@@ -112,13 +112,13 @@ public class Camera {
     }
 
     public void forward() {
-        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.06f);
+        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.1f);
         position.sub(forward);
         updateCamera();
     }
 
     public void backward() {
-        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.06f);
+        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.1f);
         position.add(forward);
         updateCamera();
     }

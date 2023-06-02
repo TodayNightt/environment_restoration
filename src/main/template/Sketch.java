@@ -1,4 +1,5 @@
 package template;
+
 import java.nio.FloatBuffer;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -18,6 +19,7 @@ import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.GLBuffers;
 
 public class Sketch implements GLEventListener, KeyListener, MouseListener {
+
     public final boolean DEBUG = false;
     protected GLWindow window;
     protected Animator animator;
@@ -25,6 +27,8 @@ public class Sketch implements GLEventListener, KeyListener, MouseListener {
             clearDepth = GLBuffers.newDirectFloatBuffer(1);
     public static FloatBuffer matBuffer = GLBuffers.newDirectFloatBuffer(16),
             vecBuffer = GLBuffers.newDirectFloatBuffer(4);
+
+    private GLProfile glProfile;
 
     public Sketch(String name) {
         setup(name);
@@ -34,7 +38,7 @@ public class Sketch implements GLEventListener, KeyListener, MouseListener {
     }
 
     public void setup(String name) {
-        GLProfile glProfile = GLProfile.get(GLProfile.GL3);
+        glProfile = GLProfile.get(GLProfile.GL3);
         GLCapabilities glCapabilities = new GLCapabilities(glProfile);
         // glCapabilities.setDepthBits(16);
 

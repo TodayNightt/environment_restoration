@@ -1,4 +1,5 @@
 package Graphics;
+
 import java.util.HashMap;
 import java.util.Map;
 import javax.management.RuntimeErrorException;
@@ -18,6 +19,14 @@ public class UniformsMap {
         this.gl = gl;
     }
 
+    private int getUniformLocation(String uniformName) {
+        Integer location = uniforms.get(uniformName);
+        if (location == null) {
+            throw new RuntimeException("Could not find uniform [" + uniformName + "]");
+        }
+        return location.intValue();
+    }
+
     public void setUniform(String name, Matrix4f value) {
         Integer location = uniforms.get(name);
         if (location == null) {
@@ -26,6 +35,10 @@ public class UniformsMap {
         float[] valueF = new float[16];
         value.get(valueF);
         gl.glUniformMatrix4fv(location.intValue(), 1, false, valueF, 0);
+    }
+
+    public void setUniform(String name, int value) {
+        gl.glUniform1i(getUniformLocation(name), value);
     }
 
     public void createUniform(String name) {

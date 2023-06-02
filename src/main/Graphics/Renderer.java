@@ -9,6 +9,7 @@ import java.util.List;
 import com.jogamp.opengl.GL3;
 
 import Camera.Camera;
+import Terrain.TerrainMap;
 
 public class Renderer {
 
@@ -31,17 +32,22 @@ public class Renderer {
         shaderP.cleanup();
     }
 
-    public void render(Chunk chunk, Camera cam) {
+    public void render(TerrainMap map, Camera cam, Textures textures, boolean wireFrame) {
         shaderP.bind();
         uniformsMap.setUniform("projectionMatrix", cam.getProjectionMatrix());
         uniformsMap.setUniform("viewMatrix", cam.getViewMatrix());
+        uniformsMap.setUniform("txtSampler", 0);
 
-        Mesh mesh = chunk.getMesh();
-        chunk.getEntitiesList().forEach(cube -> {
-            uniformsMap.setUniform("modelMatrix", cube.modelMatrix());
-            gl.glBindVertexArray(mesh.getVao().get(0));
-            gl.glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
+        gl.glActiveTexture(GL3.GL_TEXTURE0);
+        textures.bind("dirt");
+        map.getMap().forEach(chunk -> {
+            uniformsMap.setUniform("modelMatrix", chunk.getModelMatrix());
+            gl.glBindVertexArray(chunk.getMesh().getVao().get(0));
+            gl.glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
         });
+
+        gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, wireFrame ? GL3.GL_LINE : GL3.GL_FILL);
+        // });
         gl.glBindVertexArray(0);
         shaderP.unbind();
 
@@ -52,6 +58,8 @@ public class Renderer {
         uniformsMap.createUniform("projectionMatrix");
         uniformsMap.createUniform("viewMatrix");
         uniformsMap.createUniform("modelMatrix");
+
+        uniformsMap.createUniform("txtSampler");
     }
 
 }

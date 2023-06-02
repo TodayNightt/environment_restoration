@@ -1,10 +1,14 @@
-#version 330 core
+#version 330
 
 out vec4 fragColor;
 
-in vec3 vColor;
+in vec3 vPosition;
+in vec2 vTexCoord;
+
+uniform sampler2D txtSampler;
 
 void main()
 {
-    fragColor = vec4(vColor,1.0);
+    vec3 color = mix(vec3(0.5,0.1,0.5),vec3(0.0,0.3,0.6),vPosition.x);
+    fragColor = texture(txtSampler,vTexCoord);
 }

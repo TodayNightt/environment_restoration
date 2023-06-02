@@ -1,13 +1,17 @@
+import java.io.IOException;
+
 import org.joml.Vector3f;
 
 import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.GL3;
-
+import com.jogamp.opengl.GLException;
 import Camera.Camera;
-import Graphics.Chunk;
-import Graphics.Mesh;
 import Graphics.Renderer;
+import Graphics.Textures;
+import Terrain.TerrainMap;
+import Terrain.Generation.TextureGenerator;
 import template.Sketch;
 
 //https://github.com/jvm-graphics-labs/modern-jogl-examples/tree/master
@@ -15,70 +19,65 @@ public class Main extends Sketch {
 
     private Renderer renderer;
     private Camera cam;
-    private Chunk chunk;
+    private TerrainMap terrainMap;
+    private Textures textureList;
+    private boolean wireFrame;
+    protected int[] checkKey = new int[] { KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D, KeyEvent.VK_UP,
+            KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ESCAPE };
+    protected boolean[] pressed = new boolean[checkKey.length];
 
     @Override
     public void init(GL3 gl) {
         cam = new Camera();
-        cam.setCamera(new Vector3f(0.0f, 0.0f, -8.0f), new Vector3f(0.0f, 0.0f, -1.0f),
+        cam.setCamera(new Vector3f(0.0f, 0.0f, -2.0f), new Vector3f(0.0f, 0.0f, -1.0f),
                 new Vector3f(0.0f, 1.0f, 0.0f), 0.0f);
-        cam.setPerspective(90.f, (float) window.getWidth() / window.getHeight(), 0.01f, 1000.0f);
+        cam.setPerspective(90.f, (float) window.getWidth() / window.getHeight(), 0.1f, 20.0f);
+        textureList = new Textures(gl);
         try {
             renderer = new Renderer(gl);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        float[] positions = new float[] {
-                // VO
-                -0.5f, 0.5f, 0.5f,
-                // V1
-                -0.5f, -0.5f, 0.5f,
-                // V2
-                0.5f, -0.5f, 0.5f,
-                // V3
-                0.5f, 0.5f, 0.5f,
-                // V4
-                -0.5f, 0.5f, -0.5f,
-                // V5
-                0.5f, 0.5f, -0.5f,
-                // V6
-                -0.5f, -0.5f, -0.5f,
-                // V7
-                0.5f, -0.5f, -0.5f,
-        };
-        float[] colors = new float[] {
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-        };
-        int[] indices = new int[] {
-                // Front face
-                0, 1, 3, 3, 1, 2,
-                // Top Face
-                4, 0, 3, 5, 4, 3,
-                // Right face
-                3, 2, 7, 5, 3, 7,
-                // Left face
-                6, 1, 0, 6, 0, 4,
-                // Bottom face
-                2, 1, 6, 2, 6, 7,
-                // Back face
-                7, 6, 4, 7, 4, 5,
-        };
-        Mesh mesh = new Mesh(positions, colors, indices, gl);
-        chunk = new Chunk(mesh);
+        wireFrame = false;
+        initializeTexture();
+        terrainMap = new TerrainMap(gl);
+        System.out.println(gl.glGetString(GL.GL_VERSION));
+    }
 
+    private void initializeTexture() {
+        TextureGenerator.GenerateDirtMap();
+        TextureGenerator.GenerateGrassMap();
+        try {
+            textureList.createTexture("dirt", "resources/textures/dirt_texture.png", true);
+            textureList.createTexture("grass", "resources/textures/grass_texture.png", true);
+        } catch (GLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void display(GL3 gl) {
         gl.glClearBufferfv(GL2ES3.GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
-        renderer.render(chunk, cam);
+        renderer.render(terrainMap, cam, textureList, wireFrame);
+        cam.key(pressed);
+        // int MB = 1024 * 1024;
+        // Runtime runtime = Runtime.getRuntime();
+
+        // // Print used memory
+        // System.out.println("Used Memory:"
+        // + (runtime.totalMemory() - runtime.freeMemory()) / MB);
+
+        // // Print free memory
+        // System.out.println("Free Memory:"
+        // + runtime.freeMemory() / MB);
+
+        // // Print total available memory
+        // System.out.println("Total Memory:" + runtime.totalMemory() / MB);
+
+        // // Print Maximum available memory
+        // System.out.println("Max Memory:" + runtime.maxMemory() / MB);
     }
 
     @Override
@@ -89,38 +88,33 @@ public class Main extends Sketch {
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-
-        switch (keyEvent.getKeyCode()) {
-            case KeyEvent.VK_UP:
-                cam.up();
-                break;
-            case KeyEvent.VK_DOWN:
-                cam.down();
-                break;
-            case KeyEvent.VK_LEFT:
-                cam.left();
-                break;
-            case KeyEvent.VK_RIGHT:
-                cam.right();
-                break;
-            case KeyEvent.VK_W:
-                cam.forward();
-                break;
-            case KeyEvent.VK_S:
-                cam.backward();
-                break;
-            case KeyEvent.VK_A:
-                cam.yawLeft();
-                break;
-            case KeyEvent.VK_D:
-                cam.yawRight();
-                break;
-            case KeyEvent.VK_ESCAPE:
-                quit();
+        if (keyEvent.getKeyCode() == KeyEvent.VK_N) {
+            wireFrame = !wireFrame;
         }
+        changeState(true, keyEvent.getKeyCode());
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+        if (keyEvent.isAutoRepeat()) {
+            return;
+        }
+        changeState(false, keyEvent.getKeyCode());
+    }
+
+    public void changeState(boolean state, int keyCode) {
+        if (keyCode == checkKey[checkKey.length - 1])
+            quit();
+        for (int i = 0; i < checkKey.length - 1; i++) {
+            if (keyCode == checkKey[i]) {
+                pressed[i] = state;
+            }
+        }
+
     }
 
     public static void main(String[] args) {
+
         new Main().setup("OpenGL");
     }
 }
