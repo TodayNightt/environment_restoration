@@ -6,10 +6,11 @@ import org.joml.Vector3f;
 import Graphics.Chunk;
 
 public class Camera {
-    private Matrix4f viewMatrix, projectionMatrix, rotation;
+    private final Matrix4f viewMatrix;
+    private final Matrix4f projectionMatrix;
     private Vector3f position, lookDir, target, up;
 
-    private float FOV, Z_NEAR, Z_FAR, aspectRatio, yaw;
+    private float FOV, Z_NEAR, Z_FAR, aspectRatio, yaw, pan;
 
     public Camera() {
         this.viewMatrix = new Matrix4f();
@@ -30,7 +31,7 @@ public class Camera {
     }
 
     public void setAspectRatio(float width, float height) {
-        this.aspectRatio = (float) width / height;
+        this.aspectRatio = width / height;
         updatePerspective();
     }
 
@@ -44,13 +45,9 @@ public class Camera {
     }
 
     public void updateCamera() {
-        this.rotation = Chunk.rotationMatrix(yaw, (byte) 2);
-        this.lookDir = new Vector3f(target).mulDirection(rotation).normalize();
-        // this.target = new Vector3f(position).add(lookDir);
-        // this.target.y = 0;
-        // this.viewMatrix = pointAt(position, target, up).invert();
-        // this.yaw = 0;
-
+        Matrix4f rotationY = Chunk.rotationMatrix(yaw, (byte) 2);
+        Matrix4f rotationX = Chunk.rotationMatrix(pan,(byte) 1);
+        this.lookDir = new Vector3f(target).mulDirection(rotationY).normalize();
         this.viewMatrix.setLookAlong(lookDir, up).translate(position);
 
     }
@@ -69,7 +66,6 @@ public class Camera {
     // newUp.x(), newUp.y(), newUp.z(), 0.0f,
     // newForward.x(), newForward.y(), newForward.z(), 0.0f,
     // pos.x(), pos.y(), pos.z(), 1.0f);
-
     // }
 
     public void up() {
@@ -95,41 +91,50 @@ public class Camera {
     public void key(boolean[] keys) {
         if (keys[0])
             forward();
-        else if (keys[1])
+        if (keys[1])
             yawLeft();
-        else if (keys[2])
+        if (keys[2])
             backward();
-        else if (keys[3])
+        if (keys[3])
             yawRight();
-        else if (keys[4])
+        if (keys[4])
             up();
-        else if (keys[5])
+        if (keys[5])
             down();
-        else if (keys[6])
-            left();
-        else if (keys[7])
-            right();
+        if (keys[6])
+            panUp();
+        if (keys[7])
+            panDown();
     }
 
-    public void forward() {
-        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.1f);
+    private void forward() {
+        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.2f);
         position.sub(forward);
         updateCamera();
     }
 
-    public void backward() {
-        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.1f);
+    private void backward() {
+        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.2f);
         position.add(forward);
         updateCamera();
     }
 
-    public void yawLeft() {
+    private void yawLeft() {
         yaw -= 1.0f;
         updateCamera();
     }
 
-    public void yawRight() {
+    private void yawRight() {
         yaw += 1.0f;
+        updateCamera();
+    }
+
+    private void panDown(){
+        pan += 1.0f;
+        updateCamera();
+    }
+    private void panUp(){
+        pan -= 1.0f;
         updateCamera();
     }
 
@@ -144,5 +149,4 @@ public class Camera {
     public Vector3f getPosition() {
         return position;
     }
-
-};
+}

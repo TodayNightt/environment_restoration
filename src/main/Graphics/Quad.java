@@ -1,8 +1,10 @@
 package Graphics;
 
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+
 import java.nio.FloatBuffer;
 
-import org.joml.Vector3f;
 import static Graphics.Chunk.Cube;
 
 //https://github.com/TanTanDev/first_voxel_engine/blob/main/src/voxel_tools/mesh_builder.rs
@@ -11,95 +13,95 @@ public enum Quad {
 
     private static final float HALF_SIZE = 0.5f;
 
-    public static float[] getMeshFace(Quad faces, Vector3f position) {
-        switch (faces) {
-            case TOP:
-                return new float[] {
-                        position.x - HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f,
-                        position.x + HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 1.0f, 1.0f,
-                        position.x - HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 0.0f, 0.0f,
-                        position.x + HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f
-                };
 
-            case BOTTOM:
-                return new float[] {
-                        position.x - HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f,
-                        position.x + HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 1.0f, 1.0f,
-                        position.x - HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 0.0f, 0.0f,
-                        position.x + HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f
-                };
+public static float[] getMeshFace(Quad faces, Vector3f position, Vector2f uvOffset) {
+        return switch (faces) {
+            case TOP -> new float[]{
+                    //Vertex                                                                //UV        //UV offsets
+                    position.x - HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 1.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x - HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 0.0f, 0.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f, uvOffset.x, uvOffset.y,
+            };
+            case BOTTOM -> new float[]{
+                    position.x - HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 1.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x - HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 0.0f, 0.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f, uvOffset.x, uvOffset.y,
+            };
+            case BACK -> new float[]{
+                    position.x - HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 1.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x - HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 0.0f, 0.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 1.0f, 0.0f, uvOffset.x, uvOffset.y,
+            };
+            case FRONT -> new float[]{
+                    position.x - HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 0.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 1.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x - HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 0.0f, 0.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f, uvOffset.x, uvOffset.y,
+            };
+            case LEFT -> new float[]{
+                    position.x - HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x - HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 1.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x - HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 0.0f, 0.0f, uvOffset.x, uvOffset.y,
+                    position.x - HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f, uvOffset.x, uvOffset.y,
 
-            case BACK:
-                return new float[] {
-                        position.x - HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f,
-                        position.x + HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 1.0f, 1.0f,
-                        position.x - HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 0.0f, 0.0f,
-                        position.x + HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 1.0f, 0.0f
-                };
-
-            case FRONT:
-                return new float[] {
-                        position.x - HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 0.0f, 1.0f,
-                        position.x + HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 1.0f, 1.0f,
-                        position.x - HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 0.0f, 0.0f,
-                        position.x + HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f
-                };
-
-            case LEFT:
-                return new float[] {
-                        position.x - HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f,
-                        position.x - HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 1.0f, 1.0f,
-                        position.x - HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 0.0f, 0.0f,
-                        position.x - HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f
-
-                };
-
-            case RIGHT:
-                return new float[] {
-
-                        position.x + HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f,
-                        position.x + HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 1.0f, 1.0f,
-                        position.x + HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 0.0f, 0.0f,
-                        position.x + HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f
-                };
-
-            default:
-                return null;
-        }
+            };
+            case RIGHT -> new float[]{
+                    position.x + HALF_SIZE, position.y + HALF_SIZE, position.z - HALF_SIZE, 0.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y + HALF_SIZE, position.z + HALF_SIZE, 1.0f, 1.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y - HALF_SIZE, position.z - HALF_SIZE, 0.0f, 0.0f, uvOffset.x, uvOffset.y,
+                    position.x + HALF_SIZE, position.y - HALF_SIZE, position.z + HALF_SIZE, 1.0f, 0.0f, uvOffset.x, uvOffset.y,
+            };
+        };
     }
 
-    public static void processQuad(FloatBuffer vertexDataBuffer, Cube self, Cube left, Cube right, Cube bottom,
-            Cube back, Cube front) {
+    public static void processQuad(FloatBuffer vertexDataBuffer, Cube self, Cube left, Cube right, Cube top,
+            Cube bottom, Cube back, Cube front) {
         Vector3f position = self.position();
-        if (self.is_Solid() && self != null) {
-            if (!left.is_Solid()) {
-                vertexDataBuffer.put(getMeshFace(LEFT, position));
+        if (self.isSolid()) {
+            if (!left.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(LEFT, position, self.uvOffset()));
             }
-            if (!right.is_Solid()) {
-                vertexDataBuffer.put(getMeshFace(RIGHT, position));
+            if (!right.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(RIGHT, position, self.uvOffset()));
             }
-            if (!bottom.is_Solid()) {
-                vertexDataBuffer.put(getMeshFace(BOTTOM, position));
+            if (!top.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(TOP, position, self.uvOffset()));
             }
-            if (!back.is_Solid()) {
-                vertexDataBuffer.put(getMeshFace(BACK, position));
+            if (!bottom.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(BOTTOM, position, self.uvOffset()));
             }
-            if (!front.is_Solid()) {
-                vertexDataBuffer.put(getMeshFace(FRONT, position));
+            if (!back.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(BACK, position, self.uvOffset()));
             }
-
+            if (!front.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(FRONT, position, self.uvOffset()));
+            }
+        } else if (self.isWater()) {
+            if(!top.isWater() && !top.isSolid()){
+                vertexDataBuffer.put(getMeshFace(TOP,position,self.uvOffset()));
+            }
         } else {
-            if (left.is_Solid()) {
-                vertexDataBuffer.put(getMeshFace(LEFT, position));
+            if (left.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(LEFT, position,left.uvOffset()));
             }
-            if (bottom.is_Solid()) {
-                vertexDataBuffer.put(getMeshFace(BOTTOM, position));
+            if (bottom.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(BOTTOM, position,bottom.uvOffset()));
             }
-            if (back.is_Solid()) {
-                vertexDataBuffer.put(getMeshFace(BACK, position));
+            if (back.isSolid()) {
+                vertexDataBuffer.put(getMeshFace(BACK, position, back.uvOffset()));
             }
 
         }
     }
+
+//    //Calculate the uv coord on cpu
+//    private static float getUVs(float original, Integer offset){
+//        if(offset == null) return  original;
+//        return (float) textureWidth /textureRow * original;
+//    }
+
 
 }

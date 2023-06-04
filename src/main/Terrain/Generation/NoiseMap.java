@@ -1,10 +1,9 @@
 package Terrain.Generation;
 
-import java.util.Random;
-
 import Terrain.OpenSimplexNoise.OpenSimplex2S;
-
 import processing.core.PApplet;
+
+import java.util.Random;
 
 public class NoiseMap {
     // https://cbrgm.net/post/2017-07-03-procedual-map-generation-part2/
@@ -18,7 +17,6 @@ public class NoiseMap {
         for (int octave = 0; octave < octaves; octave++) {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    // System.out.print(x + " " + y + " ");
                     map[x + (y * width)] += OpenSimplex2S.noise3_ImproveXZ(seed, x * layerFrequency,
                             y * layerFrequency, 0.0)
                             * layerWeight;
@@ -63,16 +61,4 @@ public class NoiseMap {
         }
         return newMap;
     }
-
-    // public static void main(String[] args) {
-    // double[][] noise = NoiseMap.GenerateMap(10, 10, 48394);
-    // float[][] reMapped = NoiseMap.mapToFloat(noise, -1.0f, 1.0f, 0.0f, 1.0f, 10,
-    // 10);
-    // for (int i = 0; i < noise.length; i++) {
-    // for (int j = 0; j < noise[i].length; j++) {
-    // System.out.print(noise[i][j]);
-    // System.out.println(" " + reMapped[i][j]);
-    // }
-    // }
-    // }
 }

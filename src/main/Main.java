@@ -1,18 +1,17 @@
-import java.io.IOException;
-
-import org.joml.Vector3f;
-
+import Camera.Camera;
+import Graphics.Renderer;
+import Graphics.Textures;
+import Terrain.Generation.TextureGenerator;
+import Terrain.TerrainMap;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLException;
-import Camera.Camera;
-import Graphics.Renderer;
-import Graphics.Textures;
-import Terrain.TerrainMap;
-import Terrain.Generation.TextureGenerator;
+import org.joml.Vector3f;
 import template.Sketch;
+
+import java.io.IOException;
 
 //https://github.com/jvm-graphics-labs/modern-jogl-examples/tree/master
 public class Main extends Sketch {
@@ -22,37 +21,35 @@ public class Main extends Sketch {
     private TerrainMap terrainMap;
     private Textures textureList;
     private boolean wireFrame;
+
     protected int[] checkKey = new int[] { KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D, KeyEvent.VK_UP,
             KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ESCAPE };
     protected boolean[] pressed = new boolean[checkKey.length];
 
     @Override
     public void init(GL3 gl) {
+
         cam = new Camera();
-        cam.setCamera(new Vector3f(0.0f, 0.0f, -2.0f), new Vector3f(0.0f, 0.0f, -1.0f),
-                new Vector3f(0.0f, 1.0f, 0.0f), 0.0f);
-        cam.setPerspective(90.f, (float) window.getWidth() / window.getHeight(), 0.1f, 20.0f);
+        cam.setCamera(new Vector3f(-10.0f, 0.0f, -2.0f), new Vector3f(0.0f, 0.0f, -1.0f),
+                new Vector3f(0.0f, 1.0f, 0.0f), 90.0f);
+        cam.setPerspective(60.f, (float) window.getWidth() / window.getHeight(), 0.1f, 100.0f);
         textureList = new Textures(gl);
         try {
             renderer = new Renderer(gl);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        wireFrame = false;
+        wireFrame = true;
         initializeTexture();
-        terrainMap = new TerrainMap(gl);
+        terrainMap = new TerrainMap(gl,textureList.getTexture("block_atlas"));
         System.out.println(gl.glGetString(GL.GL_VERSION));
     }
 
     private void initializeTexture() {
-        TextureGenerator.GenerateDirtMap();
-        TextureGenerator.GenerateGrassMap();
+        TextureGenerator.GenerateAtlas();
         try {
-            textureList.createTexture("dirt", "resources/textures/dirt_texture.png", true);
-            textureList.createTexture("grass", "resources/textures/grass_texture.png", true);
-        } catch (GLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            textureList.createTexture("block_atlas", "src/main/resources/textures/block_atlas_texture.png", true);
+        } catch (GLException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -60,8 +57,9 @@ public class Main extends Sketch {
     @Override
     public void display(GL3 gl) {
         gl.glClearBufferfv(GL2ES3.GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
-        renderer.render(terrainMap, cam, textureList, wireFrame);
+        renderer.render(terrainMap, cam,textureList, wireFrame);
         cam.key(pressed);
+
         // int MB = 1024 * 1024;
         // Runtime runtime = Runtime.getRuntime();
 

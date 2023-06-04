@@ -1,22 +1,12 @@
 package template;
 
-import java.nio.FloatBuffer;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
-import com.jogamp.newt.event.MouseEvent;
-import com.jogamp.newt.event.MouseListener;
-import com.jogamp.newt.event.WindowAdapter;
-import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
-import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLContext;
-import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.GLBuffers;
+
+import java.nio.FloatBuffer;
 
 public class Sketch implements GLEventListener, KeyListener, MouseListener {
 
@@ -29,10 +19,6 @@ public class Sketch implements GLEventListener, KeyListener, MouseListener {
             vecBuffer = GLBuffers.newDirectFloatBuffer(4);
 
     private GLProfile glProfile;
-
-    public Sketch(String name) {
-        setup(name);
-    }
 
     public Sketch() {
     }
@@ -134,11 +120,7 @@ public class Sketch implements GLEventListener, KeyListener, MouseListener {
     }
 
     protected void quit() {
-        new Thread(new Runnable() {
-            public void run() {
-                window.destroy();
-            }
-        }).start();
+        new Thread(() -> window.destroy()).start();
     }
 
     @Override
