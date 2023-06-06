@@ -8,13 +8,12 @@ This game was inpired by both Minecraft and Tetris.
 
 ## makefileがある場合(おすすめ)
 ```
-cd src/main
 make Main
 ```
 
 ## makefileがない場合
-```
-cd src/main
-javac -d ../../out -cp './;../../libs/core.jar;../../libs/gluegen-rt.jar;../../libs/jogl-all.jar;../../libs/joml-1.10.5.jar' Main.java
-java -cp '../../out;../../libs/*' Main
+```make
+set classpath='./out;./src/main;./libs/core.jar;./libs/joml-1.10.5.jar;./libs/jogl-all.jar;./libs/gluegen-rt.jar;./libs/core'
+javac -d ./out -sourcepath ./src/main src/main/Main.java
+java -cp ./out;./libs/* Main
 ```

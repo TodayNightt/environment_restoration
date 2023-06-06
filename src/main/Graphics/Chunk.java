@@ -7,16 +7,18 @@ import org.joml.*;
 import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Random;
 
 import static org.joml.Math.cos;
 import static org.joml.Math.sin;
 
 public class Chunk {
     public static final int CHUNK_SIZE = 15;
-    public static final int CHUNK_HEIGHT = 20;
+    public static final int CHUNK_HEIGHT = 40;
     private static final int CHUNK_SQR = CHUNK_SIZE * CHUNK_SIZE;
     private static final int CHUNK_CUBE = CHUNK_SQR * CHUNK_SIZE;
-    private static final int SEA_LEVEL = 11;
+    public static final int SEA_LEVEL = 10;
+    public static final int MOUNTAIN_LEVEL = CHUNK_HEIGHT - 6;
     private Mesh mesh;
     private final Cube[] entities;
     private final Matrix4f modelMatrix;
@@ -38,10 +40,13 @@ public class Chunk {
         for (int y = 0; y < CHUNK_HEIGHT; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 for (int x = 0; x < CHUNK_SIZE; x++) {
-                    entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))] = new Cube(new Vector3f(x, y, z), getMaterial(y), y <= givenMap[x + (z * CHUNK_SIZE)], false, parentMap.getTextureRow());
-                    if (y < SEA_LEVEL && !entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))].isSolid) {
-                        entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))] = new Cube(new Vector3f(x, y, z), 3, false, true, parentMap.getTextureRow());
-                    }
+                    entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))] = new Cube(new Vector3f(x, y, z),
+                            getMaterial(y,(y < SEA_LEVEL &&!(y <= givenMap[x + (z * CHUNK_SIZE)]))),
+                            y <= givenMap[x + (z * CHUNK_SIZE)] || y < SEA_LEVEL,
+                            parentMap.getTextureRow());
+//                    if (y < SEA_LEVEL && !entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))].isSolid) {
+//                        entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))] = new Cube(new Vector3f(x, y, z), 3, true,parentMap.getTextureRow());
+//                    }
                 }
             }
         }
@@ -61,22 +66,32 @@ public class Chunk {
         FloatBuffer vertexDataBuffer = FloatBuffer
                 .allocate((CHUNK_CUBE + (CHUNK_SQR * 4)) * 24);
         for (int y = 0; y < CHUNK_HEIGHT; y++) {
-            for (int z = 0; z < CHUNK_SIZE; z++) {
-                for (int x = 0; x < CHUNK_SIZE; x++) {
-                    Cube self = entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))];
-                    if (self == null) {
-                        continue;
-                    }
-                    Cube left = getNeighbour(Direction.LEFT, x, y, z);
-                    Cube bottom = getNeighbour(Direction.BOTTOM, x, y, z);
-                    Cube back = getNeighbour(Direction.BACK, x, y, z);
-                    Cube right = getNeighbour(Direction.RIGHT, x, y, z);
-                    Cube front = getNeighbour(Direction.FRONT, x, y, z);
-                    Cube top = getNeighbour(Direction.TOP, x, y, z);
+            new Thread((new Runnable() {
+                int y;
+                @Override
+                public void run() {
+                    for (int z = 0; z < CHUNK_SIZE; z++) {
+                        for (int x = 0; x < CHUNK_SIZE; x++) {
+                            Cube self = entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))];
+                            if (self == null) {
+                                continue;
+                            }
+                            Cube left = getNeighbour(Direction.LEFT, x, y, z);
+                            Cube bottom = getNeighbour(Direction.BOTTOM, x, y, z);
+                            Cube back = getNeighbour(Direction.BACK, x, y, z);
+                            Cube right = getNeighbour(Direction.RIGHT, x, y, z);
+                            Cube front = getNeighbour(Direction.FRONT, x, y, z);
+                            Cube top = getNeighbour(Direction.TOP, x, y, z);
 
-                    Quad.processQuad(vertexDataBuffer, self, left, right, top, bottom, back, front);
+                            Quad.processQuad(vertexDataBuffer, self, left, right, top, bottom, back, front);
+                        }
+                    }
                 }
-            }
+                public Runnable pass(int y){
+                    this.y = y;
+                    return this;
+                }
+            }).pass(y)).run();
         }
         IntBuffer indicesBuffer = IntBuffer.allocate((vertexDataBuffer.capacity() / 28) * 3);
         int index = 0;
@@ -156,13 +171,20 @@ public class Chunk {
         };
     }
 
-    private static Integer getMaterial(int y) {
-        if (y< SEA_LEVEL) {
-            return 0;
+    public static Integer getMaterial(int y,boolean isWater) {
+        if (isWater){
+            return 3;
         }else if (y <= SEA_LEVEL + 2) {
             return 2;
+        } else if (y >= MOUNTAIN_LEVEL) {
+            return 4;
         } else {
-            return 1;
+            if(new Random().nextDouble()< 0.01){
+                return 0;
+            }else{
+                return 1;
+            }
+
         }
 
     }
@@ -188,12 +210,12 @@ public class Chunk {
         return modelMatrix;
     }
 
-    public record Cube(Vector3f position, Integer type, boolean isSolid, boolean isWater, Vector2f uvOffset) {
+    public record Cube(Vector3f position, Integer type, boolean isSolid, Vector2f uvOffset) {
         public Cube(Vector3f position, Integer type, boolean isSolid) {
-            this(position, type, isSolid, (position.y < SEA_LEVEL && !isSolid), null);
+            this(position, type, isSolid, null);
         }
-        public Cube(Vector3f position, Integer type, boolean isSolid, boolean isWater, float textureRow) {
-            this(position, type, isSolid, isWater, getUVOffset(type, textureRow));
+        public Cube(Vector3f position, Integer type, boolean isSolid, float textureRow) {
+            this(position, type, isSolid, getUVOffset(type, textureRow));
         }
 
         //https://www.youtube.com/watch?v=6T182r4F6J8
@@ -201,7 +223,7 @@ public class Chunk {
             if (type == null) {
                 return new Vector2f(0.0f);
             }
-            float xOffset = (type % textureRow) / textureRow;
+            float xOffset =  (type % textureRow) / textureRow;
             float yOffset = (float) ((Math.floor(type / textureRow)) / textureRow);
             return new Vector2f(xOffset, yOffset);
         }

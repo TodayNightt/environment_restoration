@@ -24,10 +24,9 @@ public class Textures {
 
     public void createTexture(String name, String filePath, boolean mipMap) throws GLException, IOException {
         Texture texture = TextureIO.newTexture(new File(filePath), true);
-//        gl.glGenerateMipmap(texture.getTarget());
-//        System.out.println(texture.isUsingAutoMipmapGeneration());
-        texture.setTexParameteri(gl, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_NEAREST);
         texture.setTexParameteri(gl, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_NEAREST);
+        texture.setTexParameteri(gl,GL3.GL_TEXTURE_MIN_FILTER,GL3.GL_NEAREST_MIPMAP_NEAREST);
+        gl.glGenerateMipmap(GL3.GL_TEXTURE_2D);
         textureList.put(name, texture);
     }
 

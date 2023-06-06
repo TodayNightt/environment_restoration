@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    maven { url "https://jogamp.org/deployment/maven" }
+}
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main'
+        }
+    }
+    resources{
+        java{
+            srcDir 'src/main/resources'
+        }
+    }
+}
+dependencies {
+    implementation "org.joml:joml:1.10.5"
+    implementation 'org.jogamp.gluegen:gluegen-rt:2.4.0'
+    implementation 'org.jogamp.jogl:jogl-all:2.4.0'
+    implementation fileTree('libs') { include '*.jar' }
+    implementation 'io.github.spair:imgui-java-app:1.86.10'
+    implementation 'io.github.spair:imgui-java-binding:1.86.10'
+    implementation 'io.github.spair:imgui-java-natives-windows:1.86.10'
+    implementation 'io.github.spair:imgui-java-natives-macos:1.86.10'
+}

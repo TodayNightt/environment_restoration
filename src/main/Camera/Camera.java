@@ -69,12 +69,12 @@ public class Camera {
     // }
 
     public void up() {
-        position.y -= 0.1f;
+        position.y -= 0.4f;
         updateCamera();
     }
 
     public void down() {
-        position.y += 0.1f;
+        position.y += 0.4f;
         updateCamera();
     }
 
@@ -90,6 +90,7 @@ public class Camera {
 
     public void key(boolean[] keys) {
         if (keys[0])
+
             forward();
         if (keys[1])
             yawLeft();
@@ -108,13 +109,13 @@ public class Camera {
     }
 
     private void forward() {
-        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.2f);
+        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f);
         position.sub(forward);
         updateCamera();
     }
 
     private void backward() {
-        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.2f);
+        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f);
         position.add(forward);
         updateCamera();
     }

@@ -3,8 +3,8 @@ package Terrain;
 import Graphics.Chunk;
 import Terrain.Generation.NoiseMap;
 import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.util.texture.Texture;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,22 +12,19 @@ import static Graphics.Chunk.CHUNK_HEIGHT;
 import static Graphics.Chunk.CHUNK_SIZE;
 
 public class TerrainMap {
-    private final int MAP_SIZE = 10;
+    private final int MAP_SIZE = 20;
     private final List<Chunk> chunkList;
-    private final Texture blockAtlas;
-
-    public Texture getTexture() {
-        return blockAtlas;
-    }
+    private final String textureName;
 
 
-    public TerrainMap(GL3 gl, Texture blockAtlas) {
-        this.blockAtlas = blockAtlas;
+    public TerrainMap(GL3 gl, String texture) throws Exception {
+        this.textureName = texture;
         chunkList = new ArrayList<>();
-        int[] heightMap = NoiseMap.mapToInt(
-                NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004),
-                -2, 1,
-                0, CHUNK_HEIGHT);
+        double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004);
+        double[] map2 = NoiseMap.GenerateMap(MAP_SIZE*CHUNK_SIZE,MAP_SIZE*CHUNK_SIZE,3,0.5,0.004);
+        double[] map3 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.9, 0.0005);
+        double[] combineMap = NoiseMap.combineMap(map1,map2,map3);
+        int[] heightMap = NoiseMap.mapToInt(combineMap,-2,1,CHUNK_HEIGHT,1);
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
                 int[] newHeightMap = new int[CHUNK_SIZE * CHUNK_SIZE];
@@ -42,8 +39,15 @@ public class TerrainMap {
             }
         }
         chunkList.forEach(Chunk::initializeBuffers);
-        int total = chunkList.stream().mapToInt(chunk -> chunk.getMesh().getNumVertices()).sum();
-        System.out.println(total);
+        Thread thread = new Thread(() -> {
+            try {
+                NoiseMap.createColoredMap(heightMap,MAP_SIZE* CHUNK_SIZE);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        thread.start();
+
 
     }
 
@@ -63,6 +67,10 @@ public class TerrainMap {
     }
 
     public float getTextureRow() {
-        return 2.0f;
+        return 3.0f;
+    }
+
+    public String getTextureName(){
+        return  textureName;
     }
 }

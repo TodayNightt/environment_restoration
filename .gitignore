@@ -1,3 +1,5 @@
 .idea
 out
 プログラミング演習２.iml
+.gradle
+build

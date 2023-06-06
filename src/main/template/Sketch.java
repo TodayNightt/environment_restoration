@@ -86,7 +86,7 @@ public class Sketch implements GLEventListener, KeyListener, MouseListener {
         }
     }
 
-    public void init(GL3 gl) {
+    public void init(GL3 gl) throws Exception {
     }
 
     @Override

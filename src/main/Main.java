@@ -1,25 +1,19 @@
 import Camera.Camera;
 import Graphics.Renderer;
-import Graphics.Textures;
-import Terrain.Generation.TextureGenerator;
-import Terrain.TerrainMap;
+import Graphics.Scene;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.GLException;
 import org.joml.Vector3f;
 import template.Sketch;
-
-import java.io.IOException;
 
 //https://github.com/jvm-graphics-labs/modern-jogl-examples/tree/master
 public class Main extends Sketch {
 
     private Renderer renderer;
     private Camera cam;
-    private TerrainMap terrainMap;
-    private Textures textureList;
+    private Scene scene;
     private boolean wireFrame;
 
     protected int[] checkKey = new int[] { KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D, KeyEvent.VK_UP,
@@ -27,37 +21,27 @@ public class Main extends Sketch {
     protected boolean[] pressed = new boolean[checkKey.length];
 
     @Override
-    public void init(GL3 gl) {
-
+    public void init(GL3 gl) throws Exception {
         cam = new Camera();
-        cam.setCamera(new Vector3f(-10.0f, 0.0f, -2.0f), new Vector3f(0.0f, 0.0f, -1.0f),
+        cam.setCamera(new Vector3f(-10.0f, -15.0f, -2.0f), new Vector3f(0.0f, 0.0f, -1.0f),
                 new Vector3f(0.0f, 1.0f, 0.0f), 90.0f);
         cam.setPerspective(60.f, (float) window.getWidth() / window.getHeight(), 0.1f, 100.0f);
-        textureList = new Textures(gl);
+        scene = new Scene(gl);
         try {
             renderer = new Renderer(gl);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        wireFrame = true;
-        initializeTexture();
-        terrainMap = new TerrainMap(gl,textureList.getTexture("block_atlas"));
+        wireFrame = false;
         System.out.println(gl.glGetString(GL.GL_VERSION));
     }
 
-    private void initializeTexture() {
-        TextureGenerator.GenerateAtlas();
-        try {
-            textureList.createTexture("block_atlas", "src/main/resources/textures/block_atlas_texture.png", true);
-        } catch (GLException | IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     @Override
     public void display(GL3 gl) {
         gl.glClearBufferfv(GL2ES3.GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
-        renderer.render(terrainMap, cam,textureList, wireFrame);
+        renderer.render(scene, cam, wireFrame);
         cam.key(pressed);
 
         // int MB = 1024 * 1024;

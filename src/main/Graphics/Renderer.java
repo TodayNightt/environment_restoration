@@ -31,23 +31,21 @@ public class Renderer {
         shaderP.cleanup();
     }
 
-    public void render(TerrainMap map, Camera cam,Textures texturesList, boolean wireFrame) {
+    public void render(Scene scene, Camera cam, boolean wireFrame) {
         shaderP.bind();
         uniformsMap.setUniform("projectionMatrix", cam.getProjectionMatrix());
         uniformsMap.setUniform("viewMatrix", cam.getViewMatrix());
          uniformsMap.setUniform("tex", 0);
-
+         TerrainMap map = scene.getTerrain();
          gl.glActiveTexture(GL3.GL_TEXTURE0);
-         texturesList.bind("block_atlas");
-         uniformsMap.setUniform("textureRow",map.getTextureRow());
-        map.getMap().forEach(chunk -> {
+         scene.getTextureList().bind(map.getTextureName());
+         uniformsMap.setUniform("textureRow",scene.getTerrain().getTextureRow());
+        scene.getTerrain().getMap().forEach(chunk -> {
             uniformsMap.setUniform("modelMatrix", chunk.getModelMatrix());
             gl.glBindVertexArray(chunk.getMesh().getVao().get(0));
             gl.glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
         });
-
         gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, wireFrame ? GL3.GL_LINE : GL3.GL_FILL);
-        // });
         gl.glBindVertexArray(0);
         shaderP.unbind();
 

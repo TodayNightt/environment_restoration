@@ -79,10 +79,6 @@ public static float[] getMeshFace(Quad faces, Vector3f position, Vector2f uvOffs
             if (!front.isSolid()) {
                 vertexDataBuffer.put(getMeshFace(FRONT, position, self.uvOffset()));
             }
-        } else if (self.isWater()) {
-            if(!top.isWater() && !top.isSolid()){
-                vertexDataBuffer.put(getMeshFace(TOP,position,self.uvOffset()));
-            }
         } else {
             if (left.isSolid()) {
                 vertexDataBuffer.put(getMeshFace(LEFT, position,left.uvOffset()));
