@@ -1,10 +1,10 @@
-# Enviroment Restoration
+# Environment Restoration
 
 Hi There, We are Year 2 undergraduate student from Teikyo University in Japan.
 <br>
-We are currently building a game called Enviroment Restoration.
+We are currently building a game called Environment Restoration.
 <br>
-This game was inpired by both Minecraft and Tetris.
+This game was inspired by both Minecraft and Tetris.
 
 ## makefileがある場合(おすすめ)
 ```
