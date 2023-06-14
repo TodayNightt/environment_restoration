@@ -1,10 +1,10 @@
 package Graphics;
 
-import org.lwjgl.system.MemoryStack;
-
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static com.jogamp.common.nio.Buffers.newDirectFloatBuffer;
+import static com.jogamp.common.nio.Buffers.newDirectIntBuffer;
 import static org.lwjgl.opengl.GL30.*;
 
 
@@ -12,9 +12,9 @@ public class TerrainMesh implements Mesh{
     private final int numVertices;
     private final int vao;
 
-    public TerrainMesh(float[] positions, int[] indices) {
+    public TerrainMesh(float[] positions,int[] indices) {
+
         this.numVertices = indices.length;
-        try(MemoryStack stack = MemoryStack.stackPush()) {
             vao = glGenVertexArrays();
             glBindVertexArray(vao);
 
@@ -26,8 +26,7 @@ public class TerrainMesh implements Mesh{
             vbos.put(vbo);
 
             // Add vbo[0] for vertices
-            FloatBuffer vertexDataBuffer = stack.callocFloat(positions.length);
-            vertexDataBuffer.put(0,positions);
+            FloatBuffer vertexDataBuffer = newDirectFloatBuffer(positions);
             glBindBuffer(GL_ARRAY_BUFFER, vbos.get(0));
             // the * 4 is used to calculate the size of the buffer as float or int is 4 bytes
             glBufferData(GL_ARRAY_BUFFER, vertexDataBuffer, GL_STATIC_DRAW);
@@ -42,15 +41,14 @@ public class TerrainMesh implements Mesh{
             glVertexAttribPointer(2, 2, GL_FLOAT, false, Float.BYTES * 7, Float.BYTES * 5);
 
             // Crete vbo for color
-            IntBuffer indicesBuffer = stack.mallocInt(indices.length);
-            indicesBuffer.put(0,indices);
+            IntBuffer indicesBuffer = newDirectIntBuffer(indices);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos.get(1));
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 
             // Clear the Buffer
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
-        }
+
     }
 
 

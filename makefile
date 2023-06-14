@@ -1,3 +1,3 @@
-%:
-	javac -d ./out -classpath ./;./src/main;./libs/* src/main/$@.java
-	java -classpath ./out;./libs/* $@
+default:
+	javac -d ./out -cp './libs/*' -sourcepath ./src/main/ src/main/Main.java
+	java -cp './out;./libs/*' Main

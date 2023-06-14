@@ -8,11 +8,11 @@ This game was inspired by both Minecraft and Tetris.
 
 ## makefileがある場合(おすすめ)
 ```
-make Main
+make
 ```
 
 ## makefileがない場合
 ```make
-javac -d ./out -classpath ./out;./src/main;./libs/* src/main/Main.java
-java -cp ./out;./libs/* Main
+javac -d ./out -cp './libs/*' -sourcepath ./src/main/ src/main/Main.java
+java -cp './out;./libs/*' Main
 ```

@@ -30,7 +30,7 @@ public class Scene {
         this.pieces = new ArrayList<>();
 //        initializeTexture();
         initializePiece();
-//        initializeTerrainGen();
+        initializeTerrainGen();
     }
 //    private void initializeTexture() throws IOException {
 //        TextureGenerator.GenerateAtlas();
@@ -58,8 +58,8 @@ public class Scene {
         uniformsMap.createUniform("projectionMatrix");
         uniformsMap.createUniform("viewMatrix");
         uniformsMap.createUniform("modelMatrix");
-        uniformsMap.createUniform("tex");
-        uniformsMap.createUniform("textureRow");
+//        uniformsMap.createUniform("tex");
+//        uniformsMap.createUniform("textureRow");
 
 
 
