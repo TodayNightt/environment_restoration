@@ -30,7 +30,7 @@ public class PieceMesh implements Mesh {
 
             // Add vbo[0] for vertices
             FloatBuffer vertexDataBuffer = stack.callocFloat(positions.length);
-            vertexDataBuffer.put(positions);
+            vertexDataBuffer.put(0,positions);
             glBindBuffer(GL_ARRAY_BUFFER, vbo);
             // the * 4 is used to calculate the size of the buffer as float or int is 4 bytes
             glBufferData(GL_ARRAY_BUFFER, vertexDataBuffer, GL_STATIC_DRAW);
@@ -43,7 +43,7 @@ public class PieceMesh implements Mesh {
             // Crete vbo for color
             vbo = glGenBuffers();
             IntBuffer indicesBuffer = stack.mallocInt(indices.length);
-            indicesBuffer.put(indices);
+            indicesBuffer.put(0,indices);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 

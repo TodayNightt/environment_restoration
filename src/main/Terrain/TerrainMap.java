@@ -3,7 +3,6 @@ package Terrain;
 import Graphics.Chunk;
 import Graphics.ShaderProgram;
 import Terrain.Generation.NoiseMap;
-import com.jogamp.opengl.GL3;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,12 +11,13 @@ import java.util.Random;
 
 import static Graphics.Chunk.CHUNK_HEIGHT;
 import static Graphics.Chunk.CHUNK_SIZE;
+import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
+import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class TerrainMap {
     private final int MAP_SIZE = 20;
     private final List<Chunk> chunkList;
     private final String textureName;
-    private GL3 gl;
     private ShaderProgram shaderP;
     private long seeds[];
 
@@ -67,8 +67,8 @@ public class TerrainMap {
 
     private void initShaderP() throws Exception {
         List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
-        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/terrain.vert",GL3.GL_VERTEX_SHADER));
-        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/terrain.frag",GL3.GL_FRAGMENT_SHADER));
+        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/terrain.vert",GL_VERTEX_SHADER));
+        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/terrain.frag",GL_FRAGMENT_SHADER));
         this.shaderP = new ShaderProgram(shaderDataList);
     }
 

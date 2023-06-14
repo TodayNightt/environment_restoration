@@ -1,7 +1,6 @@
 import Camera.Camera;
 import Graphics.Renderer;
 import Graphics.Scene;
-import com.jogamp.opengl.util.GLBuffers;
 import org.joml.Vector3f;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -23,8 +22,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Main {
 
-    protected FloatBuffer clearColor = GLBuffers.newDirectFloatBuffer(4),
-            clearDepth = GLBuffers.newDirectFloatBuffer(1);
+    protected FloatBuffer clearColor = FloatBuffer.allocate(8),
+            clearDepth = FloatBuffer.allocate(1);
     // The window handle
     private long window;
     private int width=1280,height= 720;
@@ -141,7 +140,8 @@ public class Main {
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-            glClearBufferfv(GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
+            glClearBufferfv(GL_COLOR, 0, new float[]{0f,0f,0f,1f});
+//            glClearBufferfv(GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
             glClearDepth(1.0f);
 
             // Poll for window events. The key callback above will only be
