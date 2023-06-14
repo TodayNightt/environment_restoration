@@ -3,13 +3,12 @@ package Graphics;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.joml.Vector3f;
+import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Map;
 
-import static com.jogamp.common.nio.Buffers.newDirectFloatBuffer;
-import static com.jogamp.common.nio.Buffers.newDirectIntBuffer;
 import static org.lwjgl.opengl.GL30.*;
 
 @JsonDeserialize(builder = PieceMesh.Builder.class)
@@ -22,7 +21,7 @@ public class PieceMesh implements Mesh {
             this.numVertices = indices.length;
             this.size = size;
         System.out.println(numVertices);
-
+        try (MemoryStack stack = MemoryStack.stackPush()) {
             vao = glGenVertexArrays();
             glBindVertexArray(vao);
 
@@ -30,7 +29,8 @@ public class PieceMesh implements Mesh {
             int vbo = glGenBuffers();
 
             // Add vbo[0] for vertices
-            FloatBuffer vertexDataBuffer = newDirectFloatBuffer(positions);
+            FloatBuffer vertexDataBuffer = stack.callocFloat(positions.length);
+            vertexDataBuffer.put(positions);
             glBindBuffer(GL_ARRAY_BUFFER, vbo);
             // the * 4 is used to calculate the size of the buffer as float or int is 4 bytes
             glBufferData(GL_ARRAY_BUFFER, vertexDataBuffer, GL_STATIC_DRAW);
@@ -42,14 +42,15 @@ public class PieceMesh implements Mesh {
 
             // Crete vbo for color
             vbo = glGenBuffers();
-            IntBuffer indicesBuffer = newDirectIntBuffer(indices);
+            IntBuffer indicesBuffer = stack.mallocInt(indices.length);
+            indicesBuffer.put(indices);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 
             // Clear the Buffer
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
-
+        }
     }
 
     @Override
