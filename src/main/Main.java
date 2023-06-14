@@ -1,102 +1,165 @@
 import Camera.Camera;
 import Graphics.Renderer;
 import Graphics.Scene;
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2ES3;
-import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.util.GLBuffers;
 import org.joml.Vector3f;
-import template.Sketch;
+import org.lwjgl.Version;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.Callback;
+import org.lwjgl.system.MemoryStack;
 
-//https://github.com/jvm-graphics-labs/modern-jogl-examples/tree/master
-public class Main extends Sketch {
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
-    private Renderer renderer;
-    private Camera cam;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.glClearBufferfv;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
+
+public class Main {
+
+    protected FloatBuffer clearColor = GLBuffers.newDirectFloatBuffer(4),
+            clearDepth = GLBuffers.newDirectFloatBuffer(1);
+    // The window handle
+    private long window;
+    private int width=1280,height= 720;
+    private Camera camera;
     private Scene scene;
-    private boolean wireFrame;
+    private Renderer renderer;
+    private Callback debugProc;
 
-    protected int[] checkKey = new int[] { KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D, KeyEvent.VK_UP,
-            KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ESCAPE };
-    protected boolean[] pressed = new boolean[checkKey.length];
+    public static void main(String[] args) throws Exception {
+        new Main().run();
+    }
 
-    @Override
-    public void init(GL3 gl) throws Exception {
-        cam = new Camera();
-        cam.setCamera(new Vector3f(-10.0f, -15.0f, -2.0f), new Vector3f(0.0f, 0.0f, -1.0f),
-                new Vector3f(0.0f, 1.0f, 0.0f), 90.0f);
-        cam.setPerspective(60.f, (float) window.getWidth() / window.getHeight(), 0.1f, 100.0f);
-        scene = new Scene(gl);
-        try {
-            renderer = new Renderer(gl);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void run() throws Exception {
+        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+
+
+        init();
+        loop();
+
+        // Free the window callbacks and destroy the window
+        glfwFreeCallbacks(window);
+        glfwDestroyWindow(window);
+
+        // Terminate GLFW and free the error callback
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
+    }
+
+    private void init() throws Exception {
+        // Setup an error callback. The default implementation
+        // will print the error message in System.err.
+        GLFWErrorCallback.createPrint(System.err).set();
+
+        // Initialize GLFW. Most GLFW functions will not work before doing this.
+        if ( !glfwInit() )
+            throw new IllegalStateException("Unable to initialize GLFW");
+
+        // Configure GLFW
+        glfwDefaultWindowHints(); // optional, the current window hints are already the default
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+
+        // Create the window
+        window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
+        if ( window == NULL )
+            throw new RuntimeException("Failed to create the GLFW window");
+
+        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+        });
+
+        glfwSetFramebufferSizeCallback(window,(window,width,height)-> resized(width,height));
+
+        // Get the thread stack and push a new frame
+        try ( MemoryStack stack = stackPush() ) {
+            IntBuffer pWidth = stack.mallocInt(1); // int*
+            IntBuffer pHeight = stack.mallocInt(1); // int*
+
+            // Get the window size passed to glfwCreateWindow
+            glfwGetWindowSize(window, pWidth, pHeight);
+
+            // Get the resolution of the primary monitor
+            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+            // Center the window
+            glfwSetWindowPos(
+                    window,
+                    (vidmode.width() - pWidth.get(0)) / 2,
+                    (vidmode.height() - pHeight.get(0)) / 2
+            );
+        } // the stack frame is popped automatically
+
+        // Make the OpenGL context current
+        glfwMakeContextCurrent(window);
+        // Enable v-sync
+        glfwSwapInterval(1);
+        GL.createCapabilities();
+        debugProc = GLUtil.setupDebugMessageCallback();
+        initComponent();
+
+        // Make the window visible
+        glfwShowWindow(window);
+    }
+
+    private void initComponent() throws Exception {
+        camera = new Camera();
+        camera.setCamera(new Vector3f(0.0f, 0.0f, -5.0f), new Vector3f(0.0f, 0.0f, -1.0f),
+                new Vector3f(0.0f, 1.0f, 0.0f), 0.0f);
+        camera.setPerspective(60.f, (float) width / height, 0.1f, 1000.0f);
+        scene = new Scene();
+        renderer = new Renderer();
+    }
+
+    private void loop(){
+        // This line is critical for LWJGL's interoperation with GLFW's
+        // OpenGL context, or any context that is managed externally.
+        // LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL
+        // bindings available for use.
+        System.out.println(glGetString(GL_VERSION));
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDepthFunc(GL_LEQUAL);
+        glDepthRange(0.f, 1.0f);
+
+
+        // Set the clear color
+//        glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
+
+        // Run the rendering loop until the user has attempted to close
+        // the window or has pressed the ESCAPE key.
+        while ( !glfwWindowShouldClose(window) ) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+            glClearBufferfv(GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
+            glClearDepth(1.0f);
+
+            // Poll for window events. The key callback above will only be
+            // invoked during this call.
+            glfwPollEvents();
+
+            glViewport(0, 0, width, height);
+
+            renderer.render(scene,camera,false);
+
+            glfwSwapBuffers(window); // swap the color buffers
         }
-        wireFrame = false;
-        System.out.println(gl.glGetString(GL.GL_VERSION));
     }
 
-
-
-    @Override
-    public void display(GL3 gl) {
-        gl.glClearBufferfv(GL2ES3.GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
-        renderer.render(scene, cam, wireFrame);
-        cam.key(pressed);
-
-        // int MB = 1024 * 1024;
-        // Runtime runtime = Runtime.getRuntime();
-
-        // // Print used memory
-        // System.out.println("Used Memory:"
-        // + (runtime.totalMemory() - runtime.freeMemory()) / MB);
-
-        // // Print free memory
-        // System.out.println("Free Memory:"
-        // + runtime.freeMemory() / MB);
-
-        // // Print total available memory
-        // System.out.println("Total Memory:" + runtime.totalMemory() / MB);
-
-        // // Print Maximum available memory
-        // System.out.println("Max Memory:" + runtime.maxMemory() / MB);
+    private void resized(int width,int height){
+        this.width = width;
+        this.height= height;
+        camera.setAspectRatio(width,height);
     }
 
-    @Override
-    public void reshape(GL3 gl, int w, int h) {
-        gl.glViewport(0, 0, w, h);
-        cam.setAspectRatio(w, h);
-    }
-
-    @Override
-    public void keyPressed(KeyEvent keyEvent) {
-        if (keyEvent.getKeyCode() == KeyEvent.VK_N) {
-            wireFrame = !wireFrame;
-        }
-        changeState(true, keyEvent.getKeyCode());
-    }
-
-    @Override
-    public void keyReleased(KeyEvent keyEvent) {
-        if (keyEvent.isAutoRepeat()) {
-            return;
-        }
-        changeState(false, keyEvent.getKeyCode());
-    }
-
-    public void changeState(boolean state, int keyCode) {
-        if (keyCode == checkKey[checkKey.length - 1])
-            quit();
-        for (int i = 0; i < checkKey.length - 1; i++) {
-            if (keyCode == checkKey[i]) {
-                pressed[i] = state;
-            }
-        }
-
-    }
-
-    public static void main(String[] args) {
-
-        new Main().setup("OpenGL");
-    }
 }

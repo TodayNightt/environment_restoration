@@ -3,7 +3,7 @@ package Camera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import Graphics.Chunk;
+import static Graphics.MatrixCalc.rotationMatrix;
 
 public class Camera {
     private final Matrix4f viewMatrix;
@@ -45,8 +45,8 @@ public class Camera {
     }
 
     public void updateCamera() {
-        Matrix4f rotationY = Chunk.rotationMatrix(yaw, (byte) 2);
-        Matrix4f rotationX = Chunk.rotationMatrix(pan,(byte) 1);
+        Matrix4f rotationY = rotationMatrix(yaw, (byte) 2);
+        Matrix4f rotationX = rotationMatrix(pan,(byte) 1);
         this.lookDir = new Vector3f(target).mulDirection(rotationY).normalize();
         this.viewMatrix.setLookAlong(lookDir, up).translate(position);
 
@@ -90,7 +90,6 @@ public class Camera {
 
     public void key(boolean[] keys) {
         if (keys[0])
-
             forward();
         if (keys[1])
             yawLeft();

@@ -1,63 +1,62 @@
 package Graphics;
 
 import Camera.Camera;
-import Terrain.TerrainMap;
-import com.jogamp.opengl.GL3;
+import GameLogic.Piece;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.jogamp.opengl.GL3.GL_TRIANGLES;
-import static com.jogamp.opengl.GL3.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL30.*;
+
 
 public class Renderer {
-
-    protected GL3 gl;
-
-    private final ShaderProgram shaderP;
-
-    private UniformsMap uniformsMap;
-
-    public Renderer(GL3 gl) throws Exception {
-        this.gl = gl;
-        List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
-        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/vertex.vert", GL3.GL_VERTEX_SHADER));
-        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/fragment.frag", GL3.GL_FRAGMENT_SHADER));
-        shaderP = new ShaderProgram(gl, shaderDataList);
-        createUniforms();
+    float rotate,r;
+    public Renderer(){
+        rotate = 0.5f;
+        r =0.5f;
     }
 
-    public void cleanup() {
-        shaderP.cleanup();
-    }
 
-    public void render(Scene scene, Camera cam, boolean wireFrame) {
+    public void render( Scene scene, Camera cam, boolean wireFrame) {
+        //Terrain
+//        ShaderProgram shaderP =scene.getShaderProgram("terrain");
+//        shaderP.bind();
+//        UniformsMap terrainUniforms = scene.getUniformMap("terrain");
+//        terrainUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
+//        terrainUniforms.setUniform("viewMatrix", cam.getViewMatrix());
+//         terrainUniforms.setUniform("tex", 0);
+//         TerrainMap map = scene.getTerrain();
+//         gl.glActiveTexture(GL3.GL_TEXTURE0);
+//         scene.getTextureList().bind(map.getTextureName());
+//        terrainUniforms.setUniform("textureRow",scene.getTerrain().getTextureRow());
+//        scene.getTerrain().getMap().forEach(chunk -> {
+//            terrainUniforms.setUniform("modelMatrix", chunk.getModelMatrix());
+//            gl.glBindVertexArray(chunk.getMesh().getVao().get(0));
+//            gl.glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
+//        });
+//        gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, wireFrame ? GL3.GL_LINE : GL3.GL_FILL);
+//        gl.glBindVertexArray(0);
+//        shaderP.unbind();
+
+
+        //Piece
+        ShaderProgram shaderP = scene.getShaderProgram("piece");
+        List<Piece> list= scene.getPiece();
+
         shaderP.bind();
-        uniformsMap.setUniform("projectionMatrix", cam.getProjectionMatrix());
-        uniformsMap.setUniform("viewMatrix", cam.getViewMatrix());
-         uniformsMap.setUniform("tex", 0);
-         TerrainMap map = scene.getTerrain();
-         gl.glActiveTexture(GL3.GL_TEXTURE0);
-         scene.getTextureList().bind(map.getTextureName());
-         uniformsMap.setUniform("textureRow",scene.getTerrain().getTextureRow());
-        scene.getTerrain().getMap().forEach(chunk -> {
-            uniformsMap.setUniform("modelMatrix", chunk.getModelMatrix());
-            gl.glBindVertexArray(chunk.getMesh().getVao().get(0));
-            gl.glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
+        list.forEach(piece -> {
+            UniformsMap pieceUniforms = scene.getUniformMap("piece");
+            pieceUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
+            pieceUniforms.setUniform("viewMatrix", cam.getViewMatrix());
+            pieceUniforms.setUniform("modelMatrix", piece.getModelMatrix());
+            pieceUniforms.setUniform("size", piece.getMesh().getSize());
+            glBindVertexArray(piece.getMesh().getVao());
+            glDrawElements(GL_TRIANGLES, piece.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
+            glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
+            glBindVertexArray(0);
+//            piece.rotatePiece(MatrixCalc.rotationMatrix(rotate, (byte) 2));
+//            piece.rotatePiece(MatrixCalc.rotationMatrix(r, (byte) 1));
         });
-        gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, wireFrame ? GL3.GL_LINE : GL3.GL_FILL);
-        gl.glBindVertexArray(0);
-        shaderP.unbind();
-
-    }
-
-    public void createUniforms() {
-        uniformsMap = new UniformsMap(shaderP.getProgramId(), gl);
-        uniformsMap.createUniform("projectionMatrix");
-        uniformsMap.createUniform("viewMatrix");
-        uniformsMap.createUniform("modelMatrix");
-        uniformsMap.createUniform("textureRow");
-         uniformsMap.createUniform("tex");
+            shaderP.unbind();
     }
 
 }

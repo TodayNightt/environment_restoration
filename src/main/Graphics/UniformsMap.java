@@ -1,21 +1,21 @@
 package Graphics;
 
-import com.jogamp.opengl.GL3;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import javax.management.RuntimeErrorException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL30.*;
+
 public class UniformsMap {
-    private final GL3 gl;
     private final int programId;
     private final Map<String, Integer> uniforms;
 
-    public UniformsMap(int programId, GL3 gl) {
+    public UniformsMap(int programId) {
         this.programId = programId;
         uniforms = new HashMap<>();
-        this.gl = gl;
     }
 
     private int getUniformLocation(String uniformName) {
@@ -33,17 +33,20 @@ public class UniformsMap {
         }
         float[] valueF = new float[16];
         value.get(valueF);
-        gl.glUniformMatrix4fv(location, 1, false, valueF, 0);
+        glUniformMatrix4fv(location, false, valueF);
     }
 
     public void setUniform(String name, int value) {
-        gl.glUniform1i(getUniformLocation(name), value);
+        glUniform1i(getUniformLocation(name), value);
     }
     public void setUniform(String name, float value) {
-        gl.glUniform1f(getUniformLocation(name),value);
+        glUniform1f(getUniformLocation(name),value);
+    }
+    public void setUniform(String name, Vector3f value) {
+        glUniform3f(getUniformLocation(name),value.x(),value.y(),value.z());
     }
     public void createUniform(String name) {
-        int uniformLocation = gl.glGetUniformLocation(programId, name);
+        int uniformLocation = glGetUniformLocation(programId, name);
         if (uniformLocation < 0) {
             throw new RuntimeErrorException(
                     null, String.format("Could not find uniform [%s] in shader program [%d]", name, programId));

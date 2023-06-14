@@ -92,12 +92,4 @@ public static float[] getMeshFace(Quad faces, Vector3f position, Vector2f uvOffs
 
         }
     }
-
-//    //Calculate the uv coord on cpu
-//    private static float getUVs(float original, Integer offset){
-//        if(offset == null) return  original;
-//        return (float) textureWidth /textureRow * original;
-//    }
-
-
 }

@@ -13,6 +13,6 @@ make Main
 
 ## makefileがない場合
 ```make
-javac -d ./out -classpath './out;./src/main;./libs/core.jar;./libs/joml-1.10.5.jar;./libs/jogl-all.jar;./libs/gluegen-rt.jar;./libs/*' -sourcepath ./src/main src/main/Main.java
-java -cp './out;./libs/*' Main
+javac -d ./out -classpath ./out;./src/main;./libs/* src/main/Main.java
+java -cp ./out;./libs/* Main
 ```
