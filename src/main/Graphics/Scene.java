@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL30.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL30.GL_VERTEX_SHADER;
+import static org.lwjgl.opengles.GLES30.GL_FRAGMENT_SHADER;
+import static org.lwjgl.opengles.GLES30.GL_VERTEX_SHADER;
 
 public class Scene {
 //    private Textures textureList;
@@ -30,7 +30,7 @@ public class Scene {
         this.pieces = new ArrayList<>();
 //        initializeTexture();
         initializePiece();
-        initializeTerrainGen();
+//        initializeTerrainGen();
     }
 //    private void initializeTexture() throws IOException {
 //        TextureGenerator.GenerateAtlas();

@@ -1,6 +1,6 @@
 package Graphics;
 
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengles.GLES31;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.stream.Stream;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengles.GLES31.*;
 
 
 public class ShaderProgram {
@@ -79,7 +79,7 @@ public class ShaderProgram {
         }
 
         shaderModules.forEach(s -> glDetachShader(programId, s));
-        shaderModules.forEach(GL30::glDeleteShader);
+        shaderModules.forEach(GLES31::glDeleteShader);
     }
 
     public int getProgramId() {

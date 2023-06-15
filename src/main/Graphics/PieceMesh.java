@@ -9,7 +9,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengles.GLES31.*;
 
 @JsonDeserialize(builder = PieceMesh.Builder.class)
 public class PieceMesh implements Mesh {

@@ -7,7 +7,7 @@ import javax.management.RuntimeErrorException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengles.GLES31.*;
 
 public class UniformsMap {
     private final int programId;

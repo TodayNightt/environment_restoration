@@ -5,7 +5,7 @@ import GameLogic.Piece;
 
 import java.util.List;
 
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengles.GLES30.*;
 
 
 public class Renderer {
@@ -18,28 +18,28 @@ public class Renderer {
 
     public void render( Scene scene, Camera cam, boolean wireFrame) {
         //Terrain
-        ShaderProgram shaderP =scene.getShaderProgram("terrain");
-        shaderP.bind();
-        UniformsMap terrainUniforms = scene.getUniformMap("terrain");
-        terrainUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
-        terrainUniforms.setUniform("viewMatrix", cam.getViewMatrix());
-//         terrainUniforms.setUniform("tex", 0);
-//         TerrainMap map = scene.getTerrain();
-//         gl.glActiveTexture(GL3.GL_TEXTURE0);
-//         scene.getTextureList().bind(map.getTextureName());
-//        terrainUniforms.setUniform("textureRow",scene.getTerrain().getTextureRow());
-        scene.getTerrain().getMap().forEach(chunk -> {
-            terrainUniforms.setUniform("modelMatrix", chunk.getModelMatrix());
-            glBindVertexArray(chunk.getMesh().getVao());
-            glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
-        });
-        glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
-        glBindVertexArray(0);
-        shaderP.unbind();
+//        ShaderProgram shaderP =scene.getShaderProgram("terrain");
+//        shaderP.bind();
+//        UniformsMap terrainUniforms = scene.getUniformMap("terrain");
+//        terrainUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
+//        terrainUniforms.setUniform("viewMatrix", cam.getViewMatrix());
+////         terrainUniforms.setUniform("tex", 0);
+////         TerrainMap map = scene.getTerrain();
+////         gl.glActiveTexture(GL3.GL_TEXTURE0);
+////         scene.getTextureList().bind(map.getTextureName());
+////        terrainUniforms.setUniform("textureRow",scene.getTerrain().getTextureRow());
+//        scene.getTerrain().getMap().forEach(chunk -> {
+//            terrainUniforms.setUniform("modelMatrix", chunk.getModelMatrix());
+//            glBindVertexArray(chunk.getMesh().getVao());
+//            glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
+//        });
+//        glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
+//        glBindVertexArray(0);
+//        shaderP.unbind();
 
 
         //Piece
-        shaderP = scene.getShaderProgram("piece");
+        ShaderProgram shaderP = scene.getShaderProgram("piece");
         List<Piece> list= scene.getPiece();
 
         shaderP.bind();
@@ -51,7 +51,7 @@ public class Renderer {
             pieceUniforms.setUniform("size", piece.getMesh().getSize());
             glBindVertexArray(piece.getMesh().getVao());
             glDrawElements(GL_TRIANGLES, piece.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
-            glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
+//            glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
             glBindVertexArray(0);
             piece.rotatePiece(MatrixCalc.rotationMatrix(rotate, (byte) 2));
             piece.rotatePiece(MatrixCalc.rotationMatrix(r, (byte) 1));

@@ -5,18 +5,19 @@ import org.joml.Vector3f;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLUtil;
+//import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.opengles.GLES;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
+
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.glClearBufferfv;
+//import static org.lwjgl.egl.EGL15.*;
+import static org.lwjgl.opengles.GLES31.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -65,10 +66,13 @@ public class Main {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+//        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//        glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_ANY_PROFILE);
+//        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_CREATION_API,GLFW_EGL_CONTEXT_API);
+        glfwWindowHint(GLFW_CLIENT_API,GLFW_OPENGL_ES_API);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
         // Create the window
         window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
@@ -106,8 +110,9 @@ public class Main {
         glfwMakeContextCurrent(window);
         // Enable v-sync
         glfwSwapInterval(1);
-        GL.createCapabilities();
-        debugProc = GLUtil.setupDebugMessageCallback();
+        GLES.createCapabilities();
+        System.out.println(glGetString(GL_VERSION));
+//        debugProc = GLDebugMessageCallback.
         initComponent();
 
         // Make the window visible
@@ -129,12 +134,13 @@ public class Main {
         // LWJGL detects the context that is current in the current thread,
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
-        System.out.println(glGetString(GL_VERSION));
+
 
         glEnable(GL_DEPTH_TEST);
         glDepthMask(true);
         glDepthFunc(GL_LEQUAL);
-        glDepthRange(0.f, 1.0f);
+        glDepthRangef(0.f,1.0f);
+//        glDepthRange(0.f, 1.0f);
 
 
         // Set the clear color
@@ -146,7 +152,7 @@ public class Main {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glClearBufferfv(GL_COLOR, 0, new float[]{0f,0f,0f,1f});
 //            glClearBufferfv(GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
-            glClearDepth(1.0f);
+            glClearDepthf(1.0f);
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.

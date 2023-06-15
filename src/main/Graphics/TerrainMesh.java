@@ -5,7 +5,7 @@ import java.nio.IntBuffer;
 
 import static com.jogamp.common.nio.Buffers.newDirectFloatBuffer;
 import static com.jogamp.common.nio.Buffers.newDirectIntBuffer;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengles.GLES31.*;
 
 
 public class TerrainMesh implements Mesh{
