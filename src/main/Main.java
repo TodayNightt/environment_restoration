@@ -2,21 +2,17 @@ import Camera.Camera;
 import Graphics.Renderer;
 import Graphics.Scene;
 import org.joml.Vector3f;
-import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-//import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.opengles.GLES;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
-
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-//import static org.lwjgl.egl.EGL15.*;
 import static org.lwjgl.opengles.GLES31.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -25,6 +21,9 @@ public class Main {
 
     protected FloatBuffer clearColor = FloatBuffer.allocate(8),
             clearDepth = FloatBuffer.allocate(1);
+    protected int[] checkKey = new int[] { GLFW_KEY_W, GLFW_KEY_A, GLFW_KEY_S, GLFW_KEY_D,GLFW_KEY_UP,
+            GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_ESCAPE };
+    protected boolean[] pressed = new boolean[checkKey.length];
     // The window handle
     private long window;
     private int width=1280,height= 720;
@@ -34,14 +33,12 @@ public class Main {
     private Callback debugProc;
 
     public static void main(String[] args) throws Exception {
-        new Main().run();
+        new Main().init().run();
     }
 
     public void run() throws Exception {
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
-
-
-        init();
+//        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+        initComponent();
         loop();
 
         // Free the window callbacks and destroy the window
@@ -53,7 +50,7 @@ public class Main {
         glfwSetErrorCallback(null).free();
     }
 
-    private void init() throws Exception {
+    public Main init() throws Exception {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
@@ -81,8 +78,11 @@ public class Main {
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+            if(action == GLFW_PRESS){
+                changeState(true,key);
+            }else if(action == GLFW_RELEASE){
+                changeState(false,key);
+            }
         });
 
         glfwSetFramebufferSizeCallback(window,(window,width,height)-> resized(width,height));
@@ -111,12 +111,14 @@ public class Main {
         // Enable v-sync
         glfwSwapInterval(1);
         GLES.createCapabilities();
-        System.out.println(glGetString(GL_VERSION));
+//        System.out.println(glGetString(GL_VERSION));
 //        debugProc = GLDebugMessageCallback.
-        initComponent();
+
 
         // Make the window visible
         glfwShowWindow(window);
+
+        return this;
     }
 
     private void initComponent() throws Exception {
@@ -143,9 +145,6 @@ public class Main {
 //        glDepthRange(0.f, 1.0f);
 
 
-        // Set the clear color
-//        glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
-
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
@@ -160,11 +159,26 @@ public class Main {
 
             glViewport(0, 0, width, height);
 
-            renderer.render(scene,camera,false);
+            camera.key(pressed);
+
+            renderer.render(scene,camera,true);
 
             glfwSwapBuffers(window); // swap the color buffers
         }
     }
+
+    public void changeState(boolean state, int keyCode) {
+        if (keyCode == checkKey[checkKey.length - 1])
+            glfwSetWindowShouldClose(window,true);
+        for (int i = 0; i < checkKey.length - 1; i++) {
+            if (keyCode == checkKey[i]) {
+                pressed[i] = state;
+            }
+        }
+
+    }
+
+
 
     private void resized(int width,int height){
         this.width = width;

@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 public class TerrainMap {
     private final int MAP_SIZE = 20;
     private final List<Chunk> chunkList;
-//    private final String textureName;
+    private final String textureName;
     private ShaderProgram shaderP;
     private long seeds[];
 
@@ -26,7 +26,7 @@ public class TerrainMap {
         this.seeds = new long[3];
 
         initShaderP();
-//        this.textureName = texture;
+        this.textureName = texture;
         chunkList = new ArrayList<>();
         long seed = new Random().nextLong();
         seeds[0] = seed;
@@ -91,9 +91,9 @@ public class TerrainMap {
         return 3.0f;
     }
 
-//    public String getTextureName(){
-//        return  textureName;
-//    }
+    public String getTextureName(){
+        return textureName;
+    }
 
     public ShaderProgram getShaderP(){
         return shaderP;

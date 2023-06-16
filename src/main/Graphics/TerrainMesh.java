@@ -40,7 +40,7 @@ public class TerrainMesh implements Mesh{
             glEnableVertexAttribArray(2);
             glVertexAttribPointer(2, 2, GL_FLOAT, false, Float.BYTES * 7, Float.BYTES * 5);
 
-            // Crete vbo for color
+            // Crete vbo for indices
             IntBuffer indicesBuffer = newDirectIntBuffer(indices);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos.get(1));
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
@@ -53,9 +53,10 @@ public class TerrainMesh implements Mesh{
 
 
 
-    // public void cleanup() {
-    // gl.glDeleteBuffers(GL_ARRAY_BUFFER, vbo);
-    // }
+     public void cleanup() {
+        glDeleteBuffers(vao);
+     }
+
     @Override
     public int getNumVertices() {
         return numVertices;

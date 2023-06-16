@@ -5,6 +5,7 @@ import GameLogic.Piece;
 import GameLogic.PieceCollection;
 import Terrain.TerrainMap;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,7 @@ import static org.lwjgl.opengles.GLES30.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengles.GLES30.GL_VERTEX_SHADER;
 
 public class Scene {
-//    private Textures textureList;
+    private TextureList textureList;
     private TerrainMap terrain;
     private List<Piece> pieces;
     private HashMap<String,ShaderProgram> shaderProgramList;
@@ -24,22 +25,22 @@ public class Scene {
         init();
     }
     private void init() throws Exception {
-//        this.textureList = new Textures();
+        this.textureList = new TextureList();
         this.shaderProgramList = new HashMap<>();
         this.uniformsMapList = new HashMap<>();
         this.pieces = new ArrayList<>();
-//        initializeTexture();
+        initializeTexture();
         initializePiece();
-//        initializeTerrainGen();
+        initializeTerrainGen();
     }
-//    private void initializeTexture() throws IOException {
+    private void initializeTexture() throws IOException {
 //        TextureGenerator.GenerateAtlas();
-//        textureList.createTexture("block_atlas", "src/main/resources/textures/block_atlas_texture.png", true);
-//    }
+        textureList.createTexture("block_atlas", "src/main/resources/textures/block_atlas_texture.png");
+    }
 //
-//    public Textures getTextureList(){
-//        return  textureList;
-//    }
+    public TextureList getTextureList(){
+        return textureList;
+    }
 
     public TerrainMap getTerrain(){
         return terrain;
@@ -58,9 +59,8 @@ public class Scene {
         uniformsMap.createUniform("projectionMatrix");
         uniformsMap.createUniform("viewMatrix");
         uniformsMap.createUniform("modelMatrix");
-//        uniformsMap.createUniform("tex");
-//        uniformsMap.createUniform("textureRow");
-
+        uniformsMap.createUniform("tex");
+        uniformsMap.createUniform("textureRow");
 
 
         this.shaderProgramList.put("terrain",shaderProgram);

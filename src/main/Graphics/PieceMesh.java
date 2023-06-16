@@ -20,7 +20,6 @@ public class PieceMesh implements Mesh {
     public PieceMesh(float[] positions, int[] indices,Vector3f size) {
             this.numVertices = indices.length;
             this.size = size;
-        System.out.println(numVertices);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             vao = glGenVertexArrays();
             glBindVertexArray(vao);

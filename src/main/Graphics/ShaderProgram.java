@@ -75,7 +75,7 @@ public class ShaderProgram {
     private void link(List<Integer> shaderModules) {
         glLinkProgram(programId);
         if (glGetProgrami(programId, GL_LINK_STATUS) == 0) {
-            throw new RuntimeException("Error linking Shader code: "+glGetShaderInfoLog(programId,1024));
+            throw new RuntimeException("Error linking Shader code: "+ glGetShaderInfoLog(programId,1024));
         }
 
         shaderModules.forEach(s -> glDetachShader(programId, s));
