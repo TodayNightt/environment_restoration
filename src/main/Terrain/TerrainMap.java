@@ -11,22 +11,18 @@ import java.util.Random;
 
 import static Graphics.Chunk.CHUNK_HEIGHT;
 import static Graphics.Chunk.CHUNK_SIZE;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class TerrainMap {
     private final int MAP_SIZE = 20;
     private final List<Chunk> chunkList;
-//    private final String textureName;
+    private final String textureName;
     private ShaderProgram shaderP;
     private long seeds[];
 
 
     public TerrainMap(String texture) throws Exception {
         this.seeds = new long[3];
-
-        initShaderP();
-//        this.textureName = texture;
+        this.textureName = texture;
         chunkList = new ArrayList<>();
         long seed = new Random().nextLong();
         seeds[0] = seed;
@@ -65,13 +61,6 @@ public class TerrainMap {
 
     }
 
-    private void initShaderP() throws Exception {
-        List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
-        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/terrain.vert",GL_VERTEX_SHADER));
-        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/terrain.frag",GL_FRAGMENT_SHADER));
-        this.shaderP = new ShaderProgram(shaderDataList);
-    }
-
 
     // https://stackoverflow.com/questions/22131437/return-objects-from-arraylist
     public Chunk getChunk(int x, int y, int z) {
@@ -91,9 +80,9 @@ public class TerrainMap {
         return 3.0f;
     }
 
-//    public String getTextureName(){
-//        return  textureName;
-//    }
+    public String getTextureName(){
+        return textureName;
+    }
 
     public ShaderProgram getShaderP(){
         return shaderP;

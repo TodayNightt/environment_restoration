@@ -1,13 +1,14 @@
 package Camera;
 
+import Window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import static Graphics.MatrixCalc.rotationMatrix;
 
 public class Camera {
-    private final Matrix4f viewMatrix;
-    private final Matrix4f projectionMatrix;
+    private final Matrix4f viewMatrix, inverseViewMatrix;
+    private final Matrix4f projectionMatrix, inverseProjectionMatrix, orthoProjection;
     private Vector3f position, lookDir, target, up;
 
     private float FOV, Z_NEAR, Z_FAR, aspectRatio, yaw, pan;
@@ -15,6 +16,9 @@ public class Camera {
     public Camera() {
         this.viewMatrix = new Matrix4f();
         this.projectionMatrix = new Matrix4f();
+        this.inverseViewMatrix = new Matrix4f();
+        this.inverseProjectionMatrix = new Matrix4f();
+        this.orthoProjection = new Matrix4f();
     }
 
     // Projection
@@ -28,6 +32,8 @@ public class Camera {
 
     private void updatePerspective() {
         this.projectionMatrix.identity().setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
+        this.projectionMatrix.invert(inverseProjectionMatrix);
+        this.orthoProjection.identity().ortho(0.f, Window.getWidth(), Window.getHeight(), 0.f, -1.f, 1.f);
     }
 
     public void setAspectRatio(float width, float height) {
@@ -46,10 +52,15 @@ public class Camera {
 
     public void updateCamera() {
         Matrix4f rotationY = rotationMatrix(yaw, (byte) 2);
-        Matrix4f rotationX = rotationMatrix(pan,(byte) 1);
+        Matrix4f rotationX = rotationMatrix(pan, (byte) 1);
         this.lookDir = new Vector3f(target).mulDirection(rotationY).normalize();
         this.viewMatrix.setLookAlong(lookDir, up).translate(position);
+        this.viewMatrix.invert(inverseViewMatrix);
 
+    }
+
+    public Matrix4f getOrthoProjection() {
+        return orthoProjection;
     }
 
     // https://github.com/OneLoneCoder/Javidx9/blob/master/ConsoleGameEngine/BiggerProjects/Engine3D/OneLoneCoder_olcEngine3D_Part3.cpp
@@ -129,11 +140,12 @@ public class Camera {
         updateCamera();
     }
 
-    private void panDown(){
+    private void panDown() {
         pan += 1.0f;
         updateCamera();
     }
-    private void panUp(){
+
+    private void panUp() {
         pan -= 1.0f;
         updateCamera();
     }

@@ -7,4 +7,6 @@ public interface Mesh {
 
     String toString();
 
+    void cleanup();
+
 }

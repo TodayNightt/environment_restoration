@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import javax.management.RuntimeErrorException;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,12 +40,19 @@ public class UniformsMap {
     public void setUniform(String name, int value) {
         glUniform1i(getUniformLocation(name), value);
     }
+
     public void setUniform(String name, float value) {
-        glUniform1f(getUniformLocation(name),value);
+        glUniform1f(getUniformLocation(name), value);
     }
+
     public void setUniform(String name, Vector3f value) {
-        glUniform3f(getUniformLocation(name),value.x(),value.y(),value.z());
+        glUniform3f(getUniformLocation(name), value.x, value.y, value.z);
     }
+
+    public void setUniform(String name, Color value) {
+        glUniform3f(getUniformLocation(name), value.getRed(), value.getGreen(), value.getBlue());
+    }
+
     public void createUniform(String name) {
         int uniformLocation = glGetUniformLocation(programId, name);
         if (uniformLocation < 0) {
