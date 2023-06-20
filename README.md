@@ -7,12 +7,14 @@ We are currently building a game called Environment Restoration.
 This game was inspired by both Minecraft and Tetris.
 
 ## makefileがある場合(おすすめ)
+
 ```
 make
 ```
 
 ## makefileがない場合
+
 ```make
 javac -d ./out -cp './libs/*' -sourcepath ./src/main/ src/main/Main.java
-java -cp './out;./libs/*' Main
+java -cp './out;./libs/*;./src/main/resources' Main
 ```

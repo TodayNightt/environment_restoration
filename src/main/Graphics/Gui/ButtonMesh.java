@@ -51,7 +51,6 @@ public class ButtonMesh implements Mesh {
         final int[] indices = new int[]{
                 0, 1, 2, 1, 2, 3
         };
-        System.out.println(leftMost + " " + topMost + " " + buttonSize);
         final float[] vertexData = new float[]{
                 leftMost, topMost,
                 leftMost + buttonSize, topMost,
