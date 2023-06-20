@@ -11,8 +11,6 @@ import java.util.Random;
 
 import static Graphics.Chunk.CHUNK_HEIGHT;
 import static Graphics.Chunk.CHUNK_SIZE;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class TerrainMap {
     private final int MAP_SIZE = 20;
@@ -24,8 +22,6 @@ public class TerrainMap {
 
     public TerrainMap(String texture) throws Exception {
         this.seeds = new long[3];
-
-        initShaderP();
         this.textureName = texture;
         chunkList = new ArrayList<>();
         long seed = new Random().nextLong();
@@ -63,13 +59,6 @@ public class TerrainMap {
         thread.start();
 
 
-    }
-
-    private void initShaderP() throws Exception {
-        List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
-        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/terrain.vert",GL_VERTEX_SHADER));
-        shaderDataList.add(new ShaderProgram.ShaderData("src/main/resources/shaders/terrain.frag",GL_FRAGMENT_SHADER));
-        this.shaderP = new ShaderProgram(shaderDataList);
     }
 
 

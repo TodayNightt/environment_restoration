@@ -94,7 +94,7 @@ public class Chunk {
                             Cube front = getNeighbour(FRONT, x, y, z);
                             Cube top = getNeighbour(TOP, x, y, z);
 
-                            Quad.processQuad(vertexDataBuffer, self, left, right, top, bottom, back, front);
+                            processQuad(vertexDataBuffer, self, left, right, top, bottom, back, front);
                         }
                     }
                 }

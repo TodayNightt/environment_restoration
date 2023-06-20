@@ -1,8 +1,10 @@
 package Graphics;
 
+import Utils.FileUtils;
 import org.lwjgl.opengles.GLES31;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
@@ -10,7 +12,6 @@ import java.util.HashMap;
 import static org.lwjgl.BufferUtils.createIntBuffer;
 import static org.lwjgl.opengles.GLES31.*;
 import static org.lwjgl.stb.STBImage.*;
-
 
 public class TextureList {
 
@@ -20,8 +21,8 @@ public class TextureList {
         this.textureList = new HashMap<>();
     }
 
-    public void createTexture(String name, String filePath){
-        File file = new File(filePath);
+    public void createTexture(String name, String filePath) throws URISyntaxException{
+        File file = new File(FileUtils.loadFromResources(filePath).toUri());
         IntBuffer w = createIntBuffer(1);
         IntBuffer h = createIntBuffer(1);
         IntBuffer channels = createIntBuffer(1);
@@ -31,17 +32,11 @@ public class TextureList {
             throw new RuntimeException("Image file [" + filePath + "] not loaded: " + stbi_failure_reason());
         }
 
-//        System.out.println(channels.get(0));
-//        byte[] a = new byte[textureBuffer.capacity()];
-//        textureBuffer.get(a);
-//        for (byte b : a) {
-//            System.out.println(b);
-//        }
         int textureId = glGenTextures();
         glBindTexture(GL_TEXTURE_2D,textureId);
         glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-//        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+//        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST_MIPMAP_NEAREST);
         glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,w.get(),h.get(),0,GL_RGBA,GL_UNSIGNED_BYTE,textureBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -61,5 +56,7 @@ public class TextureList {
     public void cleanup(){
         textureList.values().forEach(GLES31::glDeleteTextures);
     }
+
+
 
 }

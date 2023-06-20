@@ -1,15 +1,13 @@
 package Graphics;
 
+import Utils.FileUtils;
 import org.lwjgl.opengles.GLES31;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
-import java.util.stream.Stream;
 
 import static org.lwjgl.opengles.GLES31.*;
 
@@ -17,44 +15,36 @@ import static org.lwjgl.opengles.GLES31.*;
 public class ShaderProgram {
 
     private final int programId;
+    private List<Integer> shaderModules;
 
     public ShaderProgram( List<ShaderData> shaderDataList) throws Exception {
         programId = glCreateProgram();
         if (programId == 0) {
             throw new Exception("Could not create Shader");
         }
-        List<Integer> shaderModules = new ArrayList<>();
-        shaderDataList.forEach(s -> {
-            String[] file;
-            try {
-                file = readFile(s.shaderFile);
-                shaderModules.add(createShader(file, s.shaderType));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
+        shaderModules = new ArrayList<>();
+        shaderDataList.forEach(s -> shaderModules.add(createShader(s.shaderSource(), s.shaderType)));
         link(shaderModules);
 
     }
 
-    // https://stackoverflow.com/questions/60098830/how-to-fix-this-opengl-error-unexpected-tokens-following-preprocessor-directiv
-    public static String[] readFile(String filePath) throws IOException {
-        Vector<String> lines = new Vector<>();
+//    // https://stackoverflow.com/questions/60098830/how-to-fix-this-opengl-error-unexpected-tokens-following-preprocessor-directiv
+//    public static String[] readFile(String filePath) throws IOException {
+//        Vector<String> lines = new Vector<>();
+//
+//        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
+//            stream.forEach(x -> lines.add(x + "\n"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // CONVERT VECTOR TO ARRAY
+//        Object[] objArray = lines.toArray();
+//
+//        return Arrays.copyOf(objArray, objArray.length, String[].class);
+//    }
 
-        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            stream.forEach(x -> lines.add(x + "\n"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // CONVERT VECTOR TO ARRAY
-        Object[] objArray = lines.toArray();
-
-        return Arrays.copyOf(objArray, objArray.length, String[].class);
-    }
-
-    protected int createShader(String[] shaderCode, int shaderType) {
+    protected int createShader(CharSequence shaderCode, int shaderType) {
         int shaderId = glCreateShader(shaderType);
         if (shaderId == 0) {
             throw new RuntimeException("Error creating shader. Type: " + shaderType);
@@ -65,7 +55,7 @@ public class ShaderProgram {
 
         if (glGetShaderi(shaderId, GL_COMPILE_STATUS) == 0) {
             throw new RuntimeException(
-                    "Error compiling Shader code: " + glGetShaderInfoLog(shaderId, 1024));
+                    "Error compiling Shader code: " + shaderCode+ glGetShaderInfoLog(shaderId, 1024) );
         }
 
         glAttachShader(programId, shaderId);
@@ -96,11 +86,16 @@ public class ShaderProgram {
 
     public void cleanup() {
         unbind();
+        shaderModules.forEach(s ->glDetachShader(programId,s));
         if (programId != 0) {
             glDeleteProgram(programId);
         }
     }
 
-    public record ShaderData(String shaderFile, int shaderType) {
+    public record ShaderData(CharSequence shaderSource, int shaderType) {
+        public static ShaderData createShaderByFile(String filePath,int shaderType) throws IOException, URISyntaxException {
+            return new ShaderData(Files.readString(FileUtils.loadFromResources(filePath)),shaderType);
+        }
     }
+
 }
