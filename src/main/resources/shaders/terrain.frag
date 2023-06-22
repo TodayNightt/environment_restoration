@@ -1,6 +1,5 @@
-#version 310 es
+#version 330
 
-precision mediump float;
 
 out vec4 fragColor;
 

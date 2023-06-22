@@ -1,73 +1,93 @@
-import org.gradle.internal.os.OperatingSystem
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 repositories {
     mavenCentral()
 }
-sourceSets {
-    main {
-        java {
-            srcDirs 'src/main'
-        }
-    }
-    resources{
-        java{
-            srcDir 'src/main/resources/'
-        }
-    }
-}
-    project.ext.lwjglVersion = "3.3.2"
-    project.ext.jomlVersion = "1.10.5"
-    project.ext.imguiVersion = "1.86.10"
 
-switch (OperatingSystem.current()) {
-    case OperatingSystem.LINUX:
+project.ext.lwjglVersion = "3.3.2"
+project.ext.jomlVersion = "1.10.5"
+project.ext.imguiVersion = "1.86.10"
+
+switch (org.gradle.internal.os.OperatingSystem.current()) {
+    case org.gradle.internal.os.OperatingSystem.LINUX:
         def osArch = System.getProperty("os.arch")
         project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
                 ? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
                 : "natives-linux"
         break
-    case OperatingSystem.MAC_OS:
+    case org.gradle.internal.os.OperatingSystem.MAC_OS:
         project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
         break
-    case OperatingSystem.WINDOWS:
+    case org.gradle.internal.os.OperatingSystem.WINDOWS:
         project.ext.lwjglNatives = "natives-windows"
         break
 }
-
 dependencies {
     //Imgui
     implementation "io.github.spair:imgui-java-binding:$imguiVersion"
     implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
     implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+    implementation "io.github.spair:imgui-java-natives-macos:$imguiVersion"
+    implementation "io.github.spair:imgui-java-natives-linux:$imguiVersion"
 
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation "org.lwjgl:lwjgl"
     implementation "org.lwjgl:lwjgl-glfw"
     implementation "org.lwjgl:lwjgl-openal"
-//    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-opengl"
     implementation "org.lwjgl:lwjgl-stb"
-    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-//    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-tinyfd::$lwjglNatives"
     implementation "org.joml:joml:${jomlVersion}"
 
-    //GLES
-    implementation "org.lwjgl:lwjgl-egl"
-    implementation "org.lwjgl:lwjgl-opengles"
-    runtimeOnly "org.lwjgl:lwjgl-opengles::$lwjglNatives"
+    //Natives linux
+    runtimeOnly "org.lwjgl:lwjgl::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-openal::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-stb::natives-linux"
+
+//    //Natives linux arm
+//    runtimeOnly "org.lwjgl:lwjgl::natives-linux"
+//    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-linux"
+//    runtimeOnly "org.lwjgl:lwjgl-openal::natives-linux"
+//    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-linux"
+//    runtimeOnly "org.lwjgl:lwjgl-stb::natives-linux"
+
+
+    //Natives Window
+    runtimeOnly "org.lwjgl:lwjgl::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-openal::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-stb::natives-windows"
+
+    //Natives Macos arm
+    runtimeOnly "org.lwjgl:lwjgl::natives-macos-arm64"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-macos-arm64"
+    runtimeOnly "org.lwjgl:lwjgl-openal::natives-macos-arm64"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-macos-arm64"
+    runtimeOnly "org.lwjgl:lwjgl-stb::natives-macos-arm64"
+
 
     implementation platform("com.fasterxml.jackson:jackson-bom:2.14.2")
     implementation 'com.fasterxml.jackson.core:jackson-core:2.14.2'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
-    implementation'com.fasterxml.jackson.core:jackson-annotations:2.15.1'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.1'
 
-    implementation fileTree('libs') { include '*.jar' }
+    implementation fileTree('libs') { include 'core.jar' }
 
+}
+
+
+shadowJar {
+    archiveBaseName.set('game')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+
+    manifest {
+        attributes 'Main-Class':'com.game.Main'
+    }
 }
