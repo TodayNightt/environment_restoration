@@ -15,6 +15,11 @@ make
 ## makefileがない場合
 
 ```make
+//Mac
+chmod +x ./gradlew
+./gradlew shadowJar
+java -XstartOnFirstThread -jar ./build/libs/game.jar
+
 javac -d ./out -cp './libs/*' -sourcepath ./src/main/ src/main/Main.java
 java -cp './out;./libs/*;./src/main/resources' Main
 ```
