@@ -6,14 +6,6 @@ import com.game.Graphics.Renderer;
 import com.game.Graphics.Scene;
 import com.game.Window.EventListener.KeyListener;
 import com.game.Window.EventListener.MouseListener;
-import imgui.ImColor;
-import imgui.ImGui;
-import imgui.ImGuiIO;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiWindowFlags;
-import imgui.gl3.ImGuiImplGl3;
-import imgui.glfw.ImGuiImplGlfw;
 import org.joml.Random;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -38,10 +30,9 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window {
 
     private static Window window;
-    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
-    private final ImGuiImplGl3 imGuiGl = new ImGuiImplGl3();
+//    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
+//    private final ImGuiImplGl3 imGuiGl = new ImGuiImplGl3();
     private Scene scene;
-    private Renderer renderer;
     // The window handle
     private long windowID;
     private int width = 1280, height = 720;
@@ -76,7 +67,7 @@ public class Window {
     private static void resized(long window, int width, int height) {
         getInstance().width = width;
         getInstance().height = height;
-        getInstance().scene.getButtonManager().evalPlacement();
+//        getInstance().scene.getButtonManager().evalPlacement();
         getInstance().scene.getCamera().setAspectRatio(getWidth(), getHeight());
     }
 
@@ -87,15 +78,15 @@ public class Window {
     public void init() throws Exception {
         initWindow();
         initImGui();
-        imGuiGlfw.init(windowID, true);
-        imGuiGl.init();
+//        imGuiGlfw.init(windowID, true);
+//        imGuiGl.init();
     }
 
     protected void initImGui() {
-        ImGui.createContext();
-
-        final ImGuiIO io = ImGui.getIO();
-        io.setIniFilename("src/main/resources/imgui.ini");
+//        ImGui.createContext();
+//
+//        final ImGuiIO io = ImGui.getIO();
+//        io.setIniFilename("src/main/resources/imgui.ini");
     }
 
     public void initWindow() {
@@ -193,31 +184,23 @@ public class Window {
 
     protected void startFrame() {
         clearBuffer();
-        imGuiGlfw.newFrame();
-        ImGui.newFrame();
+//        imGuiGlfw.newFrame();
+//        ImGui.newFrame();
     }
 
     public void render() {
         scene.render();
-        ImGui.begin("Items", ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize);
-        ImGui.pushStyleColor(ImGuiCol.Button, ImColor.rgb(new Color(0, 0, 0)));
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, ImColor.rgb(new Color(255, 255, 255)));
-        if (ImGui.button("Hello World")) {
-            PieceManager.addPiece(PieceCollection.getInstance().getPieceType().get(new Random().nextInt(PieceCollection.getInstance().getPieceType().size())));
-        }
-        ImGui.popStyleColor(2);
-        ImGui.end();
     }
 
     protected void endFrame() {
-        ImGui.render();
-        imGuiGl.renderDrawData(ImGui.getDrawData());
-
-        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-            ImGui.updatePlatformWindows();
-            ImGui.renderPlatformWindowsDefault();
-            GLFW.glfwMakeContextCurrent(windowID);
-        }
+//        ImGui.render();
+//        imGuiGl.renderDrawData(ImGui.getDrawData());
+//
+//        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+//            ImGui.updatePlatformWindows();
+//            ImGui.renderPlatformWindowsDefault();
+//            GLFW.glfwMakeContextCurrent(windowID);
+//        }
 
         glViewport(0, 0, width, height);
         renderBuffer();
@@ -236,9 +219,9 @@ public class Window {
     }
 
     private void disposeAll() {
-        imGuiGl.dispose();
-        imGuiGlfw.dispose();
-        ImGui.destroyContext();
+//        imGuiGl.dispose();
+//        imGuiGlfw.dispose();
+//        ImGui.destroyContext();
         scene.cleanup();
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(windowID);
