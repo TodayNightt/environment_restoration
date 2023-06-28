@@ -1,5 +1,6 @@
 package com.game.Graphics;
 
+import com.game.Graphics.Mesh.TerrainMesh;
 import com.game.Terrain.TerrainMap;
 import org.joml.*;
 
@@ -16,7 +17,7 @@ public class Chunk {
     public static final int CHUNK_HEIGHT = 40;
     public static final int SEA_LEVEL = 10;
     public static final int MOUNTAIN_LEVEL = CHUNK_HEIGHT - 6;
-    private static final int CHUNK_SQR = CHUNK_SIZE * CHUNK_SIZE;
+    static final int CHUNK_SQR = CHUNK_SIZE * CHUNK_SIZE;
     private static final int CHUNK_CUBE = CHUNK_SQR * CHUNK_SIZE;
     private final Cube[] entities;
     private final Matrix4f modelMatrix;

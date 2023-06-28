@@ -1,6 +1,6 @@
 package com.game.GameLogic;
 
-import com.game.Graphics.PieceMesh;
+import com.game.Graphics.Mesh.PieceMesh;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 

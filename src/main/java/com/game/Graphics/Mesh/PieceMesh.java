@@ -1,4 +1,4 @@
-package com.game.Graphics;
+package com.game.Graphics.Mesh;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;

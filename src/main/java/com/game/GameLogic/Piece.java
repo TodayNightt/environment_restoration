@@ -1,7 +1,7 @@
 package com.game.GameLogic;
 
 import com.game.Graphics.MatrixCalc;
-import com.game.Graphics.PieceMesh;
+import com.game.Graphics.Mesh.PieceMesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

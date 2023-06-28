@@ -1,6 +1,6 @@
 package com.game.Graphics.Gui;
 
-import com.game.Graphics.Mesh;
+import com.game.Graphics.Mesh.Mesh;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;

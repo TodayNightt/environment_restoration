@@ -1,6 +1,5 @@
 package com.game.Graphics.Mesh;
 
-import com.game.Graphics.Mesh.Mesh;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -9,13 +8,13 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL33.*;
 
 
-public class TerrainMesh implements Mesh {
+public class NewTerrainMesh implements Mesh {
     private final int numVertices;
     private final int vao;
 
-    public TerrainMesh(float[] positions, int[] indices) {
+    public NewTerrainMesh(IntBuffer positions, IntBuffer indices) {
 
-        this.numVertices = indices.length;
+        this.numVertices = indices.capacity();
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
 
@@ -27,26 +26,20 @@ public class TerrainMesh implements Mesh {
         vbos.put(vbo);
 
         // Add vbo[0] for vertices
-        FloatBuffer vertexDataBuffer = BufferUtils.createFloatBuffer(positions.length);
-        vertexDataBuffer.put(0, positions);
+        IntBuffer vertexDataBuffer = BufferUtils.createIntBuffer(positions.capacity());
+        vertexDataBuffer.put(0,positions,0,positions.capacity());
         glBindBuffer(GL_ARRAY_BUFFER, vbos.get(0));
         // the * 4 is used to calculate the size of the buffer as float or int is 4 bytes
         glBufferData(GL_ARRAY_BUFFER, vertexDataBuffer, GL_STATIC_DRAW);
         // Enable the vertex data attribute
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES * 7, 0);
-        // Enable uvCoordinates embedded in the buffer
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, Float.BYTES * 7, Float.BYTES * 3);
-        //Enable uvOffset embedded in the buffer
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, false, Float.BYTES * 7, Float.BYTES * 5);
+        glVertexAttribPointer(0, 1, GL_UNSIGNED_INT, false, 0, 0);
 
         // Crete vbo for indices
-        IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indices.length);
-        indicesBuffer.put(0, indices);
+        IntBuffer indexBuffer = BufferUtils.createIntBuffer(indices.capacity());
+        indexBuffer.put(0,indices,0,indices.capacity());
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos.get(1));
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
 
         // Clear the Buffer
         glBindBuffer(GL_ARRAY_BUFFER, 0);

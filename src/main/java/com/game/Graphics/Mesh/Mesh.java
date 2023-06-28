@@ -1,4 +1,4 @@
-package com.game.Graphics;
+package com.game.Graphics.Mesh;
 
 public interface Mesh {
     int getNumVertices();
