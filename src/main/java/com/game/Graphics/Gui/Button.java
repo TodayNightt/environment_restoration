@@ -2,6 +2,7 @@ package com.game.Graphics.Gui;
 
 import com.game.Window.Window;
 import org.joml.Vector3d;
+import com.game.Graphics.Mesh.ButtonMesh;
 
 import java.awt.*;
 
@@ -35,7 +36,8 @@ public class Button {
     }
 
     protected boolean isCurrent(float posX, float posY) {
-        if (posX > leftMost * resizeFactor && posX < leftMost + buttonSize * resizeFactor && posY < topMost + buttonSize * resizeFactor && posY > topMost * resizeFactor) {
+        if (posX > leftMost * resizeFactor && posX < leftMost + buttonSize * resizeFactor
+                && posY < topMost + buttonSize * resizeFactor && posY > topMost * resizeFactor) {
             currentColor = selected;
             return true;
         }
@@ -46,7 +48,6 @@ public class Button {
     public Color getColor() {
         return currentColor;
     }
-
 
     protected String getType() {
         return pieceType;

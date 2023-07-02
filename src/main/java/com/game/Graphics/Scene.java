@@ -3,13 +3,11 @@ package com.game.Graphics;
 import com.game.Camera.Camera;
 import com.game.Graphics.Gui.ButtonManager;
 import com.game.Terrain.Generation.TextureGenerator;
-import com.game.Terrain.NewTerrainMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.Window;
 import org.joml.Vector3f;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ import static org.lwjgl.opengl.GL33.GL_VERTEX_SHADER;
 
 public class Scene {
     private TextureList textureList;
-    private NewTerrainMap terrain;
+    private TerrainMap terrain;
     private HashMap<String, ShaderProgram> shaderProgramList;
     private HashMap<String, UniformsMap> uniformsMapList;
     private Camera cam;
@@ -38,14 +36,15 @@ public class Scene {
         this.uniformsMapList = new HashMap<>();
         initCam();
 //        initGui();
-//        initializeTexture();
+        initializeTexture();
 //        initializePiece();
         initializeTerrainGen();
     }
 
+
     private void initCam() {
         cam = new Camera();
-        cam.setCamera(new Vector3f(0.0f, 0.0f, -5.0f), new Vector3f(0.0f, 0.0f, -1.0f),
+        cam.setCamera(new Vector3f(-1.0f, 0.0f, -5.0f), new Vector3f(0.0f, 0.0f, -1.0f),
                 new Vector3f(0.0f, 1.0f, 0.0f), 0.0f);
         cam.setPerspective(60.f, Window.getWidth() / Window.getHeight(), 0.1f, 1000.0f);
     }
@@ -82,7 +81,7 @@ public class Scene {
         return textureList;
     }
 
-    public NewTerrainMap getTerrain() {
+    public TerrainMap getTerrain() {
         return terrain;
     }
 
@@ -90,8 +89,8 @@ public class Scene {
 
         //Initialize shaderProgram
         List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
-        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/newterrain.vert", GL_VERTEX_SHADER));
-        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/newterrain.frag", GL_FRAGMENT_SHADER));
+        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/terrain.vert", GL_VERTEX_SHADER));
+        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/terrain.frag", GL_FRAGMENT_SHADER));
         ShaderProgram shaderProgram = new ShaderProgram(shaderDataList);
 
         //Initialize uniformMap
@@ -99,13 +98,13 @@ public class Scene {
         uniformsMap.createUniform("projectionMatrix");
         uniformsMap.createUniform("viewMatrix");
         uniformsMap.createUniform("modelMatrix");
-//        uniformsMap.createUniform("tex");
-//        uniformsMap.createUniform("textureRow");
+        uniformsMap.createUniform("tex");
+        uniformsMap.createUniform("fValue");
 
 
         this.shaderProgramList.put("terrain", shaderProgram);
         this.uniformsMapList.put("terrain", uniformsMap);
-        this.terrain = new NewTerrainMap();
+        this.terrain = new TerrainMap(this,"block_atlas");
     }
 
     private void initializePiece() throws Exception {

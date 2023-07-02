@@ -64,7 +64,7 @@ public class TextureGenerator {
         return buffer;
     }
 
-    public static ByteBuffer createColoredMap(int[] heightMap, int size, long[] seed) throws IOException {
+    public static ByteBuffer createColoredMap(int[] heightMap, int size, long seed) throws IOException {
 
         Color[] terrainColor = {
                 //Dirt
@@ -83,7 +83,8 @@ public class TextureGenerator {
         for (int z = 0; z < image.getHeight(); z++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 int height = heightMap[x + (z * size)];
-                int colorIndex = Chunk.getMaterial(height, height <= SEA_LEVEL);
+                int colorIndex =0;
+//                int colorIndex = Chunk.getMaterial(height, height <= SEA_LEVEL);
                 image.setRGB(x, z, terrainColor[colorIndex].getRGB());
             }
         }

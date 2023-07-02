@@ -5,3 +5,14 @@ out
 build
 bin
 gradle
+
+/src/main/java/com/game/Graphics/OldQuad.java
+/src/main/java/com/game/Graphics/OldChunk.java
+/src/main/java/com/game/Graphics/Mesh/OldTerrainMesh.java
+/src/main/java/com/game/Graphics/ChunkBorder.java
+/src/main/java/com/game/Graphics/Mesh/ChunkBorderMesh.java
+/src/main/java/com/game/Terrain/OldTerrainMap.java
+/src/main/resources/shaders/chunkBorder.frag
+/src/main/resources/shaders/chunkBorder.vert
+/src/main/resources/shaders/oldterrain.frag
+/src/main/resources/shaders/oldterrain.vert

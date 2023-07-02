@@ -56,6 +56,7 @@ public class Camera {
         this.lookDir = new Vector3f(target).mulDirection(rotationY).normalize();
         this.viewMatrix.setLookAlong(lookDir, up).translate(position);
         this.viewMatrix.invert(inverseViewMatrix);
+//        System.out.println(viewMatrix.m30() + " " + viewMatrix.m31() + " " + viewMatrix.m32());
 
     }
 

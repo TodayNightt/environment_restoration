@@ -1,4 +1,4 @@
-package com.game.Graphics.Gui;
+package com.game.Graphics.Mesh;
 
 import com.game.Graphics.Mesh.Mesh;
 import org.lwjgl.system.MemoryStack;
@@ -25,7 +25,8 @@ public class ButtonMesh implements Mesh {
             FloatBuffer vertexDataBuffer = stack.callocFloat(positions.length);
             vertexDataBuffer.put(0, positions);
             glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            // the * 4 is used to calculate the size of the buffer as float or int is 4 bytes
+            // the * 4 is used to calculate the size of the buffer as float or int is 4
+            // bytes
             glBufferData(GL_ARRAY_BUFFER, vertexDataBuffer, GL_STATIC_DRAW);
             // Enable the vertex data attribute
             glEnableVertexAttribArray(0);
@@ -46,15 +47,15 @@ public class ButtonMesh implements Mesh {
         }
     }
 
-    protected static ButtonMesh createSquare(float leftMost, float topMost, float buttonSize) {
-        final int[] indices = new int[]{
+    public static ButtonMesh createSquare(float leftMost, float topMost, float buttonSize) {
+        final int[] indices = new int[] {
                 0, 1, 2, 1, 2, 3
         };
-        final float[] vertexData = new float[]{
-                leftMost, topMost,0.0f,1.0f,
-                leftMost + buttonSize, topMost,1.0f,1.0f,
-                leftMost, topMost + buttonSize,0.0f,0.0f,
-                leftMost + buttonSize, topMost + buttonSize,1.0f,0.0f
+        final float[] vertexData = new float[] {
+                leftMost, topMost, 0.0f, 1.0f,
+                leftMost + buttonSize, topMost, 1.0f, 1.0f,
+                leftMost, topMost + buttonSize, 0.0f, 0.0f,
+                leftMost + buttonSize, topMost + buttonSize, 1.0f, 0.0f
         };
         return new ButtonMesh(vertexData, indices);
     }

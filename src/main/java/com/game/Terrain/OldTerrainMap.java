@@ -1,28 +1,30 @@
 package com.game.Terrain;
 
-import com.game.Graphics.NewChunk;
+import com.game.Graphics.OldChunk;
+import com.game.Graphics.OldChunk;
+import com.game.Graphics.Scene;
+import com.game.Graphics.ShaderProgram;
 import com.game.Terrain.Generation.NoiseMap;
+import com.game.Terrain.Generation.TextureGenerator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.game.Graphics.Chunk.CHUNK_HEIGHT;
-import static com.game.Graphics.Chunk.CHUNK_SIZE;
+import static com.game.Graphics.OldChunk.CHUNK_HEIGHT;
+import static com.game.Graphics.OldChunk.CHUNK_SIZE;
 
-public class NewTerrainMap {
-    public static void main(String[] args) throws Exception {
-        new NewTerrainMap();
-    }
-    private final int MAP_SIZE = 1;
-    private final List<NewChunk> chunkList;
-//    private final String textureName;
-    private final long seeds;
+public class OldTerrainMap {
+    private final int MAP_SIZE = 20;
+    private final List<OldChunk> chunkList;
+    private final String textureName;
+    private long seeds;
 
 
-    public NewTerrainMap() throws Exception {
+    public OldTerrainMap(Scene scene,String texture) throws Exception {
         this.seeds = new Random().nextLong();
-//        this.textureName = texture;
+        this.textureName = texture;
         chunkList = new ArrayList<>();
         double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004, seeds);
         double[] map2 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.5, 0.004, seeds);
@@ -39,29 +41,29 @@ public class NewTerrainMap {
                                 offset) + (i * (offset * CHUNK_SIZE)))];
                     }
                 }
-                chunkList.add(new NewChunk(j,0,i,newHeightMap, this));
+                chunkList.add(new OldChunk(j, 0, i, newHeightMap, this));
             }
         }
-        chunkList.forEach(NewChunk::initializeBuffers);
-//        scene.addMapTexture(TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE, seeds));
+        chunkList.forEach(OldChunk::initializeBuffers);
+        scene.addMapTexture(TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE, seeds));
 
 
     }
 
 
     // https://stackoverflow.com/questions/22131437/return-objects-from-arraylist
-    public NewChunk getChunk(int x, int y, int z) {
+    public OldChunk getChunk(int x, int y, int z) {
         return chunkList.stream().filter(chunk -> chunk.isChunk(x, y, z)).findFirst().get();
     }
     public void cleanup(){
-        chunkList.forEach(NewChunk::cleanup);
+        chunkList.forEach(OldChunk::cleanup);
     }
 
     public int getSize() {
         return MAP_SIZE;
     }
 
-    public List<NewChunk> getMap() {
+    public List<OldChunk> getMap() {
         return chunkList;
     }
 
@@ -69,9 +71,9 @@ public class NewTerrainMap {
         return 3.0f;
     }
 
-//    public String getTextureName() {
-//        return textureName;
-//    }
+    public String getTextureName() {
+        return textureName;
+    }
 
     public long getSeeds() {
         return seeds;

@@ -1,8 +1,9 @@
 package com.game.Terrain;
 
 import com.game.Graphics.Chunk;
+import com.game.Graphics.ChunkBorder;
+import com.game.Graphics.Mesh.ChunkBorderMesh;
 import com.game.Graphics.Scene;
-import com.game.Graphics.ShaderProgram;
 import com.game.Terrain.Generation.NoiseMap;
 import com.game.Terrain.Generation.TextureGenerator;
 
@@ -15,25 +16,20 @@ import static com.game.Graphics.Chunk.CHUNK_HEIGHT;
 import static com.game.Graphics.Chunk.CHUNK_SIZE;
 
 public class TerrainMap {
-    private final int MAP_SIZE = 20;
+    public static final int MAP_SIZE = 20;
     private final List<Chunk> chunkList;
+    private ChunkBorderMesh chunkBorderMesh;
     private final String textureName;
-    private long seeds[];
+    private final long seeds;
 
 
-    public TerrainMap(Scene scene,String texture) throws Exception {
-        this.seeds = new long[3];
+    public TerrainMap(Scene scene , String texture) throws Exception {
+        this.seeds = new Random().nextLong();
         this.textureName = texture;
         chunkList = new ArrayList<>();
-        long seed = new Random().nextLong();
-        seeds[0] = seed;
-        double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004, seed);
-        seed = new Random().nextLong();
-        seeds[1] = seed;
-        double[] map2 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.5, 0.004, seed);
-        seed = new Random().nextLong();
-        seeds[2] = seed;
-        double[] map3 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.9, 0.0005, seed);
+        double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004, seeds);
+        double[] map2 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.5, 0.004, seeds);
+        double[] map3 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.9, 0.0005, seeds);
         double[] combineMap = NoiseMap.combineMap(map1, map2, map3);
         int[] heightMap = NoiseMap.mapToInt(combineMap, -2, 1, CHUNK_HEIGHT, 1);
         for (int i = 0; i < MAP_SIZE; i++) {
@@ -46,14 +42,13 @@ public class TerrainMap {
                                 offset) + (i * (offset * CHUNK_SIZE)))];
                     }
                 }
-                chunkList.add(new Chunk(j, 0, i, newHeightMap, this));
+                chunkList.add(new Chunk(j,0,i,newHeightMap, this));
             }
         }
         chunkList.forEach(Chunk::initializeBuffers);
         scene.addMapTexture(TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE, seeds));
-
-
     }
+
 
 
     // https://stackoverflow.com/questions/22131437/return-objects-from-arraylist
@@ -72,7 +67,7 @@ public class TerrainMap {
         return chunkList;
     }
 
-    public float getTextureRow() {
+    public static float getTextureRow() {
         return 3.0f;
     }
 
@@ -80,7 +75,7 @@ public class TerrainMap {
         return textureName;
     }
 
-    public long[] getSeeds() {
+    public long getSeeds() {
         return seeds;
     }
 }

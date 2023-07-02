@@ -1,12 +1,8 @@
 package com.game.Window;
 
-import com.game.GameLogic.PieceCollection;
-import com.game.GameLogic.PieceManager;
-import com.game.Graphics.Renderer;
 import com.game.Graphics.Scene;
 import com.game.Window.EventListener.KeyListener;
 import com.game.Window.EventListener.MouseListener;
-import org.joml.Random;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -15,7 +11,6 @@ import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
 
-import java.awt.*;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
@@ -38,13 +33,13 @@ public class Window {
     private int width = 1280, height = 720;
     private Callback debugProc;
 
+
     private Window() {
 
     }
 
     public static void launch(Window app) throws Exception {
         app.init();
-        app.initComponent();
         app.run();
         app.disposeAll();
     }
@@ -77,7 +72,8 @@ public class Window {
 
     public void init() throws Exception {
         initWindow();
-        initImGui();
+        initComponent();
+//        initImGui();
 //        imGuiGlfw.init(windowID, true);
 //        imGuiGl.init();
     }
@@ -149,7 +145,6 @@ public class Window {
         // Enable v-sync
         glfwSwapInterval(1);
         GL.createCapabilities();
-
 //        debugProc = GLUtil.setupDebugMessageCallback();
         System.out.println(glGetString(GL_VERSION));
 
@@ -163,9 +158,15 @@ public class Window {
         glDepthMask(true);
         glDepthFunc(GL_LEQUAL);
         glDepthRange(0.f, 1.0f);
+
+        //Enable FaceCulling
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CW);
     }
 
     protected void run() {
+
         while (!glfwWindowShouldClose(windowID)) {
             runFrame();
         }
@@ -184,6 +185,7 @@ public class Window {
 
     protected void startFrame() {
         clearBuffer();
+
 //        imGuiGlfw.newFrame();
 //        ImGui.newFrame();
     }

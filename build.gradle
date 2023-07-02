@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'application'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
@@ -81,6 +81,14 @@ dependencies {
 
 }
 
+application{
+    mainClass = 'com.game.Main'
+}
+
+build{
+    dependsOn.add('runJar')
+}
+
 
 shadowJar {
     archiveBaseName.set('game')
@@ -89,5 +97,20 @@ shadowJar {
 
     manifest {
         attributes 'Main-Class':'com.game.Main'
+    }
+}
+
+tasks.register('runJar',JavaExec){
+    dependsOn.add('shadowJar')
+    if(org.gradle.internal.os.OperatingSystem.current().isMacOsX()){
+        jvmArgs += ['-XstartOnFirstThread','-Djava.awt.headless=true']
+    }
+    classpath = files('build/libs/game.jar')
+}
+
+
+run{
+    if(org.gradle.internal.os.OperatingSystem.current().isMacOsX()){
+        jvmArgs += ['-XstartOnFirstThread','-Djava.awt.headless=true']
     }
 }

@@ -2,197 +2,166 @@ package com.game.Graphics;
 
 import com.game.Graphics.Mesh.TerrainMesh;
 import com.game.Terrain.TerrainMap;
-import org.joml.*;
+import com.game.Utils.FileUtils;
+import org.joml.Matrix4f;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
-import java.lang.Math;
-import java.nio.FloatBuffer;
+import java.io.IOException;
+import java.lang.ref.Cleaner;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 import static com.game.Graphics.MatrixCalc.createModelMatrix;
 import static com.game.Graphics.MatrixCalc.rotationMatrix;
 import static com.game.Graphics.Quad.*;
+import static com.game.Terrain.Generation.NoiseMap.GenerateMap;
 
-public class Chunk {
+public class Chunk{
     public static final int CHUNK_SIZE = 15;
     public static final int CHUNK_HEIGHT = 40;
     public static final int SEA_LEVEL = 10;
-    public static final int MOUNTAIN_LEVEL = CHUNK_HEIGHT - 6;
-    static final int CHUNK_SQR = CHUNK_SIZE * CHUNK_SIZE;
+    private static final int MOUNTAIN_LEVEL = CHUNK_HEIGHT - 6;
+    public static final int CHUNK_SQR = CHUNK_SIZE * CHUNK_SIZE;
     private static final int CHUNK_CUBE = CHUNK_SQR * CHUNK_SIZE;
-    private final Cube[] entities;
-    private final Matrix4f modelMatrix;
+    private final int[]blocks;
     private final Vector3ic position;
-    private final TerrainMap parentMap;
     private TerrainMesh mesh;
+    private final Matrix4f modelMatrix;
+    private final TerrainMap parentMap;
 
-    public Chunk(int xo, int yo, int zo, int[] givenMap, TerrainMap parentMap) {
-        entities = new Cube[CHUNK_SIZE * CHUNK_SIZE * CHUNK_HEIGHT];
+    public Chunk(int xo, int yo, int zo,int[] givenMap, TerrainMap parentMap){
+        this.position = new Vector3i(xo,yo,zo);
         this.parentMap = parentMap;
-        this.position = new Vector3i(xo, yo, zo);
+        this.blocks = new int[CHUNK_SQR * CHUNK_HEIGHT];
+        Arrays.fill(this.blocks,0);
 
-        // https: // stackoverflow.com/questions/38204579/flatten-3d-array-to-1d-array
+        // https://stackoverflow.com/questions/38204579/flatten-3d-array-to-1d-array
         for (int y = 0; y < CHUNK_HEIGHT; y++) {
-            for (int z = 0; z < CHUNK_SIZE; z++) {
+            for (int z = 0; z <CHUNK_SIZE; z++) {
                 for (int x = 0; x < CHUNK_SIZE; x++) {
-                    entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))] = new Cube(new Vector3f(x, y, z),
-                            getMaterial(y, (y < SEA_LEVEL && !(y <= givenMap[x + (z * CHUNK_SIZE)]))),
-                            y <= givenMap[x + (z * CHUNK_SIZE)] || y < SEA_LEVEL,
-                            parentMap.getTextureRow());
-//                    if (y < SEA_LEVEL && !entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))].isSolid) {
-//                        entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))] = new Cube(new Vector3f(x, y, z), 3, true,parentMap.getTextureRow());
-//                    }
+                    if(y > givenMap[x + (z * CHUNK_SIZE)] && y > SEA_LEVEL) continue;
+                    int blockData =505;
+                    if(y <= SEA_LEVEL && !(y <= givenMap[x + (z * CHUNK_SIZE)])){
+                        blockData |= 0x4; //[1]00
+                    }
+                    blocks[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))] = blockData ;
                 }
             }
         }
-
         int offset = position.x() >= 0 ? 5 : 0;
         this.modelMatrix = createModelMatrix(
                 rotationMatrix(0.0f, (byte) 1),
                 rotationMatrix(0.0f, (byte) 2),
-                rotationMatrix(0.0f, (byte) 3),
+                rotationMatrix(0.0f, (byte) 3) ,
                 new Matrix4f().identity().translation((position.x() * CHUNK_SIZE) + offset, position.y(),
                         position.z() * CHUNK_SIZE),
                 new Matrix4f().identity().scale(1.0f));
-
     }
 
-
-    public static Integer getMaterial(int y, boolean isWater) {
-        if (isWater) {
-            return 3;
-        } else if (y < SEA_LEVEL) {
-            return 0;
-        } else if (y <= SEA_LEVEL + 2) {
-            return 2;
-        } else if (y >= MOUNTAIN_LEVEL) {
-            return 4;
-        } else {
-            return 1;
-
-        }
-
-    }
 
     public void initializeBuffers() {
-        FloatBuffer vertexDataBuffer = FloatBuffer
-                .allocate((CHUNK_CUBE + (CHUNK_SQR * 4)) * 24);
-        for (int y = 0; y < CHUNK_HEIGHT; y++) {
-            new Thread((new Runnable() {
-                int y;
-
-                @Override
-                public void run() {
-                    for (int z = 0; z < CHUNK_SIZE; z++) {
-                        for (int x = 0; x < CHUNK_SIZE; x++) {
-                            Cube self = entities[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))];
-                            if (self == null) {
-                                continue;
-                            }
-                            Cube left = getNeighbour(LEFT, x, y, z);
-                            Cube bottom = getNeighbour(BOTTOM, x, y, z);
-                            Cube back = getNeighbour(BACK, x, y, z);
-                            Cube right = getNeighbour(RIGHT, x, y, z);
-                            Cube front = getNeighbour(FRONT, x, y, z);
-                            Cube top = getNeighbour(TOP, x, y, z);
-
-                            processQuad(vertexDataBuffer, self, left, right, top, bottom, back, front);
-                        }
-                    }
-                }
-
-                public Runnable pass(int y) {
-                    this.y = y;
-                    return this;
-                }
-            }).pass(y)).run();
-        }
-        IntBuffer indicesBuffer = IntBuffer.allocate((vertexDataBuffer.capacity() / 28) * 3);
+        long first = System.currentTimeMillis();
+        evaluateNeighbour();
+        IntBuffer vertexBuffer = processQuad(blocks);
+        IntBuffer indicesBuffer = IntBuffer.allocate((vertexBuffer.capacity()/4)*6);
         int index = 0;
         for (int i = 0; i < indicesBuffer.capacity(); i += 6) {
-            indicesBuffer.put(index).put(index + 1).put(index + 2).put(index + 1).put(index + 2).put(index + 3);
+            indicesBuffer.put(index).put(index + 1).put(index + 2).put(index + 1).put(index + 3).put(index + 2);
             index += 4;
         }
-        mesh = new TerrainMesh(vertexDataBuffer.array(), indicesBuffer.array());
+        mesh = new TerrainMesh(vertexBuffer,indicesBuffer);
     }
 
-    private Cube getNeighbour(Quad direction, int x, int y, int z) {
-        return switch (direction) {
-            case TOP -> y < CHUNK_HEIGHT - 1
-                    ? entities[x + (z * CHUNK_SIZE) + (y + 1) * (CHUNK_SQR)]
-                    : new Cube(new Vector3f(x, y + 1, z), null, false);
-            case BOTTOM -> y > 0
-                    ? entities[x + (z * CHUNK_SIZE) + (y - 1) * (CHUNK_SQR)]
-                    : new Cube(new Vector3f(x, y - 1, z), null, false);
-            case LEFT -> x > 0
-                    ? entities[(x - 1) + (z * CHUNK_SIZE) + y * (CHUNK_SQR)]
-                    : position.x() > 0
-                    ? parentMap.getChunk(position.x() - 1, position.y(), position.z())
-                    .getCubeData((CHUNK_SIZE - 1) + x, y, z)
-                    : new Cube(new Vector3f(x - 1, y, z), null, false);
-            case RIGHT -> x < CHUNK_SIZE - 1
-                    ? entities[(x + 1) + (z * CHUNK_SIZE) + y * (CHUNK_SQR)]
-                    : position.x() < parentMap.getSize() - 1
-                    ? parentMap.getChunk(position.x() + 1, position.y(), position.x())
-                    .getCubeData((x + 1) % CHUNK_SIZE, y, z)
-                    : new Cube(new Vector3f(x + 1, y, z), null, false);
-            case FRONT -> z < CHUNK_SIZE - 1
-                    ? entities[x + ((z + 1) * CHUNK_SIZE) + y * (CHUNK_SQR)]
-                    : position.z() < parentMap.getSize() - 1
-                    ? parentMap.getChunk(position.x(), position.y(), position.z() + 1)
-                    .getCubeData(x, y, (z + 1) % CHUNK_SIZE)
-                    : new Cube(new Vector3f(x, y, z + 1), null, false);
-            case BACK -> z > 0 ? entities[x + ((z - 1) * CHUNK_SIZE) + y * (CHUNK_SQR)]
-                    : position.z() > 0
-                    ? parentMap.getChunk(position.x(), position.y(), position.z() - 1)
-                    .getCubeData(x, y, (CHUNK_SIZE - 1) + z)
-                    : new Cube(new Vector3f(x, y, z - 1), null, false);
+
+    /*
+    TODO : Get the map texture working
+    TODO : Get the world coordinate system working
+    TODO : Show the position on map system
+    TODO : Let player cannot go through the floor
+    TODO : Make holes algorithm
+    */
+    public void evaluateNeighbour(){
+        for (int y = 0; y < CHUNK_HEIGHT; y++) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
+                for (int x = 0; x < CHUNK_SIZE; x++) {
+                    if(blocks[x+(z*CHUNK_SIZE)+ (y*CHUNK_SQR)] == 0) continue;
+                    int faces = blocks[x+(z*CHUNK_SIZE)+ (y*CHUNK_SQR)];
+                    faces |= getMaterial(y,faces >> 2 & 1);
+                    faces &= isNeighbourActive(LEFT,x - 1,y,z)? 0xFF : faces; //0111111
+                    faces &= isNeighbourActive(RIGHT,x + 1,y,z) ? 0x17F: faces; //1011111
+                    faces &= isNeighbourActive(FRONT,x,y,z + 1)? 0x1BF : faces; //1101111
+                    faces &= isNeighbourActive(BACK,x,y,z - 1)? 0x1DF :faces; //1110111
+                    faces &= isNeighbourActive(TOP,x,y + 1,z)? 0x1EF : faces; //1111011
+                    faces &= isNeighbourActive(BOTTOM,x,y - 1,z)? 0x1F7: faces; //1111101
+                    blocks[x+(z*CHUNK_SIZE)+ (y*CHUNK_SQR)] = faces;
+                }
+            }
+        }
+
+
+    }
+
+    private boolean isNeighbourActive(Quad direction, int x, int y, int z) {
+        return  switch (direction) {
+            case TOP:
+                yield y < CHUNK_HEIGHT  && blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
+
+            case BOTTOM:
+                yield y >= 0 && blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
+            case LEFT:
+               yield x >= 0
+                        ? blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0
+                        : position.x() > 0 && parentMap.getChunk(position.x() - 1, position.y(), position.z()).getCubeData(CHUNK_SIZE - 1, y, z) != 0;
+            case RIGHT:
+                yield x < CHUNK_SIZE
+                        ? blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0:
+                        position.x() < parentMap.getSize() - 1 && parentMap.getChunk(position.x() + 1, position.y(), position.z())
+                                .getCubeData(0 , y, z) != 0;
+            case FRONT:
+                yield z < CHUNK_SIZE
+                        ? blocks[x + (z  * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0
+                        : position.z() < parentMap.getSize() - 1 && parentMap.getChunk(position.x(), position.y(), position.z() + 1)
+                            .getCubeData(x, y, 0) != 0;
+            case BACK:
+                yield z >= 0
+                        ? blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0
+                        : position.z() > 0 && parentMap.getChunk(position.x(), position.y(), position.z() - 1)
+                    .getCubeData(x, y, (CHUNK_SIZE - 1)) !=0;
         };
 
     }
 
-    public Cube getCubeData(int x, int y, int z) {
-        return entities[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)];
+    public static int getMaterial(int y,int isWater) {
+        if (isWater == 1) {
+            return 0x6;
+        }else if (y <= SEA_LEVEL) {
+            return 0;
+        } else if (y < SEA_LEVEL + 2) {
+            return 0x4;
+        } else {
+            return 0x2;
+        }
+
+    }
+
+    public Matrix4f getModelMatrix() {
+        return modelMatrix;
+    }
+    public TerrainMesh getMesh() {
+        return mesh;
+    }
+
+    public int getCubeData(int x, int y, int z) {
+        return blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)];
     }
 
     public boolean isChunk(int x, int y, int z) {
         return position.equals(x, y, z);
     }
 
-    @Override
-    public String toString() {
-        return position.toString();
-    }
-
-    public TerrainMesh getMesh() {
-        return mesh;
-    }
-
-    public Matrix4f getModelMatrix() {
-        return modelMatrix;
-    }
-
     public void cleanup(){
         mesh.cleanup();
     }
 
-
-    public record Cube(Vector3f position, Integer type, boolean isSolid, Vector2f uvOffset) {
-        public Cube(Vector3f position, Integer type, boolean isSolid) {
-            this(position, type, isSolid, null);
-        }
-
-        public Cube(Vector3f position, Integer type, boolean isSolid, float textureRow) {
-            this(position, type, isSolid, getUVOffset(type, textureRow));
-        }
-
-        //https://www.youtube.com/watch?v=6T182r4F6J8
-        private static Vector2f getUVOffset(Integer type, float textureRow) {
-            if (type == null) {
-                return new Vector2f(0.0f);
-            }
-            float xOffset = (type % textureRow) / textureRow;
-            float yOffset = (float) ((Math.floor(type / textureRow)) / textureRow);
-            return new Vector2f(xOffset, yOffset);
-        }
-    }
 }

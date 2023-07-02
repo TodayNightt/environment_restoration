@@ -2,7 +2,8 @@ package com.game.Graphics;
 
 import com.game.Camera.Camera;
 import com.game.GameLogic.PieceManager;
-import com.game.Terrain.NewTerrainMap;
+import com.game.Terrain.OldTerrainMap;
+import com.game.Terrain.TerrainMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.EventListener.KeyListener;
 import com.game.Window.EventListener.MouseListener;
@@ -60,11 +61,13 @@ public class Renderer {
         UniformsMap terrainUniforms = scene.getUniformMap("terrain");
         terrainUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
         terrainUniforms.setUniform("viewMatrix", cam.getViewMatrix());
-//        terrainUniforms.setUniform("tex", 0);
-        NewTerrainMap map = scene.getTerrain();
-//        glActiveTexture(GL_TEXTURE0);
-//        scene.getTextureList().bind(map.getTextureName());
-//        terrainUniforms.setUniform("textureRow", scene.getTerrain().getTextureRow());
+        terrainUniforms.setUniform("tex",0);
+        TerrainMap map = scene.getTerrain();
+        glActiveTexture(GL_TEXTURE0);
+        scene.getTextureList().bind(map.getTextureName());
+        terrainUniforms.setUniform("fValue", new float[]{
+                TerrainMap.getTextureRow()
+        });
         map.getMap().forEach(chunk -> {
             terrainUniforms.setUniform("modelMatrix", chunk.getModelMatrix());
             glBindVertexArray(chunk.getMesh().getVao());
@@ -72,6 +75,7 @@ public class Renderer {
         });
         glBindVertexArray(0);
         shaderP.unbind();
+
 
 
 //        //Piece

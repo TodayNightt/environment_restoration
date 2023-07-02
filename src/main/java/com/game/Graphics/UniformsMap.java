@@ -35,6 +35,7 @@ public class UniformsMap {
         float[] valueF = new float[16];
         value.get(valueF);
         glUniformMatrix4fv(location, false, valueF);
+
     }
 
     public void setUniform(String name, int value) {
@@ -51,6 +52,10 @@ public class UniformsMap {
 
     public void setUniform(String name, Color value) {
         glUniform3f(getUniformLocation(name), value.getRed(), value.getGreen(), value.getBlue());
+    }
+    public void setUniform(String name, float[] value) {
+        glUniform1fv(getUniformLocation(name),value);
+//        glUniform3f(getUniformLocation(name), value.getRed(), value.getGreen(), value.getBlue());
     }
 
     public void createUniform(String name) {
