@@ -4,12 +4,15 @@ import com.game.Window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.text.NumberFormat;
+
 import static com.game.Graphics.MatrixCalc.rotationMatrix;
 
 public class Camera {
     private final Matrix4f viewMatrix, inverseViewMatrix;
     private final Matrix4f projectionMatrix, inverseProjectionMatrix, orthoProjection;
     private Vector3f position, lookDir, target, up;
+    private Vector3f realPosition;
 
     private float FOV, Z_NEAR, Z_FAR, aspectRatio, yaw, pan;
 
@@ -19,6 +22,7 @@ public class Camera {
         this.inverseViewMatrix = new Matrix4f();
         this.inverseProjectionMatrix = new Matrix4f();
         this.orthoProjection = new Matrix4f();
+        this.realPosition = new Vector3f();
     }
 
     // Projection
@@ -54,9 +58,11 @@ public class Camera {
         Matrix4f rotationY = rotationMatrix(yaw, (byte) 2);
         Matrix4f rotationX = rotationMatrix(pan, (byte) 1);
         this.lookDir = new Vector3f(target).mulDirection(rotationY).normalize();
-        this.viewMatrix.setLookAlong(lookDir, up).translate(position);
+        this.viewMatrix.identity().setLookAlong(lookDir, up).translate(position);
         this.viewMatrix.invert(inverseViewMatrix);
-//        System.out.println(viewMatrix.m30() + " " + viewMatrix.m31() + " " + viewMatrix.m32());
+//        System.out.println(position);
+        this.realPosition.set(inverseViewMatrix.m30(), inverseViewMatrix.m31(), inverseViewMatrix.m32());
+        System.out.println(realPosition.toString(NumberFormat.getNumberInstance()));
 
     }
 
@@ -120,14 +126,14 @@ public class Camera {
     }
 
     private void forward() {
-        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f);
-        position.sub(forward);
+        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f).negate();
+        position.add(forward);
         updateCamera();
     }
 
     private void backward() {
-        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f);
-        position.add(forward);
+        Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f).negate();
+        position.sub(forward);
         updateCamera();
     }
 
@@ -160,6 +166,7 @@ public class Camera {
     }
 
     public Vector3f getPosition() {
-        return position;
+        return realPosition;
     }
+
 }

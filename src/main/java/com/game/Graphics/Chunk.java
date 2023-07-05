@@ -49,19 +49,17 @@ public class Chunk{
                 }
             }
         }
-        int offset = position.x() >= 0 ? 5 : 0;
         this.modelMatrix = createModelMatrix(
                 rotationMatrix(0.0f, (byte) 1),
                 rotationMatrix(0.0f, (byte) 2),
                 rotationMatrix(0.0f, (byte) 3) ,
-                new Matrix4f().identity().translation((position.x() * CHUNK_SIZE) + offset, position.y(),
+                new Matrix4f().identity().translation((position.x() * CHUNK_SIZE), position.y(),
                         position.z() * CHUNK_SIZE),
                 new Matrix4f().identity().scale(1.0f));
     }
 
 
     public void initializeBuffers() {
-        long first = System.currentTimeMillis();
         evaluateNeighbour();
         IntBuffer vertexBuffer = processQuad(blocks);
         IntBuffer indicesBuffer = IntBuffer.allocate((vertexBuffer.capacity()/4)*6);
@@ -75,7 +73,6 @@ public class Chunk{
 
 
     /*
-    TODO : Get the map texture working
     TODO : Get the world coordinate system working
     TODO : Show the position on map system
     TODO : Let player cannot go through the floor

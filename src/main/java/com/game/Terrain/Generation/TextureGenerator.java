@@ -23,7 +23,7 @@ public class TextureGenerator {
 
     private static final Color[] snow = {new Color(255, 255, 255), new Color(236, 255, 253), new Color(208, 236, 235), new Color(160, 230, 236), new Color(148, 242, 244)};
 
-    public static ByteBuffer GenerateAtlas() throws IOException {
+    public static ByteBuffer GenerateAtlas(){
         int[] dirtTexture = NoiseMap.mapToInt(NoiseMap.GenerateMap(40, 40), -1, 1, 0, dirt.length);
         int[] grassTexture = NoiseMap.mapToInt(NoiseMap.GenerateMap(40, 40), -2, 1, 0, grass.length);
         int[] sandTexture = NoiseMap.mapToInt(NoiseMap.GenerateMap(40, 40), -2, 1, 0, sand.length);
@@ -52,19 +52,25 @@ public class TextureGenerator {
 
     }
 
-    private static ByteBuffer toByteBuffer(BufferedImage image) throws IOException {
+    private static ByteBuffer toByteBuffer(BufferedImage image){
         //https://stackoverflow.com/questions/29301838/converting-bufferedimage-to-bytebuffer
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(image,"png",outputStream);
-        image.flush();
-        byte[] buf = outputStream.toByteArray();
-        ByteBuffer buffer = BufferUtils.createByteBuffer(buf.length);
-        buffer.put(buf);
-        buffer.flip();
-        return buffer;
+        try {
+            ImageIO.write(image, "png", outputStream);
+            image.flush();
+            byte[] buf = outputStream.toByteArray();
+            ByteBuffer buffer = BufferUtils.createByteBuffer(buf.length);
+            buffer.put(buf);
+            buffer.flip();
+            return buffer;
+        }catch (IOException e){
+            System.out.println("Couldn't create texture buffer with error: " + e);
+            System.exit(1);
+        }
+        return null;
     }
 
-    public static ByteBuffer createColoredMap(int[] heightMap, int size, long seed) throws IOException {
+    public static ByteBuffer createColoredMap(int[] heightMap, int size) {
 
         Color[] terrainColor = {
                 //Dirt
@@ -75,16 +81,16 @@ public class TextureGenerator {
                 new Color(246, 215, 176),
                 //Water
                 new Color(28, 163, 236),
-                //Snow
-                new Color(208, 236, 235)
+//                //Snow
+//                new Color(208, 236, 235)
         };
 
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_3BYTE_BGR);
         for (int z = 0; z < image.getHeight(); z++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 int height = heightMap[x + (z * size)];
-                int colorIndex =0;
-//                int colorIndex = Chunk.getMaterial(height, height <= SEA_LEVEL);
+                int material =  Chunk.getMaterial(height, height <= SEA_LEVEL ? 1: 0);
+                int colorIndex = material == 6 ? 3 : material == 4 ? 2 :material == 2? 1 : 0 ;
                 image.setRGB(x, z, terrainColor[colorIndex].getRGB());
             }
         }

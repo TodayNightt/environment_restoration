@@ -1,6 +1,7 @@
 package com.game.Graphics;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import javax.management.RuntimeErrorException;
@@ -50,12 +51,15 @@ public class UniformsMap {
         glUniform3f(getUniformLocation(name), value.x, value.y, value.z);
     }
 
+    public void setUniform(String name, Vector2f value) {
+        glUniform2f(getUniformLocation(name), value.x, value.y);
+    }
+
     public void setUniform(String name, Color value) {
         glUniform3f(getUniformLocation(name), value.getRed(), value.getGreen(), value.getBlue());
     }
     public void setUniform(String name, float[] value) {
         glUniform1fv(getUniformLocation(name),value);
-//        glUniform3f(getUniformLocation(name), value.getRed(), value.getGreen(), value.getBlue());
     }
 
     public void createUniform(String name) {

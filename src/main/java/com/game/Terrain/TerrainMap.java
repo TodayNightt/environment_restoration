@@ -8,6 +8,7 @@ import com.game.Terrain.Generation.NoiseMap;
 import com.game.Terrain.Generation.TextureGenerator;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,10 +21,11 @@ public class TerrainMap {
     private final List<Chunk> chunkList;
     private ChunkBorderMesh chunkBorderMesh;
     private final String textureName;
+    private final int[] heightMap;
     private final long seeds;
 
 
-    public TerrainMap(Scene scene , String texture) throws Exception {
+    public TerrainMap(Scene scene , String texture) {
         this.seeds = new Random().nextLong();
         this.textureName = texture;
         chunkList = new ArrayList<>();
@@ -31,7 +33,7 @@ public class TerrainMap {
         double[] map2 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.5, 0.004, seeds);
         double[] map3 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.9, 0.0005, seeds);
         double[] combineMap = NoiseMap.combineMap(map1, map2, map3);
-        int[] heightMap = NoiseMap.mapToInt(combineMap, -2, 1, CHUNK_HEIGHT, 1);
+        heightMap = NoiseMap.mapToInt(combineMap, -2, 1, CHUNK_HEIGHT, 1);
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
                 int[] newHeightMap = new int[CHUNK_SIZE * CHUNK_SIZE];
@@ -46,7 +48,7 @@ public class TerrainMap {
             }
         }
         chunkList.forEach(Chunk::initializeBuffers);
-        scene.addMapTexture(TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE, seeds));
+        scene.addMapTexture(TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE));
     }
 
 

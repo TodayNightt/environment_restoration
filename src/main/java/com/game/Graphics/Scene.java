@@ -3,6 +3,7 @@ package com.game.Graphics;
 import com.game.Camera.Camera;
 import com.game.Graphics.Gui.ButtonManager;
 import com.game.Terrain.Generation.TextureGenerator;
+import com.game.Terrain.OldTerrainMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.Window;
 import org.joml.Vector3f;
@@ -22,20 +23,20 @@ public class Scene {
     private HashMap<String, ShaderProgram> shaderProgramList;
     private HashMap<String, UniformsMap> uniformsMapList;
     private Camera cam;
-    private Window window;
-    private ButtonManager buttonManager;
+    private final Window window;
+    private GuiScene guiScene;
 
-    public Scene(Window window) throws Exception {
+    public Scene(Window window) {
         this.window = window;
         init();
     }
 
-    private void init() throws Exception {
+    private void init(){
         this.textureList = new TextureList();
         this.shaderProgramList = new HashMap<>();
         this.uniformsMapList = new HashMap<>();
         initCam();
-//        initGui();
+        initGui();
         initializeTexture();
 //        initializePiece();
         initializeTerrainGen();
@@ -44,36 +45,46 @@ public class Scene {
 
     private void initCam() {
         cam = new Camera();
-        cam.setCamera(new Vector3f(-1.0f, 0.0f, -5.0f), new Vector3f(0.0f, 0.0f, -1.0f),
+        cam.setCamera(new Vector3f(-150.0f, -40.0f, -150.0f), new Vector3f(0.0f, 0.0f, -1.0f),
                 new Vector3f(0.0f, 1.0f, 0.0f), 0.0f);
         cam.setPerspective(60.f, Window.getWidth() / Window.getHeight(), 0.1f, 1000.0f);
     }
 
-    private void initializeTexture() throws IOException{
-        textureList.createTexture("block_atlas",TextureGenerator.GenerateAtlas());
+    private void initializeTexture() {
+        textureList.createTexture("block_atlas", TextureGenerator.GenerateAtlas());
     }
 
-    private void initGui() throws Exception {
+    private void initGui() {
 
-        //Initialize shaderProgram
-        List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
-        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/button.vert", GL_VERTEX_SHADER));
-        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/button.frag", GL_FRAGMENT_SHADER));
-        ShaderProgram shaderProgram = new ShaderProgram(shaderDataList);
+//        //Initialize shaderProgram
+//        List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
+//        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/button.vert", GL_VERTEX_SHADER));
+//        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/button.frag", GL_FRAGMENT_SHADER));
+//        ShaderProgram shaderProgram = new ShaderProgram(shaderDataList);
+//
+//        //Initialize uniformMap
+//        UniformsMap uniformsMap = new UniformsMap(shaderProgram.getProgramId());
+//        uniformsMap.createUniform("projectionMatrix");
+//        uniformsMap.createUniform("resizeFactor");
+////        uniformsMap.createUniform("currentColor");
+//        uniformsMap.createUniform("tex");
+//
+//
+//        buttonManager = new ButtonManager();
+//        buttonManager.addButton(0.3f, 0.05f, 0.2f);
+//        buttonManager.addButton(0.03f, 0.11f, 0.05f);
+//        shaderProgramList.put("button", shaderProgram);
+//        uniformsMapList.put("button", uniformsMap);
 
-        //Initialize uniformMap
-        UniformsMap uniformsMap = new UniformsMap(shaderProgram.getProgramId());
+        guiScene = new GuiScene();
+
+        guiScene.init("minimap","shaders/minimap.vert","shaders/minimap.frag");
+        UniformsMap uniformsMap = guiScene.getUniformMap("minimap");
         uniformsMap.createUniform("projectionMatrix");
-        uniformsMap.createUniform("resizeFactor");
-//        uniformsMap.createUniform("currentColor");
+        uniformsMap.createUniform("viewPort");
         uniformsMap.createUniform("tex");
 
 
-        buttonManager = new ButtonManager();
-        buttonManager.addButton(0.3f, 0.05f, 0.2f);
-        buttonManager.addButton(0.03f, 0.11f, 0.05f);
-        shaderProgramList.put("button", shaderProgram);
-        uniformsMapList.put("button", uniformsMap);
     }
 
 
@@ -85,8 +96,7 @@ public class Scene {
         return terrain;
     }
 
-    private void initializeTerrainGen() throws Exception {
-
+    private void initializeTerrainGen() {
         //Initialize shaderProgram
         List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
         shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/terrain.vert", GL_VERTEX_SHADER));
@@ -105,9 +115,11 @@ public class Scene {
         this.shaderProgramList.put("terrain", shaderProgram);
         this.uniformsMapList.put("terrain", uniformsMap);
         this.terrain = new TerrainMap(this,"block_atlas");
+
+
     }
 
-    private void initializePiece() throws Exception {
+    private void initializePiece() {
 
         //Initialize shaderProgram
         List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
@@ -139,10 +151,6 @@ public class Scene {
         return shaderProgramList.get(name);
     }
 
-    public ButtonManager getButtonManager() {
-        return buttonManager;
-    }
-
     public void cleanup() {
         shaderProgramList.values().forEach(ShaderProgram::cleanup);
         textureList.cleanup();
@@ -153,7 +161,11 @@ public class Scene {
         return uniformsMapList.get(name);
     }
 
+    public GuiScene getGui(){
+        return guiScene;
+    }
+
     public void addMapTexture(ByteBuffer buffer){
-        textureList.createTexture("map",buffer);
+        textureList.createTexture("minimap",buffer);
     }
 }

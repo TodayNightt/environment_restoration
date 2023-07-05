@@ -39,7 +39,9 @@ public class Window {
     }
 
     public static void launch(Window app) throws Exception {
+        long first = System.currentTimeMillis();
         app.init();
+        System.out.println(System.currentTimeMillis() - first);
         app.run();
         app.disposeAll();
     }
@@ -66,24 +68,26 @@ public class Window {
         getInstance().scene.getCamera().setAspectRatio(getWidth(), getHeight());
     }
 
-    private void initComponent() throws Exception {
+    private void initComponent(){
         scene = new Scene(this);
     }
 
-    public void init() throws Exception {
+    public void init(){
+
         initWindow();
         initComponent();
+
 //        initImGui();
 //        imGuiGlfw.init(windowID, true);
 //        imGuiGl.init();
     }
 
-    protected void initImGui() {
+//    protected void initImGui() {
 //        ImGui.createContext();
 //
 //        final ImGuiIO io = ImGui.getIO();
 //        io.setIniFilename("src/main/resources/imgui.ini");
-    }
+//    }
 
     public void initWindow() {
         // Setup an error callback. The default implementation
@@ -216,7 +220,6 @@ public class Window {
     protected void clearBuffer() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
         glClearBufferfv(GL_COLOR, 0, new float[]{0f, 0f, 0f, 1f});
-//            glClearBufferfv(GL_COLOR, 0, clearColor.put(0, 0f).put(1, 0f).put(2, 0f).put(3, 1f));
         glClearDepth(1.0f);
     }
 

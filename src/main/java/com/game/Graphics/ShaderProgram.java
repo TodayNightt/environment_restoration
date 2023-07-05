@@ -14,10 +14,10 @@ public class ShaderProgram {
     private final int programId;
     private final List<Integer> shaderModules;
 
-    public ShaderProgram(List<ShaderData> shaderDataList) throws Exception {
+    public ShaderProgram(List<ShaderData> shaderDataList) {
         programId = glCreateProgram();
         if (programId == 0) {
-            throw new Exception("Could not create Shader");
+            throw new RuntimeException("Could not create Shader");
         }
         shaderModules = new ArrayList<>();
         shaderDataList.forEach(s -> shaderModules.add(createShader(s.shaderSource(), s.shaderType)));

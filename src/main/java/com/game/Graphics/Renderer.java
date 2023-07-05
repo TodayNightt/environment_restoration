@@ -7,6 +7,9 @@ import com.game.Terrain.TerrainMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.EventListener.KeyListener;
 import com.game.Window.EventListener.MouseListener;
+import com.game.Window.Window;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL33.*;
 
@@ -32,30 +35,12 @@ public class Renderer {
     public void render(Scene scene) {
         Camera cam = scene.getCamera();
         cam.key(KeyListener.getInstance().getPressed());
-//        scene.getButtonManager().whichOne(MouseListener.getX(), MouseListener.getY());
-//
-//
-//
-//        //ButtonManager
-//        ShaderProgram shaderP = scene.getShaderProgram("button");
-//        shaderP.bind();
-//        scene.getButtonManager().getButtonList().forEach(button -> {
-//            scene.getTextureList().bind("map");
-//            glActiveTexture(GL_TEXTURE1);
-//            UniformsMap buttonUniform = scene.getUniformMap("button");
-//            buttonUniform.setUniform("projectionMatrix", cam.getOrthoProjection());
-//            buttonUniform.setUniform("resizeFactor", button.getResizeFactor());
-////            buttonUniform.setUniform("currentColor", button.getColor());
-//            buttonUniform.setUniform("tex",1);
-//            glBindVertexArray(button.getMesh().getVao());
-//            glDrawElements(GL_TRIANGLES, button.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
-//        });
-//        glBindVertexArray(0);
 
 
 
         glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
-//        //Terrain
+
+        //Terrain
         ShaderProgram shaderP = scene.getShaderProgram("terrain");
         shaderP.bind();
         UniformsMap terrainUniforms = scene.getUniformMap("terrain");
@@ -76,6 +61,26 @@ public class Renderer {
         glBindVertexArray(0);
         shaderP.unbind();
 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        //GUI
+        GuiScene gui = scene.getGui();
+        shaderP = gui.getShaderP("minimap");
+        shaderP.bind();
+        UniformsMap miniMapUniforms = gui.getUniformMap("minimap");
+        miniMapUniforms.setUniform("projectionMatrix",cam.getOrthoProjection());
+        miniMapUniforms.setUniform("viewPort",new Vector2f(Window.getWidth(),Window.getHeight()));
+        miniMapUniforms.setUniform("tex",1);
+        glActiveTexture(GL_TEXTURE1);
+        scene.getTextureList().bind("minimap");
+        MiniMap miniMap = gui.getMiniMap();
+        glBindVertexArray(miniMap.getMesh().getVao());
+        glDrawElements(GL_TRIANGLES,miniMap.getMesh().getNumVertices(),GL_UNSIGNED_INT,0);
+        shaderP.unbind();
+
+
+
+
 
 
 //        //Piece
@@ -94,7 +99,7 @@ public class Renderer {
 //            piece.rotatePiece(MatrixCalc.rotationMatrix(r, (byte) 1));
 //        });
 //        shaderP.unbind();
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     }
 
     public static void wireFrame(){
