@@ -1,15 +1,10 @@
 package com.game.Graphics;
 
 import com.game.Camera.Camera;
-import com.game.GameLogic.PieceManager;
-import com.game.Terrain.OldTerrainMap;
-import com.game.Terrain.TerrainMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.EventListener.KeyListener;
-import com.game.Window.EventListener.MouseListener;
 import com.game.Window.Window;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL33.*;
 

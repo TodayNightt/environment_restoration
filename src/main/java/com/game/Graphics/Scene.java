@@ -1,14 +1,11 @@
 package com.game.Graphics;
 
 import com.game.Camera.Camera;
-import com.game.Graphics.Gui.ButtonManager;
 import com.game.Terrain.Generation.TextureGenerator;
-import com.game.Terrain.OldTerrainMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.Window;
 import org.joml.Vector3f;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;

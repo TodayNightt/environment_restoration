@@ -1,14 +1,10 @@
 package com.game.Terrain;
 
 import com.game.Graphics.Chunk;
-import com.game.Graphics.ChunkBorder;
-import com.game.Graphics.Mesh.ChunkBorderMesh;
 import com.game.Graphics.Scene;
 import com.game.Terrain.Generation.NoiseMap;
 import com.game.Terrain.Generation.TextureGenerator;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,19 +15,18 @@ import static com.game.Graphics.Chunk.CHUNK_SIZE;
 public class TerrainMap {
     public static final int MAP_SIZE = 20;
     private final List<Chunk> chunkList;
-    private ChunkBorderMesh chunkBorderMesh;
     private final String textureName;
     private final int[] heightMap;
-    private final long seeds;
+    private final long seed;
 
 
     public TerrainMap(Scene scene , String texture) {
-        this.seeds = new Random().nextLong();
+        this.seed = new Random().nextLong();
         this.textureName = texture;
         chunkList = new ArrayList<>();
-        double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004, seeds);
-        double[] map2 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.5, 0.004, seeds);
-        double[] map3 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.9, 0.0005, seeds);
+        double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004, seed);
+        double[] map2 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.5, 0.004, seed);
+        double[] map3 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.9, 0.0005, seed);
         double[] combineMap = NoiseMap.combineMap(map1, map2, map3);
         heightMap = NoiseMap.mapToInt(combineMap, -2, 1, CHUNK_HEIGHT, 1);
         for (int i = 0; i < MAP_SIZE; i++) {
@@ -77,7 +72,9 @@ public class TerrainMap {
         return textureName;
     }
 
-    public long getSeeds() {
-        return seeds;
+    public long getSeed() {
+        return seed;
     }
+
+    public int[] getHeightMap(){return heightMap;}
 }
