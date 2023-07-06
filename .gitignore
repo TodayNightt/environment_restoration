@@ -4,7 +4,12 @@ out
 .gradle
 build
 bin
-gradle
+slide
+/src/main/java/com/game/GameLogic
+/src/main/java/com/game/ThreadWorker.java
+/src/main/java/com/game/Graphics/Gui
+/src/main/java/com/game/Graphics/Mesh/ButtonMesh.java
+
 
 /src/main/java/com/game/Graphics/OldQuad.java
 /src/main/java/com/game/Graphics/OldChunk.java
@@ -16,3 +21,4 @@ gradle
 /src/main/resources/shaders/chunkBorder.vert
 /src/main/resources/shaders/oldterrain.frag
 /src/main/resources/shaders/oldterrain.vert
+/src/main/resources/skybox
