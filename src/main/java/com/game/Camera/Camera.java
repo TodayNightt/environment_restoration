@@ -1,10 +1,9 @@
 package com.game.Camera;
 
+import com.game.GameLogic.PieceManager;
 import com.game.Window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-
-import java.text.NumberFormat;
 
 import static com.game.Graphics.MatrixCalc.rotationMatrix;
 
@@ -62,7 +61,10 @@ public class Camera {
         this.viewMatrix.invert(inverseViewMatrix);
 //        System.out.println(position);
         this.realPosition.set(inverseViewMatrix.m30(), inverseViewMatrix.m31(), inverseViewMatrix.m32());
-        System.out.println(realPosition.toString(NumberFormat.getNumberInstance()));
+//        System.out.println(realPosition.toString(NumberFormat.getNumberInstance()));
+//        System.out.println(Math.ceil(lookDir.x) * 2 -1);
+
+
 
     }
 
@@ -123,6 +125,12 @@ public class Camera {
             panUp();
         if (keys[7])
             panDown();
+        if(keys[8])
+            addPiece();
+    }
+
+    private void addPiece(){
+        PieceManager.addPiece("square1d",(realPosition.x + 3 *  lookDir.x), realPosition.y,  (realPosition.z + 3 * lookDir.z));
     }
 
     private void forward() {

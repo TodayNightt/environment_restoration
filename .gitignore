@@ -5,10 +5,7 @@ out
 build
 bin
 slide
-/src/main/java/com/game/GameLogic
 /src/main/java/com/game/ThreadWorker.java
-/src/main/java/com/game/Graphics/Gui
-/src/main/java/com/game/Graphics/Mesh/ButtonMesh.java
 
 
 /src/main/java/com/game/Graphics/OldQuad.java

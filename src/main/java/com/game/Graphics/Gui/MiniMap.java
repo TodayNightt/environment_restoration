@@ -1,8 +1,7 @@
-package com.game.Graphics;
+package com.game.Graphics.Gui;
 
 import com.game.Graphics.Mesh.MapMesh;
 
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 public class MiniMap {

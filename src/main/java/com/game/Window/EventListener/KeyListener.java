@@ -7,7 +7,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class KeyListener {
     private static KeyListener keyListener;
     private final int[] checkKey = new int[]{GLFW_KEY_W, GLFW_KEY_A, GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_UP,
-            GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_ESCAPE};
+            GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT,GLFW_KEY_B, GLFW_KEY_ESCAPE};
     private final boolean[] pressed = new boolean[checkKey.length];
 
 

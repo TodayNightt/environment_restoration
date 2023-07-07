@@ -1,4 +1,7 @@
-package com.game.Graphics;
+package com.game.Graphics.Gui;
+
+import com.game.Graphics.ShaderProgram;
+import com.game.Graphics.UniformsMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +12,8 @@ import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class GuiScene {
-    private Map<String,ShaderProgram> shaderPrograms;
-    private Map<String,UniformsMap> uniformsMaps;
+    private Map<String, ShaderProgram> shaderPrograms;
+    private Map<String, UniformsMap> uniformsMaps;
     private MiniMap miniMap;
 
     public GuiScene(){

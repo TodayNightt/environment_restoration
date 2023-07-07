@@ -13,7 +13,7 @@ out vec2 vTexCoord;
 
 void main() {
 //    vColor = currentColor;
-        vTexCoord = aTexCoord;
+    vTexCoord = aTexCoord;
     vPosition = aPosition;
     gl_Position = projectionMatrix * vec4(aPosition *resizeFactor, 0.0, 1.0);
 }

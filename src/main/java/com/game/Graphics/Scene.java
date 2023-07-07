@@ -1,6 +1,8 @@
 package com.game.Graphics;
 
 import com.game.Camera.Camera;
+import com.game.GameLogic.PieceCollection;
+import com.game.Graphics.Gui.GuiScene;
 import com.game.Terrain.Generation.TextureGenerator;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.Window;
@@ -35,7 +37,7 @@ public class Scene {
         initCam();
         initGui();
         initializeTexture();
-//        initializePiece();
+        initializePiece();
         initializeTerrainGen();
     }
 
@@ -52,27 +54,6 @@ public class Scene {
     }
 
     private void initGui() {
-
-//        //Initialize shaderProgram
-//        List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
-//        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/button.vert", GL_VERTEX_SHADER));
-//        shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile("shaders/button.frag", GL_FRAGMENT_SHADER));
-//        ShaderProgram shaderProgram = new ShaderProgram(shaderDataList);
-//
-//        //Initialize uniformMap
-//        UniformsMap uniformsMap = new UniformsMap(shaderProgram.getProgramId());
-//        uniformsMap.createUniform("projectionMatrix");
-//        uniformsMap.createUniform("resizeFactor");
-////        uniformsMap.createUniform("currentColor");
-//        uniformsMap.createUniform("tex");
-//
-//
-//        buttonManager = new ButtonManager();
-//        buttonManager.addButton(0.3f, 0.05f, 0.2f);
-//        buttonManager.addButton(0.03f, 0.11f, 0.05f);
-//        shaderProgramList.put("button", shaderProgram);
-//        uniformsMapList.put("button", uniformsMap);
-
         guiScene = new GuiScene();
 
         guiScene.init("minimap","shaders/minimap.vert","shaders/minimap.frag");
@@ -80,6 +61,10 @@ public class Scene {
         uniformsMap.createUniform("projectionMatrix");
         uniformsMap.createUniform("viewPort");
         uniformsMap.createUniform("tex");
+
+        guiScene.init("button","shaders/button.vert","shaders/button.frag");
+        uniformsMap = guiScene.getUniformMap("button");
+        uniformsMap.createUniform("projectionMatrix");
 
 
     }
@@ -133,6 +118,7 @@ public class Scene {
 
         this.shaderProgramList.put("piece", shaderProgram);
         this.uniformsMapList.put("piece", uniformsMap);
+        PieceCollection.getInstance();
     }
 
     public void render(){

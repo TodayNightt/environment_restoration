@@ -1,6 +1,9 @@
 package com.game.Graphics;
 
 import com.game.Camera.Camera;
+import com.game.GameLogic.PieceManager;
+import com.game.Graphics.Gui.GuiScene;
+import com.game.Graphics.Gui.MiniMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.EventListener.KeyListener;
 import com.game.Window.Window;
@@ -78,22 +81,22 @@ public class Renderer {
 
 
 
-//        //Piece
-//        shaderP = scene.getShaderProgram("piece");
-//        shaderP.bind();
-//        PieceManager.getInstance().getPieceList().forEach(piece -> {
-//            UniformsMap pieceUniforms = scene.getUniformMap("piece");
-//            pieceUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
-//            pieceUniforms.setUniform("viewMatrix", cam.getViewMatrix());
-//            pieceUniforms.setUniform("modelMatrix", piece.getModelMatrix());
-//            pieceUniforms.setUniform("size", piece.getMesh().getSize());
-//            glBindVertexArray(piece.getMesh().getVao());
-//            glDrawElements(GL_TRIANGLES, piece.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
-//            glBindVertexArray(0);
-//            piece.rotatePiece(MatrixCalc.rotationMatrix(rotate, (byte) 2));
-//            piece.rotatePiece(MatrixCalc.rotationMatrix(r, (byte) 1));
-//        });
-//        shaderP.unbind();
+        //Piece
+        shaderP = scene.getShaderProgram("piece");
+        shaderP.bind();
+        PieceManager.getInstance().getPieceList().forEach(piece -> {
+            UniformsMap pieceUniforms = scene.getUniformMap("piece");
+            pieceUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
+            pieceUniforms.setUniform("viewMatrix", cam.getViewMatrix());
+            pieceUniforms.setUniform("modelMatrix", piece.getModelMatrix());
+            pieceUniforms.setUniform("size", piece.getMesh().getSize());
+            glBindVertexArray(piece.getMesh().getVao());
+            glDrawElements(GL_TRIANGLES, piece.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+            piece.rotatePiece(MatrixCalc.rotationMatrix(rotate, (byte) 2));
+            piece.rotatePiece(MatrixCalc.rotationMatrix(r, (byte) 1));
+        });
+        shaderP.unbind();
 
     }
 
