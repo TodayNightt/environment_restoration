@@ -62,11 +62,6 @@ public class Scene {
         uniformsMap.createUniform("viewPort");
         uniformsMap.createUniform("tex");
 
-        guiScene.init("button","shaders/button.vert","shaders/button.frag");
-        uniformsMap = guiScene.getUniformMap("button");
-        uniformsMap.createUniform("projectionMatrix");
-
-
     }
 
 

@@ -2,20 +2,16 @@ package com.game.Graphics;
 
 import com.game.Graphics.Mesh.TerrainMesh;
 import com.game.Terrain.TerrainMap;
-import com.game.Utils.FileUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
-import java.io.IOException;
-import java.lang.ref.Cleaner;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import static com.game.Graphics.MatrixCalc.createModelMatrix;
 import static com.game.Graphics.MatrixCalc.rotationMatrix;
 import static com.game.Graphics.Quad.*;
-import static com.game.Terrain.Generation.NoiseMap.GenerateMap;
 
 public class Chunk{
     public static final int CHUNK_SIZE = 15;

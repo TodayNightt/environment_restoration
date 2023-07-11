@@ -15,7 +15,8 @@
         "width": 2,
         "height": 2,
         "depth": 1
-      }
+      },
+      "schematics": [0,0,1,0,0,1,1,1]
     }
   },
   {
@@ -34,7 +35,8 @@
         "width": 2,
         "height": 2,
         "depth": 3
-      }
+      },
+      "schematics":[]
     }
   },
   {
@@ -53,7 +55,8 @@
         "width": 1,
         "height": 4,
         "depth": 1
-      }
+      },
+      "schematics": []
     }
   },
   {
@@ -75,7 +78,8 @@
         "width": 2,
         "height": 3,
         "depth": 1
-      }
+      },
+      "schematics": [0,0,1,0,0,0.4,1,0.4,0,0.4,0.5,0.4,0,1,0.5,1]
     }
   }
 ]

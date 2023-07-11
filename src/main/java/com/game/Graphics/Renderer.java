@@ -6,6 +6,7 @@ import com.game.Graphics.Gui.GuiScene;
 import com.game.Graphics.Gui.MiniMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.EventListener.KeyListener;
+import com.game.Window.EventListener.MouseListener;
 import com.game.Window.Window;
 import org.joml.Vector2f;
 
@@ -34,7 +35,9 @@ public class Renderer {
         Camera cam = scene.getCamera();
         cam.key(KeyListener.getInstance().getPressed());
 
-
+        if(MouseListener.getMouseJustPressed()) {
+            cam.addPiece();
+        }
 
         glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
 
@@ -59,7 +62,7 @@ public class Renderer {
         glBindVertexArray(0);
         shaderP.unbind();
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 
         //GUI
         GuiScene gui = scene.getGui();
@@ -75,10 +78,6 @@ public class Renderer {
         glBindVertexArray(miniMap.getMesh().getVao());
         glDrawElements(GL_TRIANGLES,miniMap.getMesh().getNumVertices(),GL_UNSIGNED_INT,0);
         shaderP.unbind();
-
-
-
-
 
 
         //Piece
@@ -98,6 +97,10 @@ public class Renderer {
         });
         shaderP.unbind();
 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+
+        MouseListener.resetMouse();
     }
 
     public static void wireFrame(){

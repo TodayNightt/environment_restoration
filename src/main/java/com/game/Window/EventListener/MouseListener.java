@@ -1,8 +1,12 @@
 package com.game.Window.EventListener;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 public class MouseListener {
     private static MouseListener mouseListener;
     private float posX, posY, lastX, lastY;
+    private int clickIndex;
+    private boolean mouseJustPressed;
 
     private MouseListener() {
         this.posX = 0.0f;
@@ -29,6 +33,17 @@ public class MouseListener {
         getInstance().posY = (float) yPos;
     }
 
+
+    public static void mouseButtonCallback(long window, int button , int action,int mod) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+            getInstance().mouseJustPressed = true;
+//            getInstance().clickIndex++;
+//            if(getInstance().clickIndex % 2 == 0 ){
+//                System.out.println("Clicked || clickIndex = " + getInstance().clickIndex);
+//            }
+        }
+    }
+
 //    public static float getOrthoX() {
 //        getInstance().posX = ((float) xPos / com.game.Window.getWidth()) * 2.0f - 1.0f;
 //
@@ -38,6 +53,10 @@ public class MouseListener {
 //        getInstance().posY = ((float) yPos / com.game.Window.getHeight()) * 2.0f - 1.0f;
 //    }
 
+    public static void resetMouse(){
+        getInstance().mouseJustPressed = false;
+    }
+
     public static float getX() {
         return getInstance().posX;
     }
@@ -46,7 +65,9 @@ public class MouseListener {
         return getInstance().posY;
     }
 
-
+    public static boolean getMouseJustPressed(){
+        return getInstance().mouseJustPressed;
+    }
     public static MouseListener getInstance() {
         if (mouseListener == null) {
             mouseListener = new MouseListener();

@@ -1,11 +1,11 @@
 package com.game.Graphics.Gui;
 
-import com.game.Graphics.Mesh.MapMesh;
+import com.game.Graphics.Mesh.QuadMesh;
 
 import java.nio.IntBuffer;
 
 public class MiniMap {
-    private MapMesh mesh;
+    private QuadMesh mesh;
 
     public MiniMap(int posX,int posY,int size){
         int[] positions = new int[]{
@@ -15,11 +15,11 @@ public class MiniMap {
                 (posX + size) << 7 | (posY + size) << 2 | 3
         };
         IntBuffer vertexBuffer = IntBuffer.wrap(positions);
-        mesh = new MapMesh(vertexBuffer);
+        mesh = new QuadMesh(vertexBuffer);
     }
 
 
-    public MapMesh getMesh(){
+    public QuadMesh getMesh(){
         return mesh;
     }
 

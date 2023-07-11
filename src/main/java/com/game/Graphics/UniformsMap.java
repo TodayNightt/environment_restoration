@@ -23,19 +23,15 @@ public class UniformsMap {
     private int getUniformLocation(String uniformName) {
         Integer location = uniforms.get(uniformName);
         if (location == null) {
-            throw new RuntimeException("Could not find uniform [" + uniformName + "]");
+            throw new RuntimeException(String.format("Could not find uniform [%s]",uniformName));
         }
         return location;
     }
 
     public void setUniform(String name, Matrix4f value) {
-        Integer location = uniforms.get(name);
-        if (location == null) {
-            throw new RuntimeException("Could not find uniform [" + name + "]");
-        }
         float[] valueF = new float[16];
         value.get(valueF);
-        glUniformMatrix4fv(location, false, valueF);
+        glUniformMatrix4fv(getUniformLocation(name), false, valueF);
 
     }
 

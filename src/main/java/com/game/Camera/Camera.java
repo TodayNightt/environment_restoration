@@ -125,11 +125,9 @@ public class Camera {
             panUp();
         if (keys[7])
             panDown();
-        if(keys[8])
-            addPiece();
     }
 
-    private void addPiece(){
+    public void addPiece(){
         PieceManager.addPiece("square1d",(realPosition.x + 3 *  lookDir.x), realPosition.y,  (realPosition.z + 3 * lookDir.z));
     }
 

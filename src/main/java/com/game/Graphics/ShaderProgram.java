@@ -25,21 +25,6 @@ public class ShaderProgram {
 
     }
 
-//    // https://stackoverflow.com/questions/60098830/how-to-fix-this-opengl-error-unexpected-tokens-following-preprocessor-directiv
-//    public static String[] readFile(String filePath) throws IOException {
-//        Vector<String> lines = new Vector<>();
-//
-//        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-//            stream.forEach(x -> lines.add(x + "\n"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // CONVERT VECTOR TO ARRAY
-//        Object[] objArray = lines.toArray();
-//
-//        return Arrays.copyOf(objArray, objArray.length, String[].class);
-//    }
 
     protected int createShader(CharSequence shaderCode, int shaderType) {
         int shaderId = glCreateShader(shaderType);

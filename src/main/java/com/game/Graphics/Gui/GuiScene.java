@@ -42,7 +42,6 @@ public class GuiScene {
         return miniMap;
     }
 
-
     public UniformsMap getUniformMap(String type){
         return uniformsMaps.get(type);
     }

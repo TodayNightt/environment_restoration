@@ -16,10 +16,12 @@ public class PieceMesh implements Mesh {
     private final int numVertices;
     private final int vao;
     private final Vector3f size;
+    private final float[] schematics;
 
-    public PieceMesh(float[] positions, int[] indices, Vector3f size) {
+    public PieceMesh(float[] positions, int[] indices, Vector3f size,float[] schematics) {
         this.numVertices = indices.length;
         this.size = size;
+        this.schematics = schematics;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             vao = glGenVertexArrays();
             glBindVertexArray(vao);
@@ -52,6 +54,10 @@ public class PieceMesh implements Mesh {
         }
     }
 
+    public float[] getSchematics(){
+        return schematics;
+    }
+
     @Override
     public int getNumVertices() {
         return numVertices;
@@ -76,6 +82,7 @@ public class PieceMesh implements Mesh {
         float[] vertexData;
         int[] indices;
         Vector3f size;
+        float[] schematics;
 
         Builder setVertexData(float[] vertexData) {
             this.vertexData = vertexData;
@@ -92,8 +99,13 @@ public class PieceMesh implements Mesh {
             return this;
         }
 
+        Builder setSchematics(float[] schematics){
+            this.schematics = schematics;
+            return this;
+        }
+
         public PieceMesh create() {
-            return new PieceMesh(vertexData, indices, size);
+            return new PieceMesh(vertexData, indices, size,schematics);
         }
     }
 }

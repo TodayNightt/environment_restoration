@@ -7,7 +7,6 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
 
@@ -39,9 +38,9 @@ public class Window {
     }
 
     public static void launch(Window app) throws Exception {
-        long first = System.currentTimeMillis();
+        long first = System.nanoTime();
         app.init();
-        System.out.println(System.currentTimeMillis() - first);
+        System.out.println((double) (System.nanoTime() - first) / 1_000_000_000);
         app.run();
         app.disposeAll();
     }
@@ -102,6 +101,7 @@ public class Window {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER,GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -116,6 +116,7 @@ public class Window {
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(windowID, KeyListener::keyCallBack);
         glfwSetCursorPosCallback(windowID, MouseListener::cursorCallback);
+        glfwSetMouseButtonCallback(windowID,MouseListener::mouseButtonCallback);
 
         glfwSetFramebufferSizeCallback(windowID, Window::resized);
 

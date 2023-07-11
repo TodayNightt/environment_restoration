@@ -24,7 +24,6 @@ public class Piece {
                 new Matrix4f().scale(1.0f)
         );
         rotatePiece(MatrixCalc.rotationMatrix((float) Math.random(),(byte)new Random().nextInt(1,3)));
-        System.out.println("Piece" + (System.currentTimeMillis() - first));
     }
 
     public Vector3f getPosition() {

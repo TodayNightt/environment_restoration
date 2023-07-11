@@ -1,19 +1,16 @@
 package com.game.Graphics.Mesh;
 
-import com.game.Window.Window;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL;
 
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL30.*;
 
-public class MapMesh implements Mesh{
+public class QuadMesh implements Mesh{
     private int vao;
     private final int numVertices;
 
-    public MapMesh(IntBuffer positions){
+    public QuadMesh(IntBuffer positions){
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
 

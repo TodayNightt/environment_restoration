@@ -6,7 +6,9 @@ build
 bin
 slide
 /src/main/java/com/game/ThreadWorker.java
-
+/src/main/java/com/game/Graphics/Gui/Button.java
+/src/main/java/com/game/Graphics/Gui/ButtonManager.java
+/src/main/java/com/game/Graphics/Mesh/ButtonMesh.java
 
 /src/main/java/com/game/Graphics/OldQuad.java
 /src/main/java/com/game/Graphics/OldChunk.java
@@ -18,4 +20,6 @@ slide
 /src/main/resources/shaders/chunkBorder.vert
 /src/main/resources/shaders/oldterrain.frag
 /src/main/resources/shaders/oldterrain.vert
+/src/main/resources/shaders/button.frag
+/src/main/resources/shaders/button.vert
 /src/main/resources/skybox
