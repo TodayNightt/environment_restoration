@@ -44,10 +44,9 @@ public class PieceCollection {
 
     }
 
-    public List<String> getPieceType() {
-        return collection.keySet().stream().toList();
+    public static List<String> getPieceType() {
+        return getInstance().collection.keySet().stream().toList();
     }
-
 
     public PieceMesh getMesh(String name) {
         return collection.get(name);

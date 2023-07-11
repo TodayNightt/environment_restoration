@@ -1,5 +1,6 @@
 package com.game.Camera;
 
+import com.game.GameLogic.PieceCollection;
 import com.game.GameLogic.PieceManager;
 import com.game.Window.Window;
 import org.joml.Matrix4f;
@@ -11,7 +12,7 @@ public class Camera {
     private final Matrix4f viewMatrix, inverseViewMatrix;
     private final Matrix4f projectionMatrix, inverseProjectionMatrix, orthoProjection;
     private Vector3f position, lookDir, target, up;
-    private Vector3f realPosition;
+    private final Vector3f realPosition;
 
     private float FOV, Z_NEAR, Z_FAR, aspectRatio, yaw, pan;
 
@@ -59,13 +60,7 @@ public class Camera {
         this.lookDir = new Vector3f(target).mulDirection(rotationY).normalize();
         this.viewMatrix.identity().setLookAlong(lookDir, up).translate(position);
         this.viewMatrix.invert(inverseViewMatrix);
-//        System.out.println(position);
         this.realPosition.set(inverseViewMatrix.m30(), inverseViewMatrix.m31(), inverseViewMatrix.m32());
-//        System.out.println(realPosition.toString(NumberFormat.getNumberInstance()));
-//        System.out.println(Math.ceil(lookDir.x) * 2 -1);
-
-
-
     }
 
     public Matrix4f getOrthoProjection() {
@@ -125,10 +120,16 @@ public class Camera {
             panUp();
         if (keys[7])
             panDown();
+        if(keys[8])
+            addPiece(0);
+        if(keys[9])
+            addPiece(1);
+        if(keys[10])
+            addPiece(2);
     }
 
-    public void addPiece(){
-        PieceManager.addPiece("square1d",(realPosition.x + 3 *  lookDir.x), realPosition.y,  (realPosition.z + 3 * lookDir.z));
+    public void addPiece(int index){
+        PieceManager.addPiece(PieceCollection.getPieceType().get(index),(realPosition.x + 3 *  lookDir.x), realPosition.y,  (realPosition.z + 3 * lookDir.z));
     }
 
     private void forward() {

@@ -5,7 +5,7 @@ import com.game.Graphics.Mesh.QuadMesh;
 import java.nio.IntBuffer;
 
 public class MiniMap {
-    private QuadMesh mesh;
+    private final QuadMesh mesh;
 
     public MiniMap(int posX,int posY,int size){
         int[] positions = new int[]{

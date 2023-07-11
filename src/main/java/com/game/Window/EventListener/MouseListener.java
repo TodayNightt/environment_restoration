@@ -37,10 +37,6 @@ public class MouseListener {
     public static void mouseButtonCallback(long window, int button , int action,int mod) {
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
             getInstance().mouseJustPressed = true;
-//            getInstance().clickIndex++;
-//            if(getInstance().clickIndex % 2 == 0 ){
-//                System.out.println("Clicked || clickIndex = " + getInstance().clickIndex);
-//            }
         }
     }
 

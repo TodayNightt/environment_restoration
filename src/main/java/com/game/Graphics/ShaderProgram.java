@@ -25,7 +25,6 @@ public class ShaderProgram {
 
     }
 
-
     protected int createShader(CharSequence shaderCode, int shaderType) {
         int shaderId = glCreateShader(shaderType);
         if (shaderId == 0) {
@@ -54,10 +53,6 @@ public class ShaderProgram {
         shaderModules.forEach(GL33::glDeleteShader);
     }
 
-    public int getProgramId() {
-        return programId;
-    }
-
     public void bind() {
         glUseProgram(programId);
     }
@@ -72,6 +67,11 @@ public class ShaderProgram {
         if (programId != 0) {
             glDeleteProgram(programId);
         }
+    }
+
+    //Getter
+    public int getProgramId() {
+        return programId;
     }
 
     public record ShaderData(CharSequence shaderSource, int shaderType) {

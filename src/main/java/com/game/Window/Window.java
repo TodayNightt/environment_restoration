@@ -52,6 +52,8 @@ public class Window {
         return window;
     }
 
+    public static long getWindowId(){return getInstance().windowID;}
+
     public static float getHeight() {
         return getInstance().height;
     }

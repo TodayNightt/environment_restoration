@@ -6,7 +6,7 @@ import java.util.List;
 public class PieceManager {
     private static PieceManager pieceManager;
     List<Piece> pieceList;
-    private int count = 0;
+    private final int count = 0;
 
     private PieceManager() {
         this.pieceList = new ArrayList<>();
@@ -23,7 +23,7 @@ public class PieceManager {
         getInstance().pieceList.add(new Piece(pieceType,x,y,z));
     }
 
-    public List<Piece> getPieceList() {
-        return pieceList;
+    public static List<Piece> getPieceList() {
+        return getInstance().pieceList;
     }
 }

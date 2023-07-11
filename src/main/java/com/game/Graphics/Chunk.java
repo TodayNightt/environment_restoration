@@ -137,24 +137,25 @@ public class Chunk{
         }
 
     }
+    public boolean isChunk(int x, int y, int z) {
+        return position.equals(x, y, z);
+    }
+    public void cleanup(){
+        mesh.cleanup();
+    }
 
+    //Getter
     public Matrix4f getModelMatrix() {
         return modelMatrix;
     }
     public TerrainMesh getMesh() {
         return mesh;
     }
-
     public int getCubeData(int x, int y, int z) {
         return blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)];
     }
 
-    public boolean isChunk(int x, int y, int z) {
-        return position.equals(x, y, z);
-    }
 
-    public void cleanup(){
-        mesh.cleanup();
-    }
+
 
 }

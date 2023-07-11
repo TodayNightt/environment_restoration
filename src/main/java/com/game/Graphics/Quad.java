@@ -116,7 +116,6 @@ public enum Quad {
     }
 
     private static void getPosition(String dir,int a1 , int a2 ,int a3 , int a4){
-        System.out.println(Integer.toBinaryString(a1));
         System.out.printf("%s a1,a2 :(%d,%d,%d),(%d,%d,%d) %n",dir,a1>>11,a1 & 0x3F,a1>>6 & 0x1F,a2>>11,a2 & 0x3F,a2>>6 & 0x1);
         System.out.printf("   a3,a4 :(%d,%d,%d),(%d,%d,%d) %n",a3>>11,a3 & 0x3F,a3>>6 & 0x1F,a4>>11,a4 & 0x3F,a4>>6 & 0x1);
     }

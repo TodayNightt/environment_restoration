@@ -7,7 +7,7 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL30.*;
 
 public class QuadMesh implements Mesh{
-    private int vao;
+    private final int vao;
     private final int numVertices;
 
     public QuadMesh(IntBuffer positions){

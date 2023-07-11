@@ -17,11 +17,10 @@ public class TerrainMap {
     private final List<Chunk> chunkList;
     private final String textureName;
     private final int[] heightMap;
-    private final long seed;
 
 
     public TerrainMap(Scene scene , String texture) {
-        this.seed = new Random().nextLong();
+        long seed = new Random().nextLong();
         this.textureName = texture;
         chunkList = new ArrayList<>();
         double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004, seed);
@@ -55,11 +54,9 @@ public class TerrainMap {
     public void cleanup(){
         chunkList.forEach(Chunk::cleanup);
     }
-
     public int getSize() {
         return MAP_SIZE;
     }
-
     public List<Chunk> getMap() {
         return chunkList;
     }
@@ -71,10 +68,5 @@ public class TerrainMap {
     public String getTextureName() {
         return textureName;
     }
-
-    public long getSeed() {
-        return seed;
-    }
-
     public int[] getHeightMap(){return heightMap;}
 }

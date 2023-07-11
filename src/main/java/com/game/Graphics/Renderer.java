@@ -6,21 +6,18 @@ import com.game.Graphics.Gui.GuiScene;
 import com.game.Graphics.Gui.MiniMap;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.EventListener.KeyListener;
-import com.game.Window.EventListener.MouseListener;
 import com.game.Window.Window;
 import org.joml.Vector2f;
 
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;
 
 
 public class Renderer {
     private static Renderer renderer;
-    float rotate, r;
     private static boolean wireFrame = false;
 
     private Renderer() {
-        rotate = 0.5f;
-        r = 0.5f;
     }
 
     public static Renderer getInstance(){
@@ -34,10 +31,6 @@ public class Renderer {
     public void render(Scene scene) {
         Camera cam = scene.getCamera();
         cam.key(KeyListener.getInstance().getPressed());
-
-        if(MouseListener.getMouseJustPressed()) {
-            cam.addPiece();
-        }
 
         glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
 
@@ -62,7 +55,7 @@ public class Renderer {
         glBindVertexArray(0);
         shaderP.unbind();
 
-
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         //GUI
         GuiScene gui = scene.getGui();
@@ -83,7 +76,7 @@ public class Renderer {
         //Piece
         shaderP = scene.getShaderProgram("piece");
         shaderP.bind();
-        PieceManager.getInstance().getPieceList().forEach(piece -> {
+        PieceManager.getPieceList().forEach(piece -> {
             UniformsMap pieceUniforms = scene.getUniformMap("piece");
             pieceUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
             pieceUniforms.setUniform("viewMatrix", cam.getViewMatrix());
@@ -92,15 +85,13 @@ public class Renderer {
             glBindVertexArray(piece.getMesh().getVao());
             glDrawElements(GL_TRIANGLES, piece.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
-            piece.rotatePiece(MatrixCalc.rotationMatrix(rotate, (byte) 2));
-            piece.rotatePiece(MatrixCalc.rotationMatrix(r, (byte) 1));
+            piece.rotatePiece(MatrixCalc.rotationMatrix(0.5f, (byte) 2));
+            piece.rotatePiece(MatrixCalc.rotationMatrix(0.3f, (byte) 1));
         });
         shaderP.unbind();
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-
-        MouseListener.resetMouse();
+        KeyListener.declicker(new int[]{GLFW_KEY_J,GLFW_KEY_K,GLFW_KEY_L});
     }
 
     public static void wireFrame(){

@@ -46,11 +46,11 @@ public class OpenSimplex2S {
     /*
      * Noise Evaluators
      */
-    private static float[] GRADIENTS_2D;
-    private static float[] GRADIENTS_3D;
-    private static float[] GRADIENTS_4D;
-    private static int[] LOOKUP_4D_A;
-    private static LatticeVertex4D[] LOOKUP_4D_B;
+    private static final float[] GRADIENTS_2D;
+    private static final float[] GRADIENTS_3D;
+    private static final float[] GRADIENTS_4D;
+    private static final int[] LOOKUP_4D_A;
+    private static final LatticeVertex4D[] LOOKUP_4D_B;
 
     static {
 
