@@ -55,24 +55,6 @@ public class Renderer {
         glBindVertexArray(0);
         shaderP.unbind();
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-        //GUI
-        GuiScene gui = scene.getGui();
-        shaderP = gui.getShaderP("minimap");
-        shaderP.bind();
-        UniformsMap miniMapUniforms = gui.getUniformMap("minimap");
-        miniMapUniforms.setUniform("projectionMatrix",cam.getOrthoProjection());
-        miniMapUniforms.setUniform("viewPort",new Vector2f(Window.getWidth(),Window.getHeight()));
-        miniMapUniforms.setUniform("tex",1);
-        glActiveTexture(GL_TEXTURE1);
-        scene.getTextureList().bind("minimap");
-        MiniMap miniMap = gui.getMiniMap();
-        glBindVertexArray(miniMap.getMesh().getVao());
-        glDrawElements(GL_TRIANGLES,miniMap.getMesh().getNumVertices(),GL_UNSIGNED_INT,0);
-        shaderP.unbind();
-
-
         //Piece
         shaderP = scene.getShaderProgram("piece");
         shaderP.bind();
@@ -90,6 +72,22 @@ public class Renderer {
         });
         shaderP.unbind();
 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        //GUI
+        GuiScene gui = scene.getGui();
+        shaderP = gui.getShaderP("minimap");
+        shaderP.bind();
+        UniformsMap miniMapUniforms = gui.getUniformMap("minimap");
+        miniMapUniforms.setUniform("projectionMatrix",cam.getOrthoProjection());
+        miniMapUniforms.setUniform("viewPort",new Vector2f(Window.getWidth(),Window.getHeight()));
+        miniMapUniforms.setUniform("tex",1);
+        glActiveTexture(GL_TEXTURE1);
+        scene.getTextureList().bind("minimap");
+        MiniMap miniMap = gui.getMiniMap();
+        glBindVertexArray(miniMap.getMesh().getVao());
+        glDrawElements(GL_TRIANGLES,miniMap.getMesh().getNumVertices(),GL_UNSIGNED_INT,0);
+        shaderP.unbind();
 
         KeyListener.declicker(new int[]{GLFW_KEY_J,GLFW_KEY_K,GLFW_KEY_L});
     }

@@ -5,8 +5,6 @@ import com.game.Graphics.Mesh.PieceMesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.util.Random;
-
 public class Piece {
     private final PieceMesh mesh;
     private final Matrix4f modelMatrix;
@@ -22,7 +20,7 @@ public class Piece {
                 new Matrix4f().identity().translation(position),
                 new Matrix4f().scale(1.0f)
         );
-        rotatePiece(MatrixCalc.rotationMatrix((float) Math.random(),(byte)new Random().nextInt(1,3)));
+//        rotatePiece(MatrixCalc.rotationMatrix(new Random().nextFloat(360),(byte) new Random().nextInt(1,3)));
     }
 
     public void rotatePiece(Matrix4f rotation) {
