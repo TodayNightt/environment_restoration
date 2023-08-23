@@ -10,12 +10,10 @@ slide
 /src/main/java/com/game/Graphics/Gui/ButtonManager.java
 /src/main/java/com/game/Graphics/Mesh/ButtonMesh.java
 
-/src/main/java/com/game/Graphics/OldQuad.java
-/src/main/java/com/game/Graphics/OldChunk.java
-/src/main/java/com/game/Graphics/Mesh/OldTerrainMesh.java
-/src/main/java/com/game/Graphics/ChunkBorder.java
-/src/main/java/com/game/Graphics/Mesh/ChunkBorderMesh.java
-/src/main/java/com/game/Terrain/OldTerrainMap.java
+/src/main/java/com/game/lwjgl/old/OldQuad.java
+/src/main/java/com/game/lwjgl/old/OldChunk.java
+/src/main/java/com/game/lwjgl/old/OldTerrainMesh.java
+/src/main/java/com/game/lwjgl/old/OldTerrainMap.java
 /src/main/resources/shaders/chunkBorder.frag
 /src/main/resources/shaders/chunkBorder.vert
 /src/main/resources/shaders/oldterrain.frag

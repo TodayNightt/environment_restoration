@@ -1,4 +1,4 @@
-package com.game;
+package com.game.lwjgl;
 
 import com.game.lwjgl.Window.Window;
 

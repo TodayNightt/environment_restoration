@@ -1,8 +1,7 @@
 plugins {
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-
 }
+
 
 java {
     toolchain {
@@ -12,14 +11,15 @@ java {
 }
 
 
-
 repositories {
     mavenCentral()
+//    gradlePluginPortal()
+//    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+//    google()
 }
 
 project.ext.lwjglVersion = "3.3.2"
-project.ext.jomlVersion = "1.10.5"
-project.ext.imguiVersion = "1.86.10"
+//project.ext.jomlVersion = "1.10.5"
 
 switch (org.gradle.internal.os.OperatingSystem.current()) {
     case org.gradle.internal.os.OperatingSystem.LINUX:
@@ -36,13 +36,6 @@ switch (org.gradle.internal.os.OperatingSystem.current()) {
         break
 }
 dependencies {
-    //Imgui
-    implementation "io.github.spair:imgui-java-binding:$imguiVersion"
-    implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
-    implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
-    implementation "io.github.spair:imgui-java-natives-macos:$imguiVersion"
-    implementation "io.github.spair:imgui-java-natives-linux:$imguiVersion"
-
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation "org.lwjgl:lwjgl"
@@ -50,7 +43,7 @@ dependencies {
     implementation "org.lwjgl:lwjgl-openal"
     implementation "org.lwjgl:lwjgl-opengl"
     implementation "org.lwjgl:lwjgl-stb"
-    implementation "org.joml:joml:${jomlVersion}"
+//    implementation "org.joml:joml:${jomlVersion}"
 
     //Natives linux
     runtimeOnly "org.lwjgl:lwjgl::natives-linux"
@@ -83,44 +76,24 @@ dependencies {
 
 
     implementation platform("com.fasterxml.jackson:jackson-bom:2.14.2")
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.14.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
 
-    implementation fileTree('libs') { include 'core.jar' }
+
+//    implementation 'org.wisepersist:gwt-gradle-plugin:1.1.16'
+
 
 }
 
-application{
-    mainClass = 'com.game.Main'
-}
 
-build{
-    dependsOn.add('runJar')
+application {
+    mainClass = 'com.game.lwjgl.Main'
 }
 
 
-shadowJar {
-    archiveBaseName.set('game')
-    archiveClassifier.set('')
-    archiveVersion.set('')
-
-    manifest {
-        attributes 'Main-Class':'com.game.Main'
-    }
-}
-
-tasks.register('runJar',JavaExec){
-    dependsOn.add('shadowJar')
-    if(org.gradle.internal.os.OperatingSystem.current().isMacOsX()){
-        jvmArgs += ['-XstartOnFirstThread','-Djava.awt.headless=true']
-    }
-    classpath = files('build/libs/game.jar')
-}
-
-
-run{
-    if(org.gradle.internal.os.OperatingSystem.current().isMacOsX()){
-        jvmArgs += ['-XstartOnFirstThread','-Djava.awt.headless=true']
+run {
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs += ['-XstartOnFirstThread', '-Djava.awt.headless=true']
     }
 }
