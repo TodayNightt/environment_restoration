@@ -3,7 +3,7 @@ package com.game.Terrain;
 import com.game.Graphics.Scene;
 import com.game.Terrain.Generation.NoiseMap;
 import com.game.Terrain.Generation.TextureGenerator;
-import com.game.WorkerManager;
+import com.game.Utils.WorkerManager;
 
 import java.util.ArrayList;
 import java.util.List;

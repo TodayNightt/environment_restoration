@@ -5,15 +5,10 @@ out
 build
 bin
 slide
-/src/main/java/com/game/ThreadWorker.java
 /src/main/java/com/game/Graphics/Gui/Button.java
 /src/main/java/com/game/Graphics/Gui/ButtonManager.java
 /src/main/java/com/game/Graphics/Mesh/ButtonMesh.java
 
-/src/main/java/com/game/lwjgl/old/OldQuad.java
-/src/main/java/com/game/lwjgl/old/OldChunk.java
-/src/main/java/com/game/lwjgl/old/OldTerrainMesh.java
-/src/main/java/com/game/lwjgl/old/OldTerrainMap.java
 /src/main/resources/shaders/chunkBorder.frag
 /src/main/resources/shaders/chunkBorder.vert
 /src/main/resources/shaders/oldterrain.frag
@@ -21,3 +16,6 @@ slide
 /src/main/resources/shaders/button.frag
 /src/main/resources/shaders/button.vert
 /src/main/resources/skybox
+/src/main/java/com/game/Utils/Vec3f.java
+/src/main/java/com/game/Utils/Vec3i.java
+/src/main/java/com/game/Utils/Mat4f.java

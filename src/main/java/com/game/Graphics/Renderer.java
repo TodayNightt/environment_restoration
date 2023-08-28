@@ -8,11 +8,9 @@ import com.game.Terrain.TerrainMap;
 import com.game.Utils.MatrixCalc;
 import com.game.Window.EventListener.KeyListener;
 import com.game.Window.Window;
-import com.game.WorkerManager;
+import com.game.Utils.WorkerManager;
 
-import java.util.Arrays;
-
-import static com.game.WorkerManager.stillWorking;
+import static com.game.Utils.WorkerManager.stillWorking;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;
 
