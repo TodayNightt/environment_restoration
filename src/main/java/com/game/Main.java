@@ -1,6 +1,6 @@
 package com.game;
 
-import com.game.lwjgl.Window.Window;
+import com.game.Window.Window;
 
 public class Main {
     public static void main(String[] args) throws Exception {

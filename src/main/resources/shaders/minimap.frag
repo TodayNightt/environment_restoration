@@ -1,6 +1,7 @@
 #version 330
 
 in vec2 vTexCoord;
+in vec3 vPosition;
 
 uniform sampler2D tex;
 
