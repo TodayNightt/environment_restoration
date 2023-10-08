@@ -1,9 +1,9 @@
 package com.game;
 
-import com.game.Window.Window;
+import static com.game.Window.Window.launch;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Window.launch(Window.getInstance());
+        launch(new GameWindow());
     }
 }

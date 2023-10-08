@@ -1,14 +1,14 @@
-package com.game.Graphics;
+package com.game.Utils;
 
 import org.joml.Matrix4f;
 
 import static org.joml.Math.cos;
 import static org.joml.Math.sin;
 
-public class MatrixCalc {
+public final class MatrixCalc {
     public static Matrix4f createModelMatrix(Matrix4f rotationX, Matrix4f rotationY, Matrix4f rotationZ,
                                              Matrix4f translation, Matrix4f scale) {
-        return new Matrix4f().identity().mul(rotationX).mul(rotationY).mul(rotationZ).mul(translation).mul(scale);
+        return new Matrix4f().mul(rotationX).mul(rotationY).mul(rotationZ).mul(translation).mul(scale);
     }
 
     // https://github.com/OneLoneCoder/Javidx9/blob/master/ConsoleGameEngine/BiggerProjects/Engine3D/OneLoneCoder_olcEngine3D_Part3.cpp

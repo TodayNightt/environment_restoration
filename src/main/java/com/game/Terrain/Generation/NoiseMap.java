@@ -1,9 +1,10 @@
 package com.game.Terrain.Generation;
 
 import com.game.Terrain.OpenSimplexNoise.OpenSimplex2S;
-import processing.core.PApplet;
 
 import java.util.Random;
+
+import static com.game.Utils.TerrainContraints.*;
 
 
 public class NoiseMap {
@@ -45,15 +46,16 @@ public class NoiseMap {
     }
 
     public static int[] mapToInt(double[] map, int start, int end, int start1, int end1) {
+
         int[] newMap = new int[map.length];
         for (int i = 0; i < map.length; i++) {
-            newMap[i] = (int) PApplet.map((float) map[i], start, end, start1, end1);
+            newMap[i] = (int) map((float) map[i], start, end, start1, end1);
 
         }
         return newMap;
     }
 
-    public static double[] combineMap(double[] map1, double[] map2, double[] map3){
+    public static double[] combineMap(double[] map1, double[] map2, double[] map3) {
         if (map1.length != map2.length || map2.length != map3.length) {
             throw new RuntimeException("All map must be the same length");
         }
@@ -64,6 +66,19 @@ public class NoiseMap {
         return newMap;
     }
 
+    public static float map(float value, float start1, float stop1, float start2, float stop2) {
+        //https://stackoverflow.com/questions/3451553/value-remapping
+        return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
+    }
+
+    public static int[] createHeightMap(){
+        long seed = new Random().nextLong();
+        double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004, seed);
+        double[] map2 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.5, 0.004, seed);
+        double[] map3 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.9, 0.0005, seed);
+        double[] combineMap = NoiseMap.combineMap(map1, map2, map3);
+        return NoiseMap.mapToInt(combineMap, -2, 1, CHUNK_HEIGHT, 1);
+    }
 
 
 }

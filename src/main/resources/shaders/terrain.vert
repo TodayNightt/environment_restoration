@@ -18,6 +18,24 @@ vec2(0.0,0.0),
 vec2(1.0,0.0)
 );
 
+struct Vertex_Data
+{
+    vec3 position;
+    uint uv;
+};
+
+
+Vertex_Data convert(uint vertex){
+    Vertex_Data data;
+    data.position.x = float((vertex >> 15) & 0x1Fu);
+    data.position.y = float((vertex >> 4) & 0x3Fu);
+    data.position.z = float((vertex >> 10) & 0x1Fu);
+    data.uv = (vertex >> 2) & 0x3u;
+    return data;
+}
+
+
+
 
 
 
@@ -29,12 +47,10 @@ void main()
     float xOffset = float((mod(type,textureRow)) / float(textureRow));
     float yOffset = float(floor(type/textureRow) / textureRow);
     vec2 offset = vec2(xOffset,yOffset);
-    vTexCoord = (uv[(aPosition >> 2) & 0x3u] /textureRow) + offset;
 
+    Vertex_Data data = convert(aPosition);
 
-    float x = float((aPosition >> 15) & 0x1Fu);
-    float z = float((aPosition >> 10) & 0x1Fu);
-    float y = float((aPosition >> 4) & 0x3Fu);
-    vColor = vec3(x,y,z);
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(x,y,z,1.0);
+    vTexCoord = (uv[data.uv] /textureRow) + offset;
+    vColor = data.position;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(data.position,1.0);
 }

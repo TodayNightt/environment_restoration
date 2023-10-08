@@ -1,5 +1,7 @@
 package com.game.Window;
 
+import com.game.GameWindow;
+import com.game.Graphics.Renderer;
 import com.game.Graphics.Scene;
 import com.game.Window.EventListener.KeyListener;
 import com.game.Window.EventListener.MouseListener;
@@ -7,6 +9,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
 
@@ -21,23 +24,21 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 
 //https://github.com/SpaiR/imgui-java/blob/main/imgui-app/src/main/java/imgui/app/Window.java#L25
-public class Window {
+abstract public class Window {
 
     private static Window window;
-//    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
+    //    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
 //    private final ImGuiImplGl3 imGuiGl = new ImGuiImplGl3();
-    private Scene scene;
     // The window handle
     private long windowID;
     private int width = 1280, height = 720;
     private Callback debugProc;
 
-
-    private Window() {
-
+    public Window() {
+        window = this;
     }
 
-    public static void launch(Window app) throws Exception {
+    public static void launch(Window app)  {
         long first = System.nanoTime();
         app.init();
         System.out.println((double) (System.nanoTime() - first) / 1_000_000_000);
@@ -46,13 +47,15 @@ public class Window {
     }
 
     public static Window getInstance() {
-        if (window == null) {
-            window = new Window();
+        if(window == null){
+            window = new GameWindow();
         }
         return window;
     }
 
-    public static long getWindowId(){return getInstance().windowID;}
+    public static long getWindowId() {
+        return getInstance().windowID;
+    }
 
     public static float getHeight() {
         return getInstance().height;
@@ -62,33 +65,20 @@ public class Window {
         return getInstance().width;
     }
 
-    private static void resized(long window, int width, int height) {
-        getInstance().width = width;
-        getInstance().height = height;
+    public void resized(long window, int width, int height) {
+        this.width = width;
+        this.height = height;
 //        getInstance().scene.getButtonManager().evalPlacement();
-        getInstance().scene.getCamera().setAspectRatio(getWidth(), getHeight());
+//        getInstance().scene.getCamera().setWindowSize(getWidth(), getHeight());
     }
 
-    private void initComponent(){
-        scene = new Scene(this);
-    }
+    abstract public void initComponent();
 
-    public void init(){
-
+    private void init(){
         initWindow();
         initComponent();
-
-//        initImGui();
-//        imGuiGlfw.init(windowID, true);
-//        imGuiGl.init();
     }
 
-//    protected void initImGui() {
-//        ImGui.createContext();
-//
-//        final ImGuiIO io = ImGui.getIO();
-//        io.setIniFilename("src/main/resources/imgui.ini");
-//    }
 
     public void initWindow() {
         // Setup an error callback. The default implementation
@@ -103,7 +93,7 @@ public class Window {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
-        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER,GLFW_TRUE);
+        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -118,10 +108,9 @@ public class Window {
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(windowID, KeyListener::keyCallBack);
         glfwSetCursorPosCallback(windowID, MouseListener::cursorCallback);
-        glfwSetMouseButtonCallback(windowID,MouseListener::mouseButtonCallback);
+        glfwSetMouseButtonCallback(windowID, MouseListener::mouseButtonCallback);
 
-        glfwSetFramebufferSizeCallback(windowID, Window::resized);
-
+        glfwSetFramebufferSizeCallback(windowID, this::resized);
 
 
 
@@ -149,17 +138,11 @@ public class Window {
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(windowID);
-        // Enable v-sync
-        glfwSwapInterval(1);
         GL.createCapabilities();
-//        debugProc = GLUtil.setupDebugMessageCallback();
+        glfwSwapInterval(1);
         System.out.println(glGetString(GL_VERSION));
 
-
-        // Make the window visible
-        glfwShowWindow(windowID);
-
-
+//        debugProc = GLUtil.setupDebugMessageCallback();
         //Set depth buffer
         glEnable(GL_DEPTH_TEST);
         glDepthMask(true);
@@ -170,14 +153,21 @@ public class Window {
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glFrontFace(GL_CW);
+        // Make the window visible
+        glfwShowWindow(windowID);
+
+
     }
 
-    protected void run() {
+    protected void run(){
+        resized(windowID,width,height);
 
-        while (!glfwWindowShouldClose(windowID)) {
+        while (!glfwWindowShouldClose(windowID)){
             runFrame();
         }
     }
+
+
 
     protected void runFrame() {
         //Start
@@ -190,29 +180,16 @@ public class Window {
         endFrame();
     }
 
-    protected void startFrame() {
-        clearBuffer();
 
-//        imGuiGlfw.newFrame();
-//        ImGui.newFrame();
-    }
-
-    public void render() {
-        scene.render();
-    }
+    abstract public void render();
 
     protected void endFrame() {
-//        ImGui.render();
-//        imGuiGl.renderDrawData(ImGui.getDrawData());
-//
-//        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-//            ImGui.updatePlatformWindows();
-//            ImGui.renderPlatformWindowsDefault();
-//            GLFW.glfwMakeContextCurrent(windowID);
-//        }
-
         glViewport(0, 0, width, height);
         renderBuffer();
+    }
+
+    protected void startFrame(){
+        clearBuffer();
     }
 
     private void renderBuffer() {
@@ -226,15 +203,10 @@ public class Window {
         glClearDepth(1.0f);
     }
 
-    private void disposeAll() {
-//        imGuiGl.dispose();
-//        imGuiGlfw.dispose();
-//        ImGui.destroyContext();
-        scene.cleanup();
+    protected void disposeAll() {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(windowID);
         glfwDestroyWindow(windowID);
-
         // Terminate GLFW and free the error callback
         glfwTerminate();
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();

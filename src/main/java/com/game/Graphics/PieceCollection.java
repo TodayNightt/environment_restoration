@@ -1,8 +1,8 @@
-package com.game.GameLogic;
+package com.game.Graphics;
 
-import com.game.Graphics.Mesh.PieceMesh;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.game.Graphics.Mesh.PieceMesh;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PieceCollection {
+public class PieceCollection{
 
     private static PieceCollection instance;
     Map<String, PieceMesh> collection;
@@ -20,14 +20,18 @@ public class PieceCollection {
     }
 
 
-    public static PieceCollection getInstance() {
+    private static PieceCollection getInstance() {
         if (instance == null) {
-            instance = new PieceCollection();
+            init();
         }
         return instance;
     }
+    public static void init(){
+        instance = new PieceCollection();
+    }
 
-    private void initPieces() {
+
+    protected void initPieces() {
         this.collection = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode root;
@@ -44,12 +48,14 @@ public class PieceCollection {
 
     }
 
+
     public static List<String> getPieceType() {
         return getInstance().collection.keySet().stream().toList();
     }
 
-    public PieceMesh getMesh(String name) {
-        return collection.get(name);
+    public static PieceMesh getMesh(String name) {
+        return getInstance().collection.get(name);
     }
+
 
 }

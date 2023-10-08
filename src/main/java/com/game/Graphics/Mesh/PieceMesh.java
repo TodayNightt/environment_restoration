@@ -2,110 +2,77 @@ package com.game.Graphics.Mesh;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.game.templates.Mesh;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
 
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL33.*;
+import static com.game.Utils.BitsUtils.*;
+import static com.game.Graphics.Mesh.MeshFactory.createMesh;
+import static com.game.templates.Mesh.MeshType.PIECE;
 
 @JsonDeserialize(builder = PieceMesh.Builder.class)
-public class PieceMesh implements Mesh {
-    private final int numVertices;
-    private final int vao;
-    private final Vector3f size;
-    private final float[] schematics;
+public class PieceMesh extends Mesh {
 
-    public PieceMesh(float[] positions, int[] indices, Vector3f size,float[] schematics) {
-        this.numVertices = indices.length;
-        this.size = size;
-        this.schematics = schematics;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            vao = glGenVertexArrays();
-            glBindVertexArray(vao);
+    private Vector3f size;
+    private float[] schematics;
 
-            // Create vbo buffer
-            int vbo = glGenBuffers();
-
-            // Add vbo[0] for vertices
-            FloatBuffer vertexDataBuffer = stack.callocFloat(positions.length);
-            vertexDataBuffer.put(0, positions);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            // the * 4 is used to calculate the size of the buffer as float or int is 4 bytes
-            glBufferData(GL_ARRAY_BUFFER, vertexDataBuffer, GL_STATIC_DRAW);
-            // Enable the vertex data attribute
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES * 5, 0);
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 2, GL_FLOAT, false, Float.BYTES * 5, Float.BYTES * 3);
-
-            // Crete vbo for color
-            vbo = glGenBuffers();
-            IntBuffer indicesBuffer = stack.mallocInt(indices.length);
-            indicesBuffer.put(0, indices);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
-
-            // Clear the Buffer
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
-        }
+    public PieceMesh(IntBuffer vertexData, IntBuffer indices) {
+        this.numVertices = indices.capacity();
+        bindBuffer(vertexData, indices);
     }
 
-    public float[] getSchematics(){
+    public float[] getSchematics() {
         return schematics;
     }
 
-    @Override
-    public int getNumVertices() {
-        return numVertices;
+
+    private void setSchematics(float[] schematics) {
+        this.schematics = schematics;
+    }
+
+    private void setSize(Vector3f size) {
+        this.size = size;
     }
 
     @Override
-    public int getVao() {
-        return vao;
-    }
-
     public Vector3f getSize() {
         return size;
     }
 
-    @Override
-    public void cleanup() {
-        glDeleteVertexArrays(vao);
-    }
-
     @JsonPOJOBuilder(buildMethodName = "create", withPrefix = "set")
     static class Builder {
-        float[] vertexData;
-        int[] indices;
+        IntBuffer vertexData;
+        IntBuffer indices;
         Vector3f size;
         float[] schematics;
 
         Builder setVertexData(float[] vertexData) {
-            this.vertexData = vertexData;
+            this.vertexData = fiveFloatsToOneInt(vertexData);
             return this;
         }
 
         Builder setIndices(int[] indices) {
-            this.indices = indices;
+            this.indices = IntBuffer.wrap(indices);
             return this;
         }
 
-        Builder setSize(Map<String, Integer> size) {
+        Builder setSize(Map<String, Float> size) {
             this.size = new Vector3f(size.get("width"), size.get("height"), size.get("depth"));
             return this;
         }
 
-        Builder setSchematics(float[] schematics){
+        Builder setSchematics(float[] schematics) {
             this.schematics = schematics;
             return this;
         }
 
         public PieceMesh create() {
-            return new PieceMesh(vertexData, indices, size,schematics);
+            PieceMesh mesh = (PieceMesh) createMesh(PIECE, vertexData, indices);
+            mesh.setSize(size);
+            mesh.setSchematics(schematics);
+            return mesh;
         }
     }
 }

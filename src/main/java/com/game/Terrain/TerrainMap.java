@@ -1,33 +1,55 @@
 package com.game.Terrain;
 
-import com.game.Graphics.Chunk;
+import com.game.Camera.Camera;
 import com.game.Graphics.Scene;
+import com.game.Graphics.ShaderProgram;
+import com.game.Graphics.TextureList;
+import com.game.Graphics.UniformsMap;
 import com.game.Terrain.Generation.NoiseMap;
 import com.game.Terrain.Generation.TextureGenerator;
+import com.game.Utils.WorkerManager;
+import com.game.templates.SceneItem;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.game.Graphics.Chunk.CHUNK_HEIGHT;
-import static com.game.Graphics.Chunk.CHUNK_SIZE;
+import static com.game.Graphics.Scene.*;
+import static com.game.Terrain.Generation.NoiseMap.createHeightMap;
+import static com.game.Utils.TerrainContraints.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
-public class TerrainMap {
-    public static final int MAP_SIZE = 20;
-    private final List<Chunk> chunkList;
-    private final String textureName;
-    private final int[] heightMap;
+public class TerrainMap extends SceneItem {
 
+    private List<Chunk> chunkList;
+    private String textureName;
+    private int[] heightMap;
 
-    public TerrainMap(Scene scene , String texture) {
-        long seed = new Random().nextLong();
+    private ShaderProgram shaderProgram;
+    private UniformsMap uniformsMap;
+
+    public TerrainMap(String texture) {
         this.textureName = texture;
-        chunkList = new ArrayList<>();
-        double[] map1 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 4, 0.95, 0.004, seed);
-        double[] map2 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.5, 0.004, seed);
-        double[] map3 = NoiseMap.GenerateMap(MAP_SIZE * CHUNK_SIZE, MAP_SIZE * CHUNK_SIZE, 3, 0.9, 0.0005, seed);
-        double[] combineMap = NoiseMap.combineMap(map1, map2, map3);
-        heightMap = NoiseMap.mapToInt(combineMap, -2, 1, CHUNK_HEIGHT, 1);
+        this.chunkList = new ArrayList<>();
+    }
+
+    @Override
+    public void init(String id,String vertShader, String fragShader,String[] uniformList){
+        this.shaderProgram = createShaderProgram(vertShader,fragShader);
+        this.uniformsMap = createUniformMap(shaderProgram,uniformList);
+    }
+
+    public void refresh(int[] heightMap){
+        initChunks(heightMap);
+    }
+
+    protected void initChunks(int[] heightMap) {
+        this.heightMap = heightMap;
+        chunkList.clear();
+
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
                 int[] newHeightMap = new int[CHUNK_SIZE * CHUNK_SIZE];
@@ -38,25 +60,51 @@ public class TerrainMap {
                                 offset) + (i * (offset * CHUNK_SIZE)))];
                     }
                 }
-                chunkList.add(new Chunk(j,0,i,newHeightMap, this));
+                chunkList.add(new Chunk(j, 0, i, newHeightMap, this));
             }
         }
-        chunkList.forEach(Chunk::initializeBuffers);
-        scene.addMapTexture(TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE));
+        WorkerManager.getInstance().pass(chunkList).start();
     }
 
 
 
     // https://stackoverflow.com/questions/22131437/return-objects-from-arraylist
     public Chunk getChunk(int x, int y, int z) {
-        return chunkList.stream().filter(chunk -> chunk.isChunk(x, y, z)).findFirst().get();
+        for(Chunk chunk : chunkList){
+            if(chunk.isChunk(x,y,z)) return chunk;
+        }
+        return null;
     }
-    public void cleanup(){
+
+    @Override
+    public void render(Camera cam){
+        shaderProgram.bind();
+        uniformsMap.setUniform("projectionMatrix", cam.getProjectionMatrix());
+        uniformsMap.setUniform("viewMatrix", cam.getViewMatrix());
+        uniformsMap.setUniform("tex", 0);
+        glActiveTexture(GL_TEXTURE0);
+        TextureList.getInstance().bind(textureName);
+        uniformsMap.setUniform("fValue", new float[]{
+                TerrainMap.getTextureRow()
+        });
+        chunkList.stream().filter(chunk -> chunk.getMesh() != null).forEach(chunk -> {
+            uniformsMap.setUniform("modelMatrix", chunk.getModelMatrix());
+            glBindVertexArray( chunk.getMesh().getVao());
+            glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
+        });
+        glBindVertexArray(0);
+        shaderProgram.unbind();
+    }
+
+    @Override
+    public void cleanup() {
         chunkList.forEach(Chunk::cleanup);
     }
+
     public int getSize() {
         return MAP_SIZE;
     }
+
     public List<Chunk> getMap() {
         return chunkList;
     }
@@ -68,5 +116,8 @@ public class TerrainMap {
     public String getTextureName() {
         return textureName;
     }
-    public int[] getHeightMap(){return heightMap;}
+
+    public int[] getHeightMap() {
+        return heightMap;
+    }
 }

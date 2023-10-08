@@ -6,16 +6,16 @@ import java.util.Scanner;
 public class FileUtils {
 
     //https://stackoverflow.com/questions/39685671/filesystem-not-found-exception-when-using-getresources
-    public static CharSequence loadShaderFromResources(String fileName) {
+    public static String loadShaderFromResources(String fileName) {
         InputStream is = FileUtils.class.getClassLoader().getResourceAsStream(fileName);
-        CharSequence text = "";
+        StringBuilder text = new StringBuilder();
         assert is != null;
         try (Scanner scanner = new Scanner(is)) {
-            while(scanner.hasNextLine()){
-                text+= scanner.nextLine() + "\n";
+            while (scanner.hasNextLine()) {
+                text.append(scanner.nextLine()).append("\n");
             }
         }
-       return text;
+        return text.toString();
     }
 
 //    public static void saveFile(int[] data,String file) {

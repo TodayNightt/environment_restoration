@@ -11,20 +11,30 @@ import static org.lwjgl.BufferUtils.createIntBuffer;
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.stb.STBImage.*;
 
-public class TextureList {
+public class TextureList{
+    protected static TextureList instance;
 
-    private final HashMap<String, Integer> textureList;
+    private HashMap<String, Integer> textureList;
 
     public TextureList() {
         this.textureList = new HashMap<>();
     }
 
-    public void createTexture(String name,ByteBuffer buffer) {
+
+    public static TextureList getInstance() {
+        if (instance == null) {
+            instance = new TextureList();
+        }
+        return instance;
+    }
+
+
+    public void createTexture(String name, ByteBuffer buffer) {
         IntBuffer w = createIntBuffer(1);
         IntBuffer h = createIntBuffer(1);
         IntBuffer channels = createIntBuffer(1);
         stbi_set_flip_vertically_on_load(true);
-        ByteBuffer textureBuffer = stbi_load_from_memory(buffer,w,h,channels,4);
+        ByteBuffer textureBuffer = stbi_load_from_memory(buffer, w, h, channels, 4);
         if (textureBuffer == null) {
             throw new RuntimeException("Texture [" + name + "] not loaded: " + stbi_failure_reason());
         }
@@ -36,20 +46,24 @@ public class TextureList {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w.get(0), h.get(0), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        textureList.put(name, textureId);
+        getInstance().textureList.put(name, textureId);
         stbi_image_free(textureBuffer);
+
     }
 
-    public Integer getTexture(String name) {
+
+    public int getTexture(String name) {
         return textureList.get(name);
     }
 
+
     public void bind(String name) {
-        glBindTexture(GL_TEXTURE_2D, textureList.get(name));
+        glBindTexture(GL_TEXTURE_2D, (Integer) textureList.get(name));
     }
 
+
     public void cleanup() {
-        textureList.values().forEach(GL33::glDeleteTextures);
+        textureList.values().forEach(tex -> GL33.glDeleteTextures((Integer) tex));
     }
 
 

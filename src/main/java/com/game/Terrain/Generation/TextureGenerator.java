@@ -1,17 +1,15 @@
 package com.game.Terrain.Generation;
 
-import com.game.Graphics.Chunk;
-import org.lwjgl.BufferUtils;
+import com.game.Terrain.Chunk;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static com.game.Graphics.Chunk.SEA_LEVEL;
+import static com.game.Utils.TerrainContraints.SEA_LEVEL;
 
 public class TextureGenerator {
     private static final Color[] dirt = {new Color(182, 159, 102), new Color(118, 85, 43), new Color(64, 41, 5),
@@ -23,7 +21,7 @@ public class TextureGenerator {
 
     private static final Color[] snow = {new Color(255, 255, 255), new Color(236, 255, 253), new Color(208, 236, 235), new Color(160, 230, 236), new Color(148, 242, 244)};
 
-    public static ByteBuffer GenerateAtlas(){
+    public static ByteBuffer GenerateAtlas() {
         int[] dirtTexture = NoiseMap.mapToInt(NoiseMap.GenerateMap(40, 40), -1, 1, 0, dirt.length);
         int[] grassTexture = NoiseMap.mapToInt(NoiseMap.GenerateMap(40, 40), -2, 1, 0, grass.length);
         int[] sandTexture = NoiseMap.mapToInt(NoiseMap.GenerateMap(40, 40), -2, 1, 0, sand.length);
@@ -52,18 +50,18 @@ public class TextureGenerator {
 
     }
 
-    private static ByteBuffer toByteBuffer(BufferedImage image){
+    private static ByteBuffer toByteBuffer(BufferedImage image) {
         //https://stackoverflow.com/questions/29301838/converting-bufferedimage-to-bytebuffer
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "png", outputStream);
             image.flush();
             byte[] buf = outputStream.toByteArray();
-            ByteBuffer buffer = BufferUtils.createByteBuffer(buf.length);
+            ByteBuffer buffer = ByteBuffer.allocateDirect(buf.length);
             buffer.put(buf);
             buffer.flip();
             return buffer;
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Couldn't create texture buffer with error: " + e);
             System.exit(1);
         }
@@ -89,8 +87,8 @@ public class TextureGenerator {
         for (int z = 0; z < image.getHeight(); z++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 int height = heightMap[x + (z * size)];
-                int material =  Chunk.getMaterial(height, height <= SEA_LEVEL ? 1: 0);
-                int colorIndex = material == 6 ? 3 : material == 4 ? 2 :material == 2? 1 : 0 ;
+                int material = Chunk.getMaterial(height, height <= SEA_LEVEL ? 1 : 0);
+                int colorIndex = material == 6 ? 3 : material == 4 ? 2 : material == 2 ? 1 : 0;
                 image.setRGB(x, z, terrainColor[colorIndex].getRGB());
             }
         }
