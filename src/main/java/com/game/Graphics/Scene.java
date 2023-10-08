@@ -2,47 +2,45 @@ package com.game.Graphics;
 
 import com.game.Camera.Camera;
 import com.game.GameLogic.PieceManager;
-import com.game.Graphics.Gui.GuiScene;
-import com.game.Terrain.TerrainMap;
+import com.game.Graphics.Gui.GuiManager;
+import com.game.Graphics.Gui.Minimap;
+import com.game.Terrain.Generation.NoiseMap;
 import com.game.Terrain.Generation.TextureGenerator;
-import com.game.Utils.FileUtils;
+import com.game.Terrain.TerrainMap;
 import com.game.Window.Window;
+import com.game.templates.SceneItem;
 import org.joml.Vector3f;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import static com.game.Utils.FileUtils.loadShaderFromResources;
+import static com.game.Terrain.Generation.NoiseMap.createHeightMap;
+import static com.game.Utils.TerrainContraints.*;
 import static org.lwjgl.opengl.GL33.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL33.GL_VERTEX_SHADER;
 
 public class Scene{
 
-    protected TerrainMap terrain;
-    protected HashMap<String, ShaderProgram> shaderProgramList;
-    protected HashMap<String, UniformsMap> uniformsMapList;
-    protected Camera cam;
-    protected Window window;
-    protected GuiScene guiScene;
+    public enum SceneType{
+        ITEM,
+        GUI
+    }
 
-    public Scene(Window window) {
-        this.window = window;
+    protected HashMap<String,SceneItem>sceneItems;
+    protected Camera cam;
+    protected GuiManager guiScene;
+
+    public Scene() {
         init();
     }
 
     public void init() {
-        this.shaderProgramList = new HashMap<>();
-        this.uniformsMapList = new HashMap<>();
+        this.sceneItems = new HashMap<>();
         initCam();
         initGui();
         initializeTexture();
         initializePiece();
-        initializeTerrainGen();
     }
-
-
 
     protected void initCam() {
         cam = new Camera();
@@ -51,55 +49,41 @@ public class Scene{
         cam.setPerspective(60.f, Window.getWidth() / Window.getHeight(), 0.1f, 1000.0f);
     }
 
-
-
     protected void initializeTexture() {
         createTexture("block_atlas", TextureGenerator.GenerateAtlas());
     }
 
-
     protected void initGui() {
-
-        guiScene = new GuiScene();
-
-        ShaderProgram shaderP = createShaderProgram("shaders/minimap.vert", "shaders/minimap.frag");
-        String[] attributes = {"projectionMatrix", "viewPort", "tex"};
-        UniformsMap uniformsMap = createUniformMap(shaderP,attributes);
-        guiScene.init("minimap",shaderP,uniformsMap);
+       guiScene = new GuiManager();
+        guiScene.init("minimap","shaders/minimap.vert","shaders/minimap.frag",new String[]{"projectionMatrix", "viewPort","tex"});
+        guiScene.addItem("minimap",Minimap.create(16, 1, 3));
+        sceneItems.put("gui",guiScene);
     }
 
-
-    protected void initializeTerrainGen() {
-        //Initialize shaderProgram
-        ShaderProgram shaderP = createShaderProgram("shaders/terrain.vert", "shaders/terrain.frag");
-        //Initialize uniformMap
-        String[] attributes = {"projectionMatrix", "viewMatrix", "modelMatrix", "tex", "fValue"};
-        UniformsMap uniformsMap = createUniformMap(shaderP,attributes);
-
-        this.shaderProgramList.put("terrain",shaderP);
-        this.uniformsMapList.put("terrain",uniformsMap);
-        this.terrain = new TerrainMap("block_atlas", this);
+    public void initializeTerrain(String vertShader,String fragShader,String[]uniformList) {
+        TerrainMap terrainMap = new TerrainMap("block_atlas");
+        terrainMap.init("terrain",vertShader,fragShader,uniformList);
+        int[] heightMap = createHeightMap();
+        terrainMap.refresh(heightMap);
+        refreshMapTexture(heightMap);
+        this.sceneItems.put("terrain",terrainMap);
     }
-
 
     protected void initializePiece() {
-        //Initialize shaderProgram
-        ShaderProgram shaderP = createShaderProgram("shaders/piece.vert", "shaders/piece.frag");
-        //Initialize uniformMap
-        String[] attributes = {"projectionMatrix", "viewMatrix", "modelMatrix", "size"};
-        UniformsMap uniformsMap = createUniformMap(shaderP,attributes);
-        this.shaderProgramList.put("piece",shaderP);
-        this.uniformsMapList.put("piece",uniformsMap);
+        PieceManager pieceManager = new PieceManager();
+        pieceManager.init("piece","shaders/piece.vert", "shaders/piece.frag",new String[]{"projectionMatrix", "viewMatrix", "modelMatrix", "size"});
+        this.sceneItems.put("piece",pieceManager);
         PieceCollection.init();
     }
 
-
     public void cleanup() {
-        shaderProgramList.values().forEach(ShaderProgram::cleanup);
         TextureList.getInstance().cleanup();
-        terrain.cleanup();
+        sceneItems.forEach((key,value)->value.cleanup());
     }
 
+    public void refreshMapTexture(int [] heightMap){
+        createTexture("minimap",TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE));
+    }
 
     public void createTexture(String name, ByteBuffer buffer) {
         TextureList.getInstance().createTexture(name, buffer);
@@ -109,31 +93,22 @@ public class Scene{
         return cam;
     }
 
-    public ShaderProgram getShaderProgram(String name) {
-        return shaderProgramList.get(name);
+    public HashMap<String, SceneItem> getSceneItems() {
+        return sceneItems;
     }
 
-    public TerrainMap getTerrain() {
-        return terrain;
-    }
-
-    public UniformsMap getUniformMap(String name) {
-        return uniformsMapList.get(name);
-    }
-
-    public GuiScene getGui() {
-        return guiScene;
-    }
-
-    protected ShaderProgram createShaderProgram(String vertShader, String fragShader) {
+    public static ShaderProgram createShaderProgram(String vertShader, String fragShader) {
         List<ShaderProgram.ShaderData> shaderDataList = new ArrayList<>();
         shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile(vertShader, GL_VERTEX_SHADER));
         shaderDataList.add(ShaderProgram.ShaderData.createShaderByFile(fragShader, GL_FRAGMENT_SHADER));
         return new ShaderProgram(shaderDataList);
     }
 
-    protected UniformsMap createUniformMap(ShaderProgram program, String[] attributes) {
+    public static UniformsMap createUniformMap(ShaderProgram program, String[] attributes) {
         return new UniformsMap(program.getProgramId(),attributes);
     }
 
+    public GuiManager guiManager(){
+        return guiScene;
+    }
 }

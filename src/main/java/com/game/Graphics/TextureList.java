@@ -14,7 +14,7 @@ import static org.lwjgl.stb.STBImage.*;
 public class TextureList{
     protected static TextureList instance;
 
-    public HashMap<String, Integer> textureList;
+    private HashMap<String, Integer> textureList;
 
     public TextureList() {
         this.textureList = new HashMap<>();
@@ -52,7 +52,7 @@ public class TextureList{
     }
 
 
-    public Object getTexture(String name) {
+    public int getTexture(String name) {
         return textureList.get(name);
     }
 

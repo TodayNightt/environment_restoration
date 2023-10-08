@@ -25,9 +25,9 @@ public class KeyListener {
 
     public static void keyCallBack(long window, int key, int scancode, int action, int mods) {
         if (action == GLFW_PRESS) {
-            if (key == GLFW_KEY_N) {
-                Renderer.wireFrame();
-            }
+//            if (key == GLFW_KEY_N) {
+//                Renderer.wireFrame();
+//            }
             changeState(true, key);
         } else if (action == GLFW_RELEASE) {
             changeState(false, key);

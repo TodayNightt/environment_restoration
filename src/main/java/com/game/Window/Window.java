@@ -1,5 +1,6 @@
 package com.game.Window;
 
+import com.game.GameWindow;
 import com.game.Graphics.Renderer;
 import com.game.Graphics.Scene;
 import com.game.Window.EventListener.KeyListener;
@@ -23,21 +24,18 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 
 //https://github.com/SpaiR/imgui-java/blob/main/imgui-app/src/main/java/imgui/app/Window.java#L25
-public class Window {
+abstract public class Window {
 
     private static Window window;
     //    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
 //    private final ImGuiImplGl3 imGuiGl = new ImGuiImplGl3();
-    private Scene scene;
     // The window handle
     private long windowID;
     private int width = 1280, height = 720;
     private Callback debugProc;
 
-
-
-    private Window() {
-
+    public Window() {
+        window = this;
     }
 
     public static void launch(Window app)  {
@@ -49,8 +47,8 @@ public class Window {
     }
 
     public static Window getInstance() {
-        if (window == null) {
-            window = new Window();
+        if(window == null){
+            window = new GameWindow();
         }
         return window;
     }
@@ -67,16 +65,14 @@ public class Window {
         return getInstance().width;
     }
 
-    private static void resized(long window, int width, int height) {
-        getInstance().width = width;
-        getInstance().height = height;
+    public void resized(long window, int width, int height) {
+        this.width = width;
+        this.height = height;
 //        getInstance().scene.getButtonManager().evalPlacement();
-        getInstance().scene.getCamera().setWindowSize(getWidth(), getHeight());
+//        getInstance().scene.getCamera().setWindowSize(getWidth(), getHeight());
     }
 
-    private void initComponent() {
-        scene = new Scene(this);
-    }
+    abstract public void initComponent();
 
     private void init(){
         initWindow();
@@ -114,7 +110,7 @@ public class Window {
         glfwSetCursorPosCallback(windowID, MouseListener::cursorCallback);
         glfwSetMouseButtonCallback(windowID, MouseListener::mouseButtonCallback);
 
-        glfwSetFramebufferSizeCallback(windowID, Window::resized);
+        glfwSetFramebufferSizeCallback(windowID, this::resized);
 
 
 
@@ -185,9 +181,7 @@ public class Window {
     }
 
 
-    public void render() {
-        Renderer.getInstance().render(scene);
-    }
+    abstract public void render();
 
     protected void endFrame() {
         glViewport(0, 0, width, height);
@@ -209,7 +203,7 @@ public class Window {
         glClearDepth(1.0f);
     }
 
-    private void disposeAll() {
+    protected void disposeAll() {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(windowID);
         glfwDestroyWindow(windowID);

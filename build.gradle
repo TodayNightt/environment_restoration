@@ -88,7 +88,7 @@ dependencies {
 
 
 application {
-    mainClass = 'com.game.lwjgl.Main'
+    mainClass = 'com.game.Main'
 }
 
 

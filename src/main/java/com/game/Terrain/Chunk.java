@@ -1,7 +1,7 @@
 package com.game.Terrain;
 
-import com.game.Graphics.MeshFactory;
-import com.game.Graphics.Quad;
+import com.game.Graphics.Mesh.MeshFactory;
+import com.game.Graphics.Faces;
 import com.game.templates.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3i;
@@ -9,7 +9,7 @@ import org.joml.Vector3i;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import static com.game.Graphics.Quad.*;
+import static com.game.Graphics.Faces.*;
 import static com.game.Utils.TerrainContraints.*;
 import static com.game.Utils.MatrixCalc.createModelMatrix;
 import static com.game.Utils.MatrixCalc.rotationMatrix;
@@ -33,8 +33,7 @@ public class Chunk extends Thread{
     public Chunk(int x, int y, int z, int[] heightMap, TerrainMap parent) {
         init(x, y, z, heightMap, parent);
     }
-
-
+    
     public void init(int xx, int yy, int zz, int[] givenMap, TerrainMap parentMap) {
         this.position = new Vector3i(xx, yy, zz);
         this.parentMap = parentMap;
@@ -66,7 +65,7 @@ public class Chunk extends Thread{
 
     public void initializeBuffers() {
         evaluateNeighbour();
-        vertexBuffer = Quad.processQuad(blocks);
+        vertexBuffer = Faces.processQuad(blocks);
         indicesBuffer = IntBuffer.allocate((vertexBuffer.capacity() / 4) * 6);
         int index = 0;
         for (int i = 0; i < indicesBuffer.capacity(); i += 6) {
@@ -110,7 +109,7 @@ public class Chunk extends Thread{
 
     }
 
-    private boolean isNeighbourActive(Quad direction, int x, int y, int z) {
+    private boolean isNeighbourActive(Faces direction, int x, int y, int z) {
         switch (direction) {
             case TOP -> {
                 return y < CHUNK_HEIGHT && blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;

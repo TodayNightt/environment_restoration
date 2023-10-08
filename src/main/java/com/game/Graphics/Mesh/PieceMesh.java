@@ -3,18 +3,14 @@ package com.game.Graphics.Mesh;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.game.templates.Mesh;
-import com.game.Utils.Vec3i;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.Map;
 
 import static com.game.Utils.BitsUtils.*;
-import static com.game.Graphics.MeshFactory.createMesh;
+import static com.game.Graphics.Mesh.MeshFactory.createMesh;
 import static com.game.templates.Mesh.MeshType.PIECE;
-import static org.lwjgl.opengl.GL33.*;
 
 @JsonDeserialize(builder = PieceMesh.Builder.class)
 public class PieceMesh extends Mesh {

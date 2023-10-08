@@ -21,7 +21,6 @@ public abstract class Mesh {
     protected int numVertices;
 
 
-
     public void bindBuffer(IntBuffer positions, IntBuffer indices) {
         vao = glGenVertexArrays();
         glBindVertexArray(vao);

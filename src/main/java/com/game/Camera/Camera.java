@@ -1,10 +1,8 @@
 package com.game.Camera;
 
-import com.game.GameLogic.PieceManager;
-import com.game.Graphics.PieceCollection;
+import com.game.Window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector3i;
 
 import static com.game.Utils.MatrixCalc.rotationMatrix;
 
@@ -17,7 +15,6 @@ public class Camera {
 
     private float windowWidth;
     private float windowHeight;
-
 
     private float FOV, Z_NEAR, Z_FAR, aspectRatio, yaw, pan;
 
@@ -42,7 +39,7 @@ public class Camera {
     private void updatePerspective() {
         this.projectionMatrix.identity().setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
         this.projectionMatrix.invert(inverseProjectionMatrix);
-        this.orthoProjection.identity().ortho(0.f, windowWidth, windowHeight, 0.f, -1.f, 1.f);
+        this.orthoProjection.identity().ortho(0.f, windowWidth,windowHeight, 0.f, -1.f, 1.f);
     }
 
     public void setWindowSize(float width, float height) {
@@ -95,65 +92,37 @@ public class Camera {
         updateCamera();
     }
 
-    public void key(boolean[] keys) {
-        if (keys[0])
-            forward();
-        if (keys[1])
-            yawLeft();
-        if (keys[2])
-            backward();
-        if (keys[3])
-            yawRight();
-        if (keys[4])
-            up();
-        if (keys[5])
-            down();
-        if (keys[6])
-            panUp();
-        if (keys[7])
-            panDown();
-        if (keys[8])
-            addPiece(0);
-        if (keys[9])
-            addPiece(1);
-        if (keys[10])
-            addPiece(2);
-    }
 
-    public void addPiece(int index) {
-        PieceManager.addPiece(PieceCollection.getPieceType().get(index), (realPosition.x() + 3 * lookDir.x()), realPosition.y(), (realPosition.z() + 3 * lookDir.z()));
-    }
-
-    private void forward() {
+    public void forward() {
         Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f).negate();
         forward.y = 0f;
         position.add(forward);
         updateCamera();
     }
 
-    private void backward() {
+    public void backward() {
         Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f).negate();
         forward.y = 0f;
         position.sub(forward);
         updateCamera();
     }
 
-    private void yawLeft() {
+    public void yawLeft() {
         yaw -= 1.0f;
         updateCamera();
     }
 
-    private void yawRight() {
+    public void yawRight() {
         yaw += 1.0f;
         updateCamera();
     }
 
-    private void panDown() {
+    public void panDown() {
         pan -= .5f;
         updateCamera();
     }
 
-    private void panUp() {
+    public void panUp() {
         pan += .5f;
         updateCamera();
     }
@@ -171,5 +140,6 @@ public class Camera {
     public Vector3f getPosition() {
         return realPosition;
     }
+    public Vector3f getLookDir(){return lookDir;}
 
 }

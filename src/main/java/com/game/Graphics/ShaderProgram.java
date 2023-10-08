@@ -84,6 +84,7 @@ public class ShaderProgram {
     }
 
 
+
     public record ShaderData(String shaderSource, int shaderType) {
         public static ShaderData createShaderByFile(String filePath, int shaderType) {
             return new ShaderData(FileUtils.loadShaderFromResources(filePath), shaderType);

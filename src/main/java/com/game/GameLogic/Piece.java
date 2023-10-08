@@ -1,12 +1,16 @@
 package com.game.GameLogic;
 
+import com.game.Camera.Camera;
+import com.game.Graphics.ShaderProgram;
+import com.game.Graphics.UniformsMap;
 import com.game.Utils.MatrixCalc;
 import com.game.Graphics.PieceCollection;
 import com.game.Graphics.Mesh.PieceMesh;
+import com.game.templates.SceneItem;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public class Piece {
+public class Piece{
     private final PieceMesh mesh;
     private final Matrix4f modelMatrix;
     private final Vector3f position;
@@ -39,4 +43,5 @@ public class Piece {
     public Matrix4f getModelMatrix() {
         return modelMatrix;
     }
+
 }

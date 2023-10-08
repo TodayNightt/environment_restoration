@@ -18,6 +18,9 @@ public class QuadMesh extends Mesh {
         bindBuffer(positions, indices);
     }
 
+
+
+
     @Override
     public Vector3f getSize() {
         return null;

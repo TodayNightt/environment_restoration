@@ -5,7 +5,7 @@ import java.nio.IntBuffer;
 import static com.game.Utils.TerrainContraints.*;
 
 //https://github.com/TanTanDev/first_voxel_engine/blob/main/src/voxel_tools/mesh_builder.rs
-public enum Quad {
+public enum Faces {
     TOP, BOTTOM, FRONT, BACK, LEFT, RIGHT;
 
 
@@ -48,7 +48,7 @@ public enum Quad {
 
 
     //https://learnopengl.com/code_viewer.php?code=advanced/faceculling-exercise1
-    private static int[] getMeshFace(Quad direction, int x, int y, int z, int textureID) {
+    private static int[] getMeshFace(Faces direction, int x, int y, int z, int textureID) {
         /* a1    a2
            _______
            |     |  //Front
