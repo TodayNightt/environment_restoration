@@ -1,6 +1,5 @@
 package com.game;
 
-import com.game.Graphics.Gui.Button;
 import com.game.Graphics.Renderer;
 import com.game.Graphics.Scene;
 import com.game.Window.Window;
