@@ -6,15 +6,11 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 public abstract class Mesh {
-    public enum MeshType{
-        TERRAIN,QUAD,PIECE
+    public enum MeshType {
+        TERRAIN, QUAD, PIECE
     }
 
     protected int vao;
@@ -53,11 +49,11 @@ public abstract class Mesh {
         glBindVertexArray(0);
     }
 
-    public int getNumVertices(){
+    public int getNumVertices() {
         return numVertices;
     }
 
-    public int getVao(){
+    public int getVao() {
         return vao;
     }
 

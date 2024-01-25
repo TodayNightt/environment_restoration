@@ -1,22 +1,21 @@
 package com.game.Terrain;
 
 import com.game.Camera.Camera;
-import com.game.Graphics.Scene;
 import com.game.Graphics.ShaderProgram;
 import com.game.Graphics.TextureList;
 import com.game.Graphics.UniformsMap;
-import com.game.Terrain.Generation.NoiseMap;
-import com.game.Terrain.Generation.TextureGenerator;
 import com.game.Utils.WorkerManager;
+import com.game.templates.Mesh;
 import com.game.templates.SceneItem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 
-import static com.game.Graphics.Scene.*;
-import static com.game.Terrain.Generation.NoiseMap.createHeightMap;
-import static com.game.Utils.TerrainContraints.*;
+import static com.game.Graphics.Scene.createShaderProgram;
+import static com.game.Graphics.Scene.createUniformMap;
+import static com.game.Utils.TerrainContraints.CHUNK_SIZE;
+import static com.game.Utils.TerrainContraints.MAP_SIZE;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -24,8 +23,8 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 public class TerrainMap extends SceneItem {
 
-    private List<Chunk> chunkList;
-    private String textureName;
+    private final List<Chunk> chunkList;
+    private final String textureName;
     private int[] heightMap;
 
     private ShaderProgram shaderProgram;
@@ -37,12 +36,12 @@ public class TerrainMap extends SceneItem {
     }
 
     @Override
-    public void init(String id,String vertShader, String fragShader,String[] uniformList){
-        this.shaderProgram = createShaderProgram(vertShader,fragShader);
-        this.uniformsMap = createUniformMap(shaderProgram,uniformList);
+    public void init(String id, String vertShader, String fragShader, String[] uniformList) {
+        this.shaderProgram = createShaderProgram(vertShader, fragShader);
+        this.uniformsMap = createUniformMap(shaderProgram, uniformList);
     }
 
-    public void refresh(int[] heightMap){
+    public void refresh(int[] heightMap) {
         initChunks(heightMap);
     }
 
@@ -67,17 +66,14 @@ public class TerrainMap extends SceneItem {
     }
 
 
-
     // https://stackoverflow.com/questions/22131437/return-objects-from-arraylist
-    public Chunk getChunk(int x, int y, int z) {
-        for(Chunk chunk : chunkList){
-            if(chunk.isChunk(x,y,z)) return chunk;
-        }
-        return null;
+    public Optional<Chunk> getChunk(int x, int y, int z) {
+        return this.chunkList.stream().filter(chunk -> chunk.isChunk(x, y, z)).findFirst();
     }
 
     @Override
-    public void render(Camera cam){
+    public void render(Camera cam, boolean isWireFrame) {
+        glPolygonMode(GL_FRONT_AND_BACK, isWireFrame ? GL_LINE : GL_FILL);
         shaderProgram.bind();
         uniformsMap.setUniform("projectionMatrix", cam.getProjectionMatrix());
         uniformsMap.setUniform("viewMatrix", cam.getViewMatrix());
@@ -87,10 +83,11 @@ public class TerrainMap extends SceneItem {
         uniformsMap.setUniform("fValue", new float[]{
                 TerrainMap.getTextureRow()
         });
-        chunkList.stream().filter(chunk -> chunk.getMesh() != null).forEach(chunk -> {
+        chunkList.stream().filter(chunk -> chunk.getMesh().isPresent()).forEach(chunk -> {
             uniformsMap.setUniform("modelMatrix", chunk.getModelMatrix());
-            glBindVertexArray( chunk.getMesh().getVao());
-            glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
+            Mesh mesh = chunk.getMesh().get();
+            glBindVertexArray(mesh.getVao());
+            glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
         });
         glBindVertexArray(0);
         shaderProgram.unbind();

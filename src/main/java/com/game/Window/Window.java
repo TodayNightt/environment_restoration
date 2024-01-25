@@ -1,15 +1,12 @@
 package com.game.Window;
 
 import com.game.GameWindow;
-import com.game.Graphics.Renderer;
-import com.game.Graphics.Scene;
 import com.game.Window.EventListener.KeyListener;
 import com.game.Window.EventListener.MouseListener;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
 
@@ -38,7 +35,7 @@ abstract public class Window {
         window = this;
     }
 
-    public static void launch(Window app)  {
+    public static void launch(Window app) {
         long first = System.nanoTime();
         app.init();
         System.out.println((double) (System.nanoTime() - first) / 1_000_000_000);
@@ -47,7 +44,7 @@ abstract public class Window {
     }
 
     public static Window getInstance() {
-        if(window == null){
+        if (window == null) {
             window = new GameWindow();
         }
         return window;
@@ -74,7 +71,7 @@ abstract public class Window {
 
     abstract public void initComponent();
 
-    private void init(){
+    private void init() {
         initWindow();
         initComponent();
     }
@@ -111,7 +108,6 @@ abstract public class Window {
         glfwSetMouseButtonCallback(windowID, MouseListener::mouseButtonCallback);
 
         glfwSetFramebufferSizeCallback(windowID, this::resized);
-
 
 
         // Get the thread stack and push a new frame
@@ -159,14 +155,13 @@ abstract public class Window {
 
     }
 
-    protected void run(){
-        resized(windowID,width,height);
+    protected void run() {
+        resized(windowID, width, height);
 
-        while (!glfwWindowShouldClose(windowID)){
+        while (!glfwWindowShouldClose(windowID)) {
             runFrame();
         }
     }
-
 
 
     protected void runFrame() {
@@ -188,7 +183,7 @@ abstract public class Window {
         renderBuffer();
     }
 
-    protected void startFrame(){
+    protected void startFrame() {
         clearBuffer();
     }
 

@@ -2,13 +2,9 @@ package com.game.Graphics;
 
 import com.game.Camera.Camera;
 import com.game.GameLogic.PieceManager;
-import com.game.Graphics.Gui.GuiManager;
-import com.game.Graphics.Gui.Minimap;
-import com.game.Terrain.Generation.TextureGenerator;
 import com.game.Terrain.TerrainMap;
-import com.game.Window.EventListener.KeyListener;
-import com.game.Window.Window;
 import com.game.Utils.WorkerManager;
+import com.game.Window.EventListener.KeyListener;
 import com.game.templates.SceneItem;
 import org.joml.Vector3f;
 
@@ -17,7 +13,6 @@ import java.util.HashMap;
 import static com.game.Terrain.Generation.NoiseMap.createHeightMap;
 import static com.game.Utils.WorkerManager.stillWorking;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL33.*;
 
 
 public class Renderer {
@@ -37,13 +32,13 @@ public class Renderer {
         Camera cam = scene.getCamera();
         handleInput(KeyListener.getInstance().getPressed());
         HashMap<String, SceneItem> sceneItems = scene.getSceneItems();
-        if(stillWorking){
+        if (stillWorking) {
             WorkerManager.getInstance().run();
         }
-        sceneItems.forEach((key,value)-> value.render(cam));
+        sceneItems.forEach((key, value) -> value.render(cam, wireFrame));
 
 
-        glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
+//        glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
 
         //Terrain
 //        ShaderProgram shaderP = scene.getShaderProgram("terrain");
@@ -102,18 +97,18 @@ public class Renderer {
 //            shaderP.unbind();
 //        }
 
-        KeyListener.declicker(new int[]{GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L,GLFW_KEY_C});
+        KeyListener.declicker(new int[]{GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_C, GLFW_KEY_N});
     }
 
     public void wireFrame() {
         wireFrame = !wireFrame;
     }
 
-    public void handleInput(boolean[] pressed){
+    public void handleInput(boolean[] pressed) {
         PieceManager pieceManager = (PieceManager) scene.getSceneItems().get("piece");
-        TerrainMap terrainMap = (TerrainMap)scene.getSceneItems().get("terrain");
+        TerrainMap terrainMap = (TerrainMap) scene.getSceneItems().get("terrain");
         Camera cam = scene.getCamera();
-        Vector3f position =cam.getPosition();
+        Vector3f position = cam.getPosition();
         Vector3f lookDir = cam.getLookDir();
         if (pressed[0])
             cam.forward();
@@ -137,10 +132,13 @@ public class Renderer {
             pieceManager.addPiece(PieceCollection.getPieceType().get(1), (position.x() + 3 * lookDir.x()), position.y(), (position.z() + 3 * lookDir.z()));
         if (pressed[10])
             pieceManager.addPiece(PieceCollection.getPieceType().get(2), (position.x() + 3 * lookDir.x()), position.y(), (position.z() + 3 * lookDir.z()));
-        if(pressed[11]) {
+        if (pressed[11]) {
             int[] heightMap = createHeightMap();
             terrainMap.refresh(heightMap);
             scene.refreshMapTexture(heightMap);
+        }
+        if (pressed[12]) {
+            wireFrame();
         }
     }
 

@@ -1,6 +1,5 @@
 package com.game.Camera;
 
-import com.game.Window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -39,7 +38,7 @@ public class Camera {
     private void updatePerspective() {
         this.projectionMatrix.identity().setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
         this.projectionMatrix.invert(inverseProjectionMatrix);
-        this.orthoProjection.identity().ortho(0.f, windowWidth,windowHeight, 0.f, -1.f, 1.f);
+        this.orthoProjection.identity().ortho(0.f, windowWidth, windowHeight, 0.f, -1.f, 1.f);
     }
 
     public void setWindowSize(float width, float height) {
@@ -64,7 +63,7 @@ public class Camera {
         this.lookDir = new Vector3f(target).mulDirection(rotationX).mulDirection(rotationY);
         this.viewMatrix.identity().setLookAlong(lookDir, up).translate(position);
         this.viewMatrix.invert(inverseViewMatrix);
-        this.realPosition.set(inverseViewMatrix.m30(),inverseViewMatrix.m31(),  inverseViewMatrix.m32());
+        this.realPosition.set(inverseViewMatrix.m30(), inverseViewMatrix.m31(), inverseViewMatrix.m32());
     }
 
     public Matrix4f getOrthoProjection() {
@@ -73,12 +72,12 @@ public class Camera {
 
 
     public void up() {
-        position.y-=0.4f;
+        position.y -= 0.4f;
         updateCamera();
     }
 
     public void down() {
-        position.y+=0.4f;
+        position.y += 0.4f;
         updateCamera();
     }
 
@@ -140,6 +139,9 @@ public class Camera {
     public Vector3f getPosition() {
         return realPosition;
     }
-    public Vector3f getLookDir(){return lookDir;}
+
+    public Vector3f getLookDir() {
+        return lookDir;
+    }
 
 }

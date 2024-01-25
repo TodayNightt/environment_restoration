@@ -11,10 +11,10 @@ import static org.lwjgl.BufferUtils.createIntBuffer;
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.stb.STBImage.*;
 
-public class TextureList{
+public class TextureList {
     protected static TextureList instance;
 
-    private HashMap<String, Integer> textureList;
+    private final HashMap<String, Integer> textureList;
 
     public TextureList() {
         this.textureList = new HashMap<>();
@@ -58,12 +58,12 @@ public class TextureList{
 
 
     public void bind(String name) {
-        glBindTexture(GL_TEXTURE_2D, (Integer) textureList.get(name));
+        glBindTexture(GL_TEXTURE_2D, textureList.get(name));
     }
 
 
     public void cleanup() {
-        textureList.values().forEach(tex -> GL33.glDeleteTextures((Integer) tex));
+        textureList.values().forEach(GL33::glDeleteTextures);
     }
 
 

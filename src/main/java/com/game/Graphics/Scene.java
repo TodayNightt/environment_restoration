@@ -4,7 +4,6 @@ import com.game.Camera.Camera;
 import com.game.GameLogic.PieceManager;
 import com.game.Graphics.Gui.GuiManager;
 import com.game.Graphics.Gui.Minimap;
-import com.game.Terrain.Generation.NoiseMap;
 import com.game.Terrain.Generation.TextureGenerator;
 import com.game.Terrain.TerrainMap;
 import com.game.Window.Window;
@@ -12,21 +11,24 @@ import com.game.templates.SceneItem;
 import org.joml.Vector3f;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import static com.game.Terrain.Generation.NoiseMap.createHeightMap;
-import static com.game.Utils.TerrainContraints.*;
+import static com.game.Utils.TerrainContraints.CHUNK_SIZE;
+import static com.game.Utils.TerrainContraints.MAP_SIZE;
 import static org.lwjgl.opengl.GL33.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL33.GL_VERTEX_SHADER;
 
-public class Scene{
+public class Scene {
 
-    public enum SceneType{
+    public enum SceneType {
         ITEM,
         GUI
     }
 
-    protected HashMap<String,SceneItem>sceneItems;
+    protected HashMap<String, SceneItem> sceneItems;
     protected Camera cam;
     protected GuiManager guiScene;
 
@@ -54,35 +56,35 @@ public class Scene{
     }
 
     protected void initGui() {
-       guiScene = new GuiManager();
-        guiScene.init("minimap","shaders/minimap.vert","shaders/minimap.frag",new String[]{"projectionMatrix", "viewPort","tex"});
-        guiScene.addItem("minimap",Minimap.create(16, 1, 3));
-        sceneItems.put("gui",guiScene);
+        guiScene = new GuiManager();
+        guiScene.init("minimap", "shaders/minimap.vert", "shaders/minimap.frag", new String[]{"projectionMatrix", "viewPort", "tex"});
+        guiScene.addItem("minimap", Minimap.create(16, 1, 3));
+        sceneItems.put("gui", guiScene);
     }
 
-    public void initializeTerrain(String vertShader,String fragShader,String[]uniformList) {
+    public void initializeTerrain(String vertShader, String fragShader, String[] uniformList) {
         TerrainMap terrainMap = new TerrainMap("block_atlas");
-        terrainMap.init("terrain",vertShader,fragShader,uniformList);
+        terrainMap.init("terrain", vertShader, fragShader, uniformList);
         int[] heightMap = createHeightMap();
         terrainMap.refresh(heightMap);
         refreshMapTexture(heightMap);
-        this.sceneItems.put("terrain",terrainMap);
+        this.sceneItems.put("terrain", terrainMap);
     }
 
     protected void initializePiece() {
         PieceManager pieceManager = new PieceManager();
-        pieceManager.init("piece","shaders/piece.vert", "shaders/piece.frag",new String[]{"projectionMatrix", "viewMatrix", "modelMatrix", "size"});
-        this.sceneItems.put("piece",pieceManager);
+        pieceManager.init("piece", "shaders/piece.vert", "shaders/piece.frag", new String[]{"projectionMatrix", "viewMatrix", "modelMatrix", "size"});
+        this.sceneItems.put("piece", pieceManager);
         PieceCollection.init();
     }
 
     public void cleanup() {
         TextureList.getInstance().cleanup();
-        sceneItems.forEach((key,value)->value.cleanup());
+        sceneItems.forEach((key, value) -> value.cleanup());
     }
 
-    public void refreshMapTexture(int [] heightMap){
-        createTexture("minimap",TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE));
+    public void refreshMapTexture(int[] heightMap) {
+        createTexture("minimap", TextureGenerator.createColoredMap(heightMap, MAP_SIZE * CHUNK_SIZE));
     }
 
     public void createTexture(String name, ByteBuffer buffer) {
@@ -105,10 +107,10 @@ public class Scene{
     }
 
     public static UniformsMap createUniformMap(ShaderProgram program, String[] attributes) {
-        return new UniformsMap(program.getProgramId(),attributes);
+        return new UniformsMap(program.getProgramId(), attributes);
     }
 
-    public GuiManager guiManager(){
+    public GuiManager guiManager() {
         return guiScene;
     }
 }

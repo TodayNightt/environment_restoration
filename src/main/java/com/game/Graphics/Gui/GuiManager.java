@@ -50,9 +50,10 @@ public class GuiManager extends SceneItem {
     }
 
     @Override
-    public void render(Camera cam) {
+    public void render(Camera cam,boolean isWireFrame) {
             ShaderProgram shaderP = shaderPrograms.get("minimap");
             shaderP.bind();
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             UniformsMap miniMapUniforms = uniformsMaps.get("minimap");
             miniMapUniforms.setUniform("projectionMatrix", cam.getOrthoProjection());
             miniMapUniforms.setUniform("viewPort", Window.getWidth(), Window.getHeight());
@@ -63,6 +64,7 @@ public class GuiManager extends SceneItem {
             glBindVertexArray(quad.getMesh().getVao());
             glDrawElements(GL_TRIANGLES, quad.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
             shaderP.unbind();
+
     }
 
     @Override

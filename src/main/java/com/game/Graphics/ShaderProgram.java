@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL33.*;
 public class ShaderProgram {
 
 
-    protected int programId;
+    protected final int programId;
 
     protected List<Integer> shaderModules;
 
@@ -22,7 +22,7 @@ public class ShaderProgram {
             throw new RuntimeException("Could not create Shader");
         }
         shaderModules = new ArrayList<>();
-        shaderDataList.forEach(s->shaderModules.add(createShader(s.shaderSource(),s.shaderType())));
+        shaderDataList.forEach(s -> shaderModules.add(createShader(s.shaderSource(), s.shaderType())));
         link(shaderModules);
 
     }
@@ -54,7 +54,7 @@ public class ShaderProgram {
         }
 
         shaderModules.forEach(s -> {
-            glDetachShader(programId,  s);
+            glDetachShader(programId, s);
             glDeleteShader(s);
         });
     }
@@ -74,15 +74,13 @@ public class ShaderProgram {
     }
 
 
-
     public void cleanup() {
         unbind();
         shaderModules.forEach(s -> glDetachShader(programId, s));
-        if ( programId != 0) {
-            glDeleteProgram( programId);
+        if (programId != 0) {
+            glDeleteProgram(programId);
         }
     }
-
 
 
     public record ShaderData(String shaderSource, int shaderType) {

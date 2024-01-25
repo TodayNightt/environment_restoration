@@ -5,6 +5,7 @@ import org.joml.Matrix4f;
 import static org.joml.Math.cos;
 import static org.joml.Math.sin;
 
+@SuppressWarnings("ALL")
 public final class MatrixCalc {
     public static Matrix4f createModelMatrix(Matrix4f rotationX, Matrix4f rotationY, Matrix4f rotationZ,
                                              Matrix4f translation, Matrix4f scale) {

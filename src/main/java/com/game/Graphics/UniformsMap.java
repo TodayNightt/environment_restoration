@@ -12,22 +12,22 @@ import static org.lwjgl.opengl.GL33.*;
 
 public class UniformsMap {
 
-    private int programId;
+    private final int programId;
 
-    private Map<String,Integer> uniforms;
+    private final Map<String, Integer> uniforms;
 
 
-    public UniformsMap(int programId,String[] attributes) {
+    public UniformsMap(int programId, String[] attributes) {
         this.programId = programId;
         uniforms = new HashMap<>();
-        for(String attribute : attributes){
+        for (String attribute : attributes) {
             createUniform(attribute);
         }
     }
 
 
     protected int getUniformLocation(String uniformName) {
-        Integer location =  uniforms.get(uniformName);
+        Integer location = uniforms.get(uniformName);
         if (location == null) {
             throw new RuntimeException(String.format("Could not find uniform [%s]", uniformName));
         }
@@ -50,17 +50,14 @@ public class UniformsMap {
         glUniform1i(getUniformLocation(name), value);
     }
 
-    public void setUniformU(String name,int value){
-        glUniform1ui(getUniformLocation(name),value);
+    public void setUniformU(String name, int value) {
+        glUniform1ui(getUniformLocation(name), value);
     }
-
-
 
 
     public void setUniform(String name, float value) {
         glUniform1f(getUniformLocation(name), value);
     }
-
 
 
     public void setUniform(String name, float value1, float value2) {

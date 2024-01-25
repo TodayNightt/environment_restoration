@@ -1,30 +1,32 @@
 package com.game.Terrain;
 
-import com.game.Graphics.Mesh.MeshFactory;
 import com.game.Graphics.Faces;
+import com.game.Graphics.Mesh.MeshFactory;
 import com.game.templates.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3i;
 
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static com.game.Graphics.Faces.*;
-import static com.game.Utils.TerrainContraints.*;
 import static com.game.Utils.MatrixCalc.createModelMatrix;
 import static com.game.Utils.MatrixCalc.rotationMatrix;
+import static com.game.Utils.TerrainContraints.*;
 import static com.game.templates.Mesh.MeshType.TERRAIN;
 
-public class Chunk extends Thread{
+public class Chunk extends Thread {
 
     private int[] blocks;
     private Vector3i position;
-    private Mesh mesh;
+    private Optional<Mesh> mesh;
     private Matrix4f modelMatrix;
     private TerrainMap parentMap;
-    private IntBuffer vertexBuffer,indicesBuffer;
+    private IntBuffer vertexBuffer, indicesBuffer;
+
     @Override
-    public void run(){
+    public void run() {
 //        System.out.println("Starting thread for " + this);
         initializeBuffers();
 //        System.out.println("Ending thread for " + this);
@@ -33,11 +35,11 @@ public class Chunk extends Thread{
     public Chunk(int x, int y, int z, int[] heightMap, TerrainMap parent) {
         init(x, y, z, heightMap, parent);
     }
-    
+
     public void init(int xx, int yy, int zz, int[] givenMap, TerrainMap parentMap) {
         this.position = new Vector3i(xx, yy, zz);
         this.parentMap = parentMap;
-        this.blocks = new int[CHUNK_SQR * CHUNK_HEIGHT];
+        this.blocks = new int[CHUNK_SQR * CHUNK_HEIGHT + (CHUNK_SQR)];
         Arrays.fill(this.blocks, 0);
 
         // https://stackoverflow.com/questions/38204579/flatten-3d-array-to-1d-array
@@ -53,6 +55,10 @@ public class Chunk extends Thread{
                 }
             }
         }
+
+//        System.out.println("0s" + Arrays.stream(this.blocks).filter(block -> block == 0).count());
+//        System.out.println("1s" + Arrays.stream(this.blocks).filter(block -> block != 0).count());
+
         this.modelMatrix = createModelMatrix(
                 rotationMatrix(0.0f, (byte) 1),
                 rotationMatrix(0.0f, (byte) 2),
@@ -75,10 +81,9 @@ public class Chunk extends Thread{
 
     }
 
-    public void generateMesh(){
-        mesh = MeshFactory.createMesh(TERRAIN,vertexBuffer,indicesBuffer);
+    public void generateMesh() {
+        mesh = Optional.of(MeshFactory.createMesh(TERRAIN, vertexBuffer, indicesBuffer));
     }
-
 
 
     /*
@@ -87,6 +92,7 @@ public class Chunk extends Thread{
     TODO : Let player cannot go through the floor
     TODO : Make holes algorithm
     TODO : Block lighting
+    TODO : Which even zero or non-zero case are smaller, use that to calculate the meshes
     */
     public void evaluateNeighbour() {
         for (int y = 0; y < CHUNK_HEIGHT; y++) {
@@ -110,37 +116,50 @@ public class Chunk extends Thread{
     }
 
     private boolean isNeighbourActive(Faces direction, int x, int y, int z) {
+        Optional<Chunk> neighbour;
         switch (direction) {
-            case TOP -> {
-                return y < CHUNK_HEIGHT && blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
-            }
-            case BOTTOM -> {
+            case TOP:
+                return y <= CHUNK_HEIGHT && blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
+            case BOTTOM:
                 return y >= 0 && blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
-            }
-            case LEFT -> {
-                return x >= 0
-                        ? blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0
-                        : position.x() > 0 && parentMap.getChunk(position.x() - 1, position.y(), position.z()).getCubeData(CHUNK_SIZE - 1, y, z) != 0;
-            }
-            case RIGHT -> {
-                return x < CHUNK_SIZE - 1
-                        ? blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0
-                        : position.x() < parentMap.getSize() - 1 && parentMap.getChunk(position.x() + 1, position.y(), position.z()).getCubeData(0, y, z) != 0;
-            }
-            case FRONT -> {
-                return z < CHUNK_SIZE - 1
-                        ? blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0
-                        : position.z() < parentMap.getSize() - 1 && parentMap.getChunk(position.x(), position.y(), position.z() + 1).getCubeData(x, y, 0) != 0;
-            }
-            case BACK -> {
-                return z >= 0
-                        ? blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0
-                        : position.z() > 0 && parentMap.getChunk(position.x(), position.y(), position.z() - 1)
-                        .getCubeData(x, y, (CHUNK_SIZE - 1)) != 0;
-            }
-            default -> {
+            case LEFT:
+                if (x >= 0) {
+                    return blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
+                }
+
+                neighbour = parentMap.getChunk(position.x() - 1, position.y(), position.z());
+
+                return neighbour.filter(chunk -> chunk.getCubeData(CHUNK_SIZE - 1, y, z) != 0).isPresent();
+
+            case RIGHT:
+                if (x < CHUNK_SIZE - 1) {
+                    return blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
+                }
+
+                neighbour = parentMap.getChunk(position.x() + 1, position.y(), position.z());
+
+                return neighbour.filter(chunk -> chunk.getCubeData(0, y, z) != 0).isPresent();
+            case FRONT:
+                if (z < CHUNK_SIZE - 1) {
+                    return blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
+                }
+
+                neighbour = parentMap.getChunk(position.x(), position.y(), position.z() + 1);
+
+                return neighbour.filter(chunk -> chunk.getCubeData(x, y, 0) != 0).isPresent();
+
+
+            case BACK:
+                if (z >= 0) {
+                    return blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
+                }
+
+                neighbour = parentMap.getChunk(position.x(), position.y(), position.z() - 1);
+
+                return neighbour.filter(chunk -> chunk.getCubeData(x, y, (CHUNK_SIZE - 1)) != 0).isPresent();
+
+            default:
                 return false;
-            }
         }
 
     }
@@ -163,7 +182,7 @@ public class Chunk extends Thread{
     }
 
     public void cleanup() {
-        mesh.cleanup();
+        mesh.ifPresent(Mesh::cleanup);
     }
 
     //Getter
@@ -171,7 +190,7 @@ public class Chunk extends Thread{
         return modelMatrix;
     }
 
-    public Mesh getMesh() {
+    public Optional<Mesh> getMesh() {
         return mesh;
     }
 
@@ -181,7 +200,7 @@ public class Chunk extends Thread{
 
 
     @Override
-    public String toString(){
-        return getClass().getSimpleName() + " " + position.x() +" "+ position.y() +" "+ position.z();
+    public String toString() {
+        return getClass().getSimpleName() + " " + position.x() + " " + position.y() + " " + position.z();
     }
 }

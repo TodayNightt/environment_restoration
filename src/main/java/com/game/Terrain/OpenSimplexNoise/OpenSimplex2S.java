@@ -8,6 +8,7 @@ package com.game.Terrain.OpenSimplexNoise;
  * https://gist.github.com/KdotJPG/b1270127455a94ac5d19
  */
 
+@SuppressWarnings("ALL")
 public class OpenSimplex2S {
 
     private static final long PRIME_X = 0x5205402B9270C86FL;

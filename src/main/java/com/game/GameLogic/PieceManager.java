@@ -18,7 +18,7 @@ public class PieceManager extends SceneItem {
 
     private ShaderProgram shaderProgram;
     private UniformsMap uniformsMap;
-    private List<Piece> pieceList;
+    private final List<Piece> pieceList;
     private final int count = 0;
 
     public PieceManager() {
@@ -34,7 +34,8 @@ public class PieceManager extends SceneItem {
     }
 
     @Override
-    public void render(Camera cam) {
+    public void render(Camera cam, boolean isWireFrame) {
+        glPolygonMode(GL_FRONT_AND_BACK, isWireFrame ? GL_LINE : GL_FILL);
         shaderProgram.bind();
         uniformsMap.setUniform("projectionMatrix", cam.getProjectionMatrix());
         uniformsMap.setUniform("viewMatrix", cam.getViewMatrix());
@@ -42,7 +43,7 @@ public class PieceManager extends SceneItem {
             uniformsMap.setUniform("modelMatrix", piece.getModelMatrix());
             uniformsMap.setUniform("size", piece.getMesh().getSize());
             glBindVertexArray(piece.getMesh().getVao());
-            glDrawElements(GL_TRIANGLES,piece.getMesh().getNumVertices(),GL_UNSIGNED_INT,0);
+            glDrawElements(GL_TRIANGLES, piece.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
             piece.rotatePiece(MatrixCalc.rotationMatrix(0.5f, (byte) 2));
             piece.rotatePiece(MatrixCalc.rotationMatrix(0.3f, (byte) 1));
         });
@@ -51,9 +52,9 @@ public class PieceManager extends SceneItem {
     }
 
     @Override
-    public void init(String id,String vertShader, String fragShader, String[] uniformList) {
-        this.shaderProgram = createShaderProgram(vertShader,fragShader);
-        this.uniformsMap = createUniformMap(shaderProgram,uniformList);
+    public void init(String id, String vertShader, String fragShader, String[] uniformList) {
+        this.shaderProgram = createShaderProgram(vertShader, fragShader);
+        this.uniformsMap = createUniformMap(shaderProgram, uniformList);
     }
 
     @Override
