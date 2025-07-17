@@ -46,8 +46,8 @@ public class Scene {
 
     protected void initCam() {
         cam = new Camera();
-        cam.setCamera(new Vector3f(-150.0f, -40.0f, -150.0f), new Vector3f(0.0f, 0.0f, -1.0f),
-                new Vector3f(0.0f, 1.0f, 0.0f), 0.0f);
+        cam.setCamera(new Vector3f(-246.0f, -110.0f, -350.0f), new Vector3f(0.0f, 0.0f, -1.0f),
+                new Vector3f(0.0f, 1.0f, 0.0f), -23.0f, 30.f);
         cam.setPerspective(60.f, Window.getWidth() / Window.getHeight(), 0.1f, 1000.0f);
     }
 
@@ -57,7 +57,8 @@ public class Scene {
 
     protected void initGui() {
         guiScene = new GuiManager();
-        guiScene.init("minimap", "shaders/minimap.vert", "shaders/minimap.frag", new String[]{"projectionMatrix", "viewPort", "tex"});
+        guiScene.init("minimap", "shaders/minimap.vert", "shaders/minimap.frag",
+                new String[] { "projectionMatrix", "viewPort", "tex" });
         guiScene.addItem("minimap", Minimap.create(16, 1, 3));
         sceneItems.put("gui", guiScene);
     }
@@ -73,7 +74,8 @@ public class Scene {
 
     protected void initializePiece() {
         PieceManager pieceManager = new PieceManager();
-        pieceManager.init("piece", "shaders/piece.vert", "shaders/piece.frag", new String[]{"projectionMatrix", "viewMatrix", "modelMatrix", "size"});
+        pieceManager.init("piece", "shaders/piece.vert", "shaders/piece.frag",
+                new String[] { "projectionMatrix", "viewMatrix", "modelMatrix", "size" });
         this.sceneItems.put("piece", pieceManager);
         PieceCollection.init();
     }

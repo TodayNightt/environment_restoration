@@ -8,6 +8,7 @@ import java.util.Arrays;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.*;
 
+@SuppressWarnings({ "unused" })
 public class BitsUtils {
 
     public static int[] floatsToBits(float[] array) {
@@ -15,7 +16,8 @@ public class BitsUtils {
         for (int i = 0; i < array.length; i++) {
             float value = array[i];
             String[] valueComponent = Float.toString(value).split("\\.");
-            arr[i] = (isNegative(value) ? 0x80 : 0x00) | abs(parseInt(valueComponent[0])) << 4 | parseInt(valueComponent[1]);
+            arr[i] = (isNegative(value) ? 0x80 : 0x00) | abs(parseInt(valueComponent[0])) << 4
+                    | parseInt(valueComponent[1]);
         }
         return arr;
     }
@@ -48,7 +50,8 @@ public class BitsUtils {
     public static IntBuffer fiveFloatsToOneInt(float[] array) {
         IntBuffer buffer = IntBuffer.allocate(array.length / 5);
         for (int i = 0; i < array.length; i += 5) {
-            buffer.put(floatToBits(array[i]) << 18 | floatToBits(array[i + 1]) << 10 | floatToBits(array[i + 2]) << 2 | (int) array[i + 3] << 1 | (int) array[i + 4]);
+            buffer.put(floatToBits(array[i]) << 18 | floatToBits(array[i + 1]) << 10 | floatToBits(array[i + 2]) << 2
+                    | (int) array[i + 3] << 1 | (int) array[i + 4]);
         }
         return buffer;
     }
@@ -60,29 +63,28 @@ public class BitsUtils {
                 -1.0f, -0.5f, 0f, 0f, 1.0f, -1.0f, -0.5f, 0f, 1f
         };
 
-        float[] value = {0.5f, 0.7f, 0f, 1f, 1f};
+        float[] value = { 0.5f, 0.7f, 0f, 1f, 1f };
 
+        //
+        // System.out.println(Arrays.toString(values));
+        // int[] valueInt = floatsToBits(values);
+        // System.out.println(Arrays.toString(valueInt));
+        // String [] valueStr = intToBinary(valueInt);
+        // System.out.println(Arrays.toString(valueStr));
+        // int[] valueBuffer = fiveFloatsToOneInt(values).array();
+        // System.out.println(Arrays.toString(valueBuffer));
 
-//
-//        System.out.println(Arrays.toString(values));
-//        int[] valueInt = floatsToBits(values);
-//        System.out.println(Arrays.toString(valueInt));
-//        String [] valueStr = intToBinary(valueInt);
-//        System.out.println(Arrays.toString(valueStr));
-//        int[] valueBuffer = fiveFloatsToOneInt(values).array();
-//        System.out.println(Arrays.toString(valueBuffer));
-
-//        double[] values = {4, 77, 234, 4563, 13467, 635789};
-//        for(int i = 0; i < values.length; i++)
-//        {
-//            double tenthPower = floor(log10(values[i]));
-//            double place = Math.pow(10, tenthPower);
-//            System.out.println(place);
-//        }
-//
-//        float[] values = {
-//                -1.15f,1.5f,0.5f,1f,0f
-//        };
+        // double[] values = {4, 77, 234, 4563, 13467, 635789};
+        // for(int i = 0; i < values.length; i++)
+        // {
+        // double tenthPower = floor(log10(values[i]));
+        // double place = Math.pow(10, tenthPower);
+        // System.out.println(place);
+        // }
+        //
+        // float[] values = {
+        // -1.15f,1.5f,0.5f,1f,0f
+        // };
 
         System.out.println(Arrays.toString(values));
 

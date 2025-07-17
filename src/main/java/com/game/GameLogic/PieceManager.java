@@ -14,6 +14,7 @@ import static com.game.Graphics.Scene.createUniformMap;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
+@SuppressWarnings({ "unused" })
 public class PieceManager extends SceneItem {
 
     private ShaderProgram shaderProgram;

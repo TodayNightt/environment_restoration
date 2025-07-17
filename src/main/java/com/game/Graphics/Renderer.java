@@ -14,7 +14,6 @@ import static com.game.Terrain.Generation.NoiseMap.createHeightMap;
 import static com.game.Utils.WorkerManager.stillWorking;
 import static org.lwjgl.glfw.GLFW.*;
 
-
 public class Renderer {
 
     private Scene scene;
@@ -37,67 +36,7 @@ public class Renderer {
         }
         sceneItems.forEach((key, value) -> value.render(cam, wireFrame));
 
-
-//        glPolygonMode(GL_FRONT_AND_BACK, wireFrame ? GL_LINE : GL_FILL);
-
-        //Terrain
-//        ShaderProgram shaderP = scene.getShaderProgram("terrain");
-//        shaderProgram.bind();
-//        UniformsMap terrainUniforms = scene.getUniformMap("terrain");
-//        terrainUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
-//        terrainUniforms.setUniform("viewMatrix", cam.getViewMatrix());
-//        terrainUniforms.setUniform("tex", 0);
-//        TerrainMap map = scene.getTerrain();
-//        glActiveTexture(GL_TEXTURE0);
-//        TextureList.getInstance().bind(map.getTextureName());
-//        terrainUniforms.setUniform("fValue", new float[]{
-//                TerrainMap.getTextureRow()
-//        });
-//        map.getMap().stream().filter(chunk -> chunk.getMesh() != null).forEach(chunk -> {
-//            terrainUniforms.setUniform("modelMatrix", chunk.getModelMatrix());
-//            glBindVertexArray( chunk.getMesh().getVao());
-//            glDrawElements(GL_TRIANGLES, chunk.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
-//        });
-//        glBindVertexArray(0);
-//        shaderProgram.unbind();
-
-//        //Piece
-//        ShaderProgram shaderP = scene.getShaderProgram("piece");
-//        shaderP.bind();
-//        UniformsMap pieceUniforms = scene.getUniformMap("piece");
-//        pieceUniforms.setUniform("projectionMatrix", cam.getProjectionMatrix());
-//        pieceUniforms.setUniform("viewMatrix", cam.getViewMatrix());
-//        PieceManager.getPieceList().forEach(piece -> {
-//            pieceUniforms.setUniform("modelMatrix", piece.getModelMatrix());
-//            pieceUniforms.setUniform("size", piece.getMesh().getSize());
-//            glBindVertexArray(piece.getMesh().getVao());
-//            glDrawElements(GL_TRIANGLES,piece.getMesh().getNumVertices(),GL_UNSIGNED_INT,0);
-//            piece.rotatePiece(MatrixCalc.rotationMatrix(0.5f, (byte) 2));
-//            piece.rotatePiece(MatrixCalc.rotationMatrix(0.3f, (byte) 1));
-//        });
-//        glBindVertexArray(0);
-//        shaderP.unbind();
-//
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-//        //GUI
-//        GuiManager gui = scene.guiManager();
-//        if(gui.getMiniMap().getMesh() != null) {
-//           ShaderProgram shaderP = gui.getShaderP("minimap");
-//            shaderP.bind();
-//            UniformsMap miniMapUniforms = gui.getUniformMap("minimap");
-//            miniMapUniforms.setUniform("projectionMatrix", cam.getOrthoProjection());
-//            miniMapUniforms.setUniform("viewPort", Window.getWidth(), Window.getHeight());
-//            miniMapUniforms.setUniform("tex", 1);
-//            glActiveTexture(GL_TEXTURE1);
-//            TextureList.getInstance().bind("minimap");
-//            Minimap quad = gui.getMiniMap();
-//            glBindVertexArray(quad.getMesh().getVao());
-//            glDrawElements(GL_TRIANGLES, quad.getMesh().getNumVertices(), GL_UNSIGNED_INT, 0);
-//            shaderP.unbind();
-//        }
-
-        KeyListener.declicker(new int[]{GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_C, GLFW_KEY_N});
+        KeyListener.declicker(new int[] { GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L, GLFW_KEY_C, GLFW_KEY_N });
     }
 
     public void wireFrame() {
@@ -127,11 +66,14 @@ public class Renderer {
         if (pressed[7])
             cam.panDown();
         if (pressed[8])
-            pieceManager.addPiece(PieceCollection.getPieceType().get(0), (position.x() + 3 * lookDir.x()), position.y(), (position.z() + 3 * lookDir.z()));
+            pieceManager.addPiece(PieceCollection.getPieceType().get(0), (position.x() + 3 * lookDir.x()), position.y(),
+                    (position.z() + 3 * lookDir.z()));
         if (pressed[9])
-            pieceManager.addPiece(PieceCollection.getPieceType().get(1), (position.x() + 3 * lookDir.x()), position.y(), (position.z() + 3 * lookDir.z()));
+            pieceManager.addPiece(PieceCollection.getPieceType().get(1), (position.x() + 3 * lookDir.x()), position.y(),
+                    (position.z() + 3 * lookDir.z()));
         if (pressed[10])
-            pieceManager.addPiece(PieceCollection.getPieceType().get(2), (position.x() + 3 * lookDir.x()), position.y(), (position.z() + 3 * lookDir.z()));
+            pieceManager.addPiece(PieceCollection.getPieceType().get(2), (position.x() + 3 * lookDir.x()), position.y(),
+                    (position.z() + 3 * lookDir.z()));
         if (pressed[11]) {
             int[] heightMap = createHeightMap();
             terrainMap.refresh(heightMap);

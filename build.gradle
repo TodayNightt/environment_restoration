@@ -1,5 +1,6 @@
 plugins {
     id 'application'
+    id 'java'
 }
 
 
@@ -13,9 +14,6 @@ java {
 
 repositories {
     mavenCentral()
-//    gradlePluginPortal()
-//    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-//    google()
 }
 
 project.ext.lwjglVersion = "3.3.2"
@@ -41,7 +39,7 @@ dependencies {
 
     implementation "org.lwjgl:lwjgl"
     implementation "org.lwjgl:lwjgl-glfw"
-   implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-opengl"
     implementation "org.lwjgl:lwjgl-stb"
     implementation "org.joml:joml:${jomlVersion}"
 
@@ -55,18 +53,17 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
-
-
-//    implementation 'org.wisepersist:gwt-gradle-plugin:1.1.16'
-
-
 }
 
+distributions {
+    main {
+        distributionBaseName = 'environment-restoration'
+    }
+}
 
 application {
     mainClass = 'com.game.Main'
 }
-
 
 run {
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {

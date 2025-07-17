@@ -19,3 +19,9 @@ slide
 /src/main/java/com/game/Utils/Vec3f.java
 /src/main/java/com/game/Utils/Vec3i.java
 /src/main/java/com/game/Utils/Mat4f.java
+.project
+
+**/jdk-17.0.8
+
+.settings
+.vscode

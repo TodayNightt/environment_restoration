@@ -2,6 +2,7 @@ package com.game.Window.EventListener;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+@SuppressWarnings({ "unused" })
 public class MouseListener {
     private static MouseListener mouseListener;
     private float posX, posY, lastX, lastY;
@@ -15,16 +16,9 @@ public class MouseListener {
         this.lastY = 0.0f;
     }
 
-//    public static float getOrthoX() {
-//        getX()
-//    }
-//
-//    public static float getOrthoY() {
-//
-//    }
-
     /**
-     * Get the cursor position from glfw cursorCallback, then convert the coordinates to Normalized Device Coordinates(NDC)
+     * Get the cursor position from glfw cursorCallback, then convert the
+     * coordinates to Normalized Device Coordinates(NDC)
      **/
     public static void cursorCallback(long window, double xPos, double yPos) {
         getInstance().lastX = getInstance().posX;
@@ -33,23 +27,13 @@ public class MouseListener {
         getInstance().posY = (float) yPos;
     }
 
-
-    public static void mouseButtonCallback(long window, int button , int action,int mod) {
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+    public static void mouseButtonCallback(long window, int button, int action, int mod) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             getInstance().mouseJustPressed = true;
         }
     }
 
-//    public static float getOrthoX() {
-//        getInstance().posX = ((float) xPos / com.game.Window.getWidth()) * 2.0f - 1.0f;
-//
-//    }
-//
-//    public static float getOrthoY() {
-//        getInstance().posY = ((float) yPos / com.game.Window.getHeight()) * 2.0f - 1.0f;
-//    }
-
-    public static void resetMouse(){
+    public static void resetMouse() {
         getInstance().mouseJustPressed = false;
     }
 
@@ -61,9 +45,10 @@ public class MouseListener {
         return getInstance().posY;
     }
 
-    public static boolean getMouseJustPressed(){
+    public static boolean getMouseJustPressed() {
         return getInstance().mouseJustPressed;
     }
+
     public static MouseListener getInstance() {
         if (mouseListener == null) {
             mouseListener = new MouseListener();
