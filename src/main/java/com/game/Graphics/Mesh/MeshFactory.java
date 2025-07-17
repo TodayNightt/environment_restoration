@@ -1,10 +1,7 @@
 package com.game.Graphics.Mesh;
 
-import com.game.Graphics.Mesh.TerrainMesh;
-import com.game.Graphics.Mesh.PieceMesh;
 import com.game.templates.Mesh;
 import com.game.templates.Mesh.MeshType;
-import com.game.Graphics.Mesh.QuadMesh;
 
 import java.nio.IntBuffer;
 
@@ -20,14 +17,14 @@ public class MeshFactory {
         };
     }
 
-    public static Mesh createQuadMesh(int posX,int posY,int size){
-        int[] positions = new int[]{
+    public static Mesh createQuadMesh(int posX, int posY, int size) {
+        int[] positions = new int[] {
                 posX << 7 | posY << 2,
                 (posX + size) << 7 | posY << 2 | 1,
                 posX << 7 | (posY + size) << 2 | 2,
                 (posX + size) << 7 | (posY + size) << 2 | 3
         };
         IntBuffer vertexBuffer = IntBuffer.wrap(positions);
-        return createMesh(QUAD,vertexBuffer,null);
+        return createMesh(QUAD, vertexBuffer, null);
     }
 }

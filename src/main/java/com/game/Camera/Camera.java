@@ -49,11 +49,12 @@ public class Camera {
     }
 
     // com.game.Camera
-    public void setCamera(Vector3f pos, Vector3f target, Vector3f up, float yaw) {
+    public void setCamera(Vector3f pos, Vector3f target, Vector3f up, float yaw, float pan) {
         this.position = pos;
         this.target = target;
         this.up = up;
         this.yaw = yaw;
+        this.pan = pan;
         updateCamera();
     }
 
@@ -69,7 +70,6 @@ public class Camera {
     public Matrix4f getOrthoProjection() {
         return orthoProjection;
     }
-
 
     public void up() {
         position.y -= 0.4f;
@@ -90,7 +90,6 @@ public class Camera {
         position.x -= 0.1f;
         updateCamera();
     }
-
 
     public void forward() {
         Vector3f forward = new Vector3f(lookDir).normalize().mul(0.4f).negate();
@@ -130,11 +129,9 @@ public class Camera {
         return projectionMatrix;
     }
 
-
     public Matrix4f getViewMatrix() {
         return this.viewMatrix;
     }
-
 
     public Vector3f getPosition() {
         return realPosition;

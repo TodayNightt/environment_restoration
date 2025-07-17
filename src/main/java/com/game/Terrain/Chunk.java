@@ -27,9 +27,9 @@ public class Chunk extends Thread {
 
     @Override
     public void run() {
-//        System.out.println("Starting thread for " + this);
+        // System.out.println("Starting thread for " + this);
         initializeBuffers();
-//        System.out.println("Ending thread for " + this);
+        // System.out.println("Ending thread for " + this);
     }
 
     public Chunk(int x, int y, int z, int[] heightMap, TerrainMap parent) {
@@ -46,18 +46,18 @@ public class Chunk extends Thread {
         for (int y = 0; y < CHUNK_HEIGHT; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 for (int x = 0; x < CHUNK_SIZE; x++) {
-                    if (y > givenMap[x + (z * CHUNK_SIZE)] && y > SEA_LEVEL) continue;
+                    if (y > givenMap[x + (z * CHUNK_SIZE)] && y > SEA_LEVEL)
+                        continue;
                     int blockData = 505;
                     if (y <= SEA_LEVEL && !(y <= givenMap[x + (z * CHUNK_SIZE)])) {
-                        blockData |= 0x4; //[1]00
+                        blockData |= 0x4; // [1]00
                     }
                     blocks[x + (z * CHUNK_SIZE) + (y * (CHUNK_SQR))] = blockData;
                 }
             }
         }
 
-//        System.out.println("0s" + Arrays.stream(this.blocks).filter(block -> block == 0).count());
-//        System.out.println("1s" + Arrays.stream(this.blocks).filter(block -> block != 0).count());
+        this.mesh = Optional.empty();
 
         this.modelMatrix = createModelMatrix(
                 rotationMatrix(0.0f, (byte) 1),
@@ -67,7 +67,6 @@ public class Chunk extends Thread {
                         position.z() * CHUNK_SIZE),
                 new Matrix4f().identity().scale(1.0f));
     }
-
 
     public void initializeBuffers() {
         evaluateNeighbour();
@@ -85,33 +84,33 @@ public class Chunk extends Thread {
         mesh = Optional.of(MeshFactory.createMesh(TERRAIN, vertexBuffer, indicesBuffer));
     }
 
-
     /*
-    TODO : Get the world coordinate system working
-    TODO : Show the position on map system
-    TODO : Let player cannot go through the floor
-    TODO : Make holes algorithm
-    TODO : Block lighting
-    TODO : Which even zero or non-zero case are smaller, use that to calculate the meshes
-    */
+     * TODO : Get the world coordinate system working
+     * TODO : Show the position on map system
+     * TODO : Let player cannot go through the floor
+     * TODO : Make holes algorithm
+     * TODO : Block lighting
+     * TODO : Which even zero or non-zero case are smaller, use that to calculate
+     * the meshes
+     */
     public void evaluateNeighbour() {
         for (int y = 0; y < CHUNK_HEIGHT; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 for (int x = 0; x < CHUNK_SIZE; x++) {
-                    if (blocks[x + (z * CHUNK_SIZE) + (y * CHUNK_SQR)] == 0) continue;
+                    if (blocks[x + (z * CHUNK_SIZE) + (y * CHUNK_SQR)] == 0)
+                        continue;
                     int faces = blocks[x + (z * CHUNK_SIZE) + (y * CHUNK_SQR)];
                     faces |= getMaterial(y, faces >> 2 & 1);
-                    faces &= isNeighbourActive(LEFT, x - 1, y, z) ? 0xFF : faces; //0111111
-                    faces &= isNeighbourActive(RIGHT, x + 1, y, z) ? 0x17F : faces; //1011111
-                    faces &= isNeighbourActive(FRONT, x, y, z + 1) ? 0x1BF : faces; //1101111
-                    faces &= isNeighbourActive(BACK, x, y, z - 1) ? 0x1DF : faces; //1110111
-                    faces &= isNeighbourActive(TOP, x, y + 1, z) ? 0x1EF : faces; //1111011
-                    faces &= isNeighbourActive(BOTTOM, x, y - 1, z) ? 0x1F7 : faces; //1111101
+                    faces &= isNeighbourActive(LEFT, x - 1, y, z) ? 0xFF : faces; // 0111111
+                    faces &= isNeighbourActive(RIGHT, x + 1, y, z) ? 0x17F : faces; // 1011111
+                    faces &= isNeighbourActive(FRONT, x, y, z + 1) ? 0x1BF : faces; // 1101111
+                    faces &= isNeighbourActive(BACK, x, y, z - 1) ? 0x1DF : faces; // 1110111
+                    faces &= isNeighbourActive(TOP, x, y + 1, z) ? 0x1EF : faces; // 1111011
+                    faces &= isNeighbourActive(BOTTOM, x, y - 1, z) ? 0x1F7 : faces; // 1111101
                     blocks[x + (z * CHUNK_SIZE) + (y * CHUNK_SQR)] = faces;
                 }
             }
         }
-
 
     }
 
@@ -148,7 +147,6 @@ public class Chunk extends Thread {
 
                 return neighbour.filter(chunk -> chunk.getCubeData(x, y, 0) != 0).isPresent();
 
-
             case BACK:
                 if (z >= 0) {
                     return blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)] != 0;
@@ -177,6 +175,10 @@ public class Chunk extends Thread {
 
     }
 
+    public boolean gotMesh() {
+        return mesh.isPresent();
+    }
+
     public boolean isChunk(int x, int y, int z) {
         return position.equals(x, y, z);
     }
@@ -185,7 +187,7 @@ public class Chunk extends Thread {
         mesh.ifPresent(Mesh::cleanup);
     }
 
-    //Getter
+    // Getter
     public Matrix4f getModelMatrix() {
         return modelMatrix;
     }
@@ -197,7 +199,6 @@ public class Chunk extends Thread {
     public int getCubeData(int x, int y, int z) {
         return blocks[x + (z * CHUNK_SIZE) + y * (CHUNK_SQR)];
     }
-
 
     @Override
     public String toString() {

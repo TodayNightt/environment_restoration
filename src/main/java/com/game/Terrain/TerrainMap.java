@@ -65,7 +65,6 @@ public class TerrainMap extends SceneItem {
         WorkerManager.getInstance().pass(chunkList).start();
     }
 
-
     // https://stackoverflow.com/questions/22131437/return-objects-from-arraylist
     public Optional<Chunk> getChunk(int x, int y, int z) {
         return this.chunkList.stream().filter(chunk -> chunk.isChunk(x, y, z)).findFirst();
@@ -80,7 +79,7 @@ public class TerrainMap extends SceneItem {
         uniformsMap.setUniform("tex", 0);
         glActiveTexture(GL_TEXTURE0);
         TextureList.getInstance().bind(textureName);
-        uniformsMap.setUniform("fValue", new float[]{
+        uniformsMap.setUniform("fValue", new float[] {
                 TerrainMap.getTextureRow()
         });
         chunkList.stream().filter(chunk -> chunk.getMesh().isPresent()).forEach(chunk -> {

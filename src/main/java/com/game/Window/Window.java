@@ -19,13 +19,13 @@ import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-
-//https://github.com/SpaiR/imgui-java/blob/main/imgui-app/src/main/java/imgui/app/Window.java#L25
+@SuppressWarnings({ "unused" })
+// https://github.com/SpaiR/imgui-java/blob/main/imgui-app/src/main/java/imgui/app/Window.java#L25
 abstract public class Window {
 
     private static Window window;
-    //    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
-//    private final ImGuiImplGl3 imGuiGl = new ImGuiImplGl3();
+    // private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
+    // private final ImGuiImplGl3 imGuiGl = new ImGuiImplGl3();
     // The window handle
     private long windowID;
     private int width = 1280, height = 720;
@@ -65,8 +65,8 @@ abstract public class Window {
     public void resized(long window, int width, int height) {
         this.width = width;
         this.height = height;
-//        getInstance().scene.getButtonManager().evalPlacement();
-//        getInstance().scene.getCamera().setWindowSize(getWidth(), getHeight());
+        // getInstance().scene.getButtonManager().evalPlacement();
+        // getInstance().scene.getCamera().setWindowSize(getWidth(), getHeight());
     }
 
     abstract public void initComponent();
@@ -75,7 +75,6 @@ abstract public class Window {
         initWindow();
         initComponent();
     }
-
 
     public void initWindow() {
         // Setup an error callback. The default implementation
@@ -100,15 +99,15 @@ abstract public class Window {
         windowID = glfwCreateWindow(width, height, "Environment Restoration", NULL, NULL);
         if (windowID == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
-        glfwSetWindowAspectRatio(windowID, 16, 9); //Lock aspect ratio
+        glfwSetWindowAspectRatio(windowID, 16, 9); // Lock aspect ratio
 
-        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        // Setup a key callback. It will be called every time a key is pressed, repeated
+        // or released.
         glfwSetKeyCallback(windowID, KeyListener::keyCallBack);
         glfwSetCursorPosCallback(windowID, MouseListener::cursorCallback);
         glfwSetMouseButtonCallback(windowID, MouseListener::mouseButtonCallback);
 
         glfwSetFramebufferSizeCallback(windowID, this::resized);
-
 
         // Get the thread stack and push a new frame
         try (MemoryStack stack = stackPush()) {
@@ -126,11 +125,9 @@ abstract public class Window {
             glfwSetWindowPos(
                     windowID,
                     (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
+                    (vidmode.height() - pHeight.get(0)) / 2);
 
         } // the stack frame is popped automatically
-
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(windowID);
@@ -138,20 +135,19 @@ abstract public class Window {
         glfwSwapInterval(1);
         System.out.println(glGetString(GL_VERSION));
 
-//        debugProc = GLUtil.setupDebugMessageCallback();
-        //Set depth buffer
+        // debugProc = GLUtil.setupDebugMessageCallback();
+        // Set depth buffer
         glEnable(GL_DEPTH_TEST);
         glDepthMask(true);
         glDepthFunc(GL_LEQUAL);
         glDepthRange(0.f, 1.0f);
 
-        //Enable FaceCulling
+        // Enable FaceCulling
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glFrontFace(GL_CW);
         // Make the window visible
         glfwShowWindow(windowID);
-
 
     }
 
@@ -163,18 +159,16 @@ abstract public class Window {
         }
     }
 
-
     protected void runFrame() {
-        //Start
+        // Start
         startFrame();
 
-        //Render
+        // Render
         render();
 
-        //End
+        // End
         endFrame();
     }
-
 
     abstract public void render();
 
@@ -194,7 +188,7 @@ abstract public class Window {
 
     protected void clearBuffer() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-        glClearBufferfv(GL_COLOR, 0, new float[]{0f, 0f, 0f, 1f});
+        glClearBufferfv(GL_COLOR, 0, new float[] { 0f, 0f, 0f, 1f });
         glClearDepth(1.0f);
     }
 
@@ -207,6 +201,5 @@ abstract public class Window {
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();
 
     }
-
 
 }

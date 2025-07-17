@@ -20,7 +20,8 @@ public class WorkerManager {
 
     public void run() {
         stillWorking = totalNumber != currentNum;
-        List<Chunk> stream = chunkList.stream().filter(chunk -> !chunk.isAlive() && chunk.getMesh().isEmpty()).toList();
+        List<Chunk> stream = chunkList.stream().filter(chunk -> !chunk.isAlive() && !chunk.gotMesh())
+                .toList();
         currentNum += stream.size();
         stream.forEach(Chunk::generateMesh);
     }
