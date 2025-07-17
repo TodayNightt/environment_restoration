@@ -15,7 +15,7 @@ public class Camera {
     private float windowWidth;
     private float windowHeight;
 
-    private float FOV, Z_NEAR, Z_FAR, aspectRatio, yaw, pan;
+    private float FOV, Z_NEAR, Z_FAR, aspectRatio, yaw, tilt;
 
     public Camera() {
         this.viewMatrix = new Matrix4f();
@@ -49,18 +49,18 @@ public class Camera {
     }
 
     // com.game.Camera
-    public void setCamera(Vector3f pos, Vector3f target, Vector3f up, float yaw, float pan) {
+    public void setCamera(Vector3f pos, Vector3f target, Vector3f up, float yaw, float tilt) {
         this.position = pos;
         this.target = target;
         this.up = up;
         this.yaw = yaw;
-        this.pan = pan;
+        this.tilt = tilt;
         updateCamera();
     }
 
     public void updateCamera() {
         Matrix4f rotationY = rotationMatrix(yaw, (byte) 2);
-        Matrix4f rotationX = rotationMatrix(pan, (byte) 1);
+        Matrix4f rotationX = rotationMatrix(tilt, (byte) 1);
         this.lookDir = new Vector3f(target).mulDirection(rotationX).mulDirection(rotationY);
         this.viewMatrix.identity().setLookAlong(lookDir, up).translate(position);
         this.viewMatrix.invert(inverseViewMatrix);
@@ -115,13 +115,13 @@ public class Camera {
         updateCamera();
     }
 
-    public void panDown() {
-        pan -= .5f;
+    public void tiltDown() {
+        tilt -= .5f;
         updateCamera();
     }
 
-    public void panUp() {
-        pan += .5f;
+    public void tiltUp() {
+        tilt += .5f;
         updateCamera();
     }
 

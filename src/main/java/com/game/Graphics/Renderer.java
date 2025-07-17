@@ -63,9 +63,9 @@ public class Renderer {
         if (pressed[Key.getIndex(Key.Down)])
             cam.down();
         if (pressed[Key.getIndex(Key.Left)])
-            cam.panUp();
+            cam.tiltUp();
         if (pressed[Key.getIndex(Key.Right)])
-            cam.panDown();
+            cam.tiltDown();
         if (pressed[Key.getIndex(Key.J)])
             pieceManager.addPiece(PieceCollection.getPieceType().get(0), (position.x() + 3 * lookDir.x()), position.y(),
                     (position.z() + 3 * lookDir.z()));
