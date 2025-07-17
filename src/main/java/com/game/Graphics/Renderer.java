@@ -13,6 +13,7 @@ import java.util.HashMap;
 import static com.game.Terrain.Generation.NoiseMap.createHeightMap;
 import static com.game.Utils.WorkerManager.stillWorking;
 import static org.lwjgl.glfw.GLFW.*;
+import static com.game.Window.EventListener.KeyListener.Key;
 
 public class Renderer {
 
@@ -49,37 +50,37 @@ public class Renderer {
         Camera cam = scene.getCamera();
         Vector3f position = cam.getPosition();
         Vector3f lookDir = cam.getLookDir();
-        if (pressed[0])
+        if (pressed[Key.getIndex(Key.W)])
             cam.forward();
-        if (pressed[1])
+        if (pressed[Key.getIndex(Key.A)])
             cam.yawLeft();
-        if (pressed[2])
+        if (pressed[Key.getIndex(Key.S)])
             cam.backward();
-        if (pressed[3])
+        if (pressed[Key.getIndex(Key.D)])
             cam.yawRight();
-        if (pressed[4])
+        if (pressed[Key.getIndex(Key.Up)])
             cam.up();
-        if (pressed[5])
+        if (pressed[Key.getIndex(Key.Down)])
             cam.down();
-        if (pressed[6])
+        if (pressed[Key.getIndex(Key.Left)])
             cam.panUp();
-        if (pressed[7])
+        if (pressed[Key.getIndex(Key.Right)])
             cam.panDown();
-        if (pressed[8])
+        if (pressed[Key.getIndex(Key.J)])
             pieceManager.addPiece(PieceCollection.getPieceType().get(0), (position.x() + 3 * lookDir.x()), position.y(),
                     (position.z() + 3 * lookDir.z()));
-        if (pressed[9])
+        if (pressed[Key.getIndex(Key.K)])
             pieceManager.addPiece(PieceCollection.getPieceType().get(1), (position.x() + 3 * lookDir.x()), position.y(),
                     (position.z() + 3 * lookDir.z()));
-        if (pressed[10])
+        if (pressed[Key.getIndex(Key.L)])
             pieceManager.addPiece(PieceCollection.getPieceType().get(2), (position.x() + 3 * lookDir.x()), position.y(),
                     (position.z() + 3 * lookDir.z()));
-        if (pressed[11]) {
+        if (pressed[Key.getIndex(Key.C)]) {
             int[] heightMap = createHeightMap();
             terrainMap.refresh(heightMap);
             scene.refreshMapTexture(heightMap);
         }
-        if (pressed[12]) {
+        if (pressed[Key.getIndex(Key.N)]) {
             wireFrame();
         }
     }
